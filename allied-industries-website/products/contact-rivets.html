@@ -3,24 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0E1012">
+<meta name="color-scheme" content="dark">
+<script>document.documentElement.className+=" js";</script>
 <title>Contact Rivets — Trimetal, Bimetal, Weldable Button &amp; Disc Contacts | Allied Industries</title>
 <meta name="description" content="Trimetal, Bimetal, Weldable Button and Disc Contact Rivets in AgCdO, AgNi, AgSnO and Ag999 silver alloys, bonded to ETP copper or steel base — manufactured by Allied Industries, New Delhi.">
 <link rel="icon" href="../assets/images/site/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../assets/images/site/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="../assets/images/site/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap"></noscript>
 <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
+<div class="scroll-progress" aria-hidden="true"></div>
 
 <header class="site-header">
   <nav class="container nav-row" aria-label="Primary">
     <a class="brand" href="../index.html">
       <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-        <circle cx="20" cy="20" r="18" fill="#202225"/>
-        <circle cx="20" cy="20" r="14.5" fill="none" stroke="#7C8994" stroke-width="2.1"/>
-        <circle cx="20" cy="20" r="8" fill="#AD5A2C"/>
-        <circle cx="16.7" cy="16.2" r="2.2" fill="rgba(255,255,255,0.55)"/>
+        <circle cx="20" cy="20" r="18.5" fill="#1D2125" stroke="#383F46" stroke-width="1"/>
+        <circle cx="20" cy="20" r="14" fill="none" stroke="#8C99A4" stroke-width="1.6"/>
+        <circle cx="20" cy="20" r="8.5" fill="#D97D3F"/>
+        <circle cx="16.8" cy="16.6" r="2.4" fill="rgba(255,255,255,0.42)"/>
       </svg>
       <span>
         <span class="brand-name-full">Allied Industries</span>
@@ -83,12 +91,13 @@
       <p class="breadcrumb"><a href="../index.html">Home</a> / <a href="metal-rivets.html">Products</a> / Contact Rivets</p>
       <span class="eyebrow">Contact Rivets</span>
       <h1 class="h1" style="margin-top:var(--space-3);max-width:26ch;">Electrical contact rivets, cold-headed for a soft shank and a hardened head.</h1>
-      <p class="lede" style="color:rgba(250,249,246,0.78);margin-top:var(--space-3);">Manufactured with wire by cold heading: the shank stays soft for easy riveting while the head work-hardens. Shank length can be varied; shank diameter is held in proportion to head size to avoid wrinkling during cold forging.</p>
+      <p class="lede" style="margin-top:var(--space-3);">Manufactured with wire by cold heading: the shank stays soft for easy riveting while the head work-hardens. Shank length can be varied; shank diameter is held in proportion to head size to avoid wrinkling during cold forging.</p>
     </div>
   </section>
 
   <section>
     <div class="container">
+      <h2 class="visually-hidden">Contact rivet types we manufacture</h2>
       <div class="card-grid cols-2" data-reveal-group>
 
         <article class="feature-card" data-reveal>
@@ -137,17 +146,52 @@
     </div>
   </section>
 
-  <section style="background:var(--paper-sunken);">
+  <section class="section-sunken">
     <div class="container">
       <div class="section-head" data-reveal>
         <span class="eyebrow">Reference data</span>
         <h2>Dimensional tolerance chart</h2>
         <p class="lede">Standard head diameter, head thickness, shank diameter, shank length, taper and layer tolerances we work to. There is always a possibility of deviating from the indicated limits — tolerances are set as desired by the customer.</p>
       </div>
-      <div class="table-wrap" data-reveal>
-        <img src="../assets/images/products/tolerance-chart.webp" alt="Allied Industries dimensional tolerance chart for contact rivets — head diameter, head thickness, shank diameter, shank length, taper, profile and layer tolerances in millimetres" loading="lazy" width="1200" height="800" style="display:block;width:100%;height:auto;">
+      <!-- The tolerance chart itself is a controlled engineering document and is
+           sent on request rather than published. The parameters below are the
+           dimensions held to tolerance, as described in the copy above. -->
+      <ul class="spec-params" data-reveal-group="60">
+          <li data-reveal>
+            <span class="spec-param-name">Head diameter</span>
+            <span class="spec-param-note">Ø to drawing</span>
+          </li>
+          <li data-reveal>
+            <span class="spec-param-name">Head thickness</span>
+            <span class="spec-param-note">To drawing</span>
+          </li>
+          <li data-reveal>
+            <span class="spec-param-name">Shank diameter</span>
+            <span class="spec-param-note">Held in proportion to head size</span>
+          </li>
+          <li data-reveal>
+            <span class="spec-param-name">Shank length</span>
+            <span class="spec-param-note">Variable</span>
+          </li>
+          <li data-reveal>
+            <span class="spec-param-name">Taper</span>
+            <span class="spec-param-note">To drawing</span>
+          </li>
+          <li data-reveal>
+            <span class="spec-param-name">Contact layer</span>
+            <span class="spec-param-note">Typically ½ head thickness</span>
+          </li>
+      </ul>
+
+      <div class="notice" data-reveal>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg>
+        <span>Tolerances are set as desired by the customer, and deviation from standard limits is possible. Send your drawing and we'll confirm the exact tolerances for your part — or ask us for the full dimensional tolerance chart.</span>
       </div>
-      <p class="form-note" data-reveal style="margin-top:var(--space-3);">Chart shown for reference. Send us your drawing and we'll confirm exact tolerances for your part before quoting.</p>
+
+      <div class="btn-group" data-reveal style="margin-top:var(--space-5);">
+        <a class="btn btn-primary" href="../contact.html">Request the tolerance chart</a>
+        <a class="btn btn-outline" href="https://wa.me/919811697031?text=Please%20send%20the%20dimensional%20tolerance%20chart%20for%20contact%20rivets." target="_blank" rel="noopener">Ask on WhatsApp</a>
+      </div>
     </div>
   </section>
 
@@ -169,11 +213,11 @@
 <footer class="site-footer">
   <div class="container footer-grid">
     <div class="footer-brand">
-      <a class="brand" href="../index.html" style="color: var(--on-graphite);">
+      <a class="brand" href="../index.html">
         <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-          <circle cx="20" cy="20" r="18" fill="#F1EFEA"/>
-          <circle cx="20" cy="20" r="14.5" fill="none" stroke="#7C8994" stroke-width="2.1"/>
-          <circle cx="20" cy="20" r="8" fill="#AD5A2C"/>
+          <circle cx="20" cy="20" r="18.5" fill="#1D2125" stroke="#383F46" stroke-width="1"/>
+          <circle cx="20" cy="20" r="14" fill="none" stroke="#8C99A4" stroke-width="1.6"/>
+          <circle cx="20" cy="20" r="8.5" fill="#D97D3F"/>
         </svg>
         <span>Allied Industries</span>
       </a>
@@ -184,7 +228,7 @@
       </div>
     </div>
     <div class="footer-col">
-      <h4>Products</h4>
+      <h3>Products</h3>
       <ul>
         <li><a href="metal-rivets.html">Metal Rivets</a></li>
         <li><a href="contact-rivets.html">Contact Rivets</a></li>
@@ -193,7 +237,7 @@
       </ul>
     </div>
     <div class="footer-col">
-      <h4>Company</h4>
+      <h3>Company</h3>
       <ul>
         <li><a href="../about.html">About Us</a></li>
         <li><a href="../careers.html">Careers</a></li>
@@ -201,7 +245,7 @@
       </ul>
     </div>
     <div class="footer-col">
-      <h4>Get in touch</h4>
+      <h3>Get in touch</h3>
       <ul>
         <li class="footer-contact-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10.5c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0z"/><circle cx="12" cy="10.5" r="2.7"/></svg>
