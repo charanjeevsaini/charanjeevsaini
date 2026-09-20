@@ -34,12 +34,30 @@
   function val(name) { return root.querySelector('[name="' + name + '"]'); }
   function num(name) { return parseFloat(val(name).value); }
 
+
+  /* Step 1: the construction sets sensible defaults and decides which of the
+     dimension fields actually apply to that part. */
+  var TYPES = {
+    "semi-tubular":     { label: "Semi Tubular Rivet",     d: { headDia: 5.0, headThk: 0.9, shankDia: 2.2, shankLen: 4.5, headStyle: "flat",        construction: "tubular", bodyMat: "copper", facing: "none" }, hide: ["facing", "facingThk"] },
+    "trimmed":          { label: "Trimmed Rivet",          d: { headDia: 5.4, headThk: 1.0, shankDia: 2.0, shankLen: 4.0, headStyle: "flat",        construction: "solid",   bodyMat: "copper", facing: "none" }, hide: ["facing", "facingThk"] },
+    "straight-head":    { label: "Straight Head Rivet",    d: { headDia: 4.8, headThk: 0.8, shankDia: 2.2, shankLen: 4.0, headStyle: "flat",        construction: "solid",   bodyMat: "copper", facing: "none" }, hide: ["facing", "facingThk"] },
+    "double-head-shank":{ label: "Double Head & Shank Rivet", d: { headDia: 5.2, headThk: 1.2, shankDia: 2.4, shankLen: 6.0, headStyle: "flat",     construction: "solid",   bodyMat: "brass",  facing: "none" }, hide: ["facing", "facingThk"] },
+    "formed":           { label: "Formed Rivet",           d: { headDia: 5.0, headThk: 1.0, shankDia: 2.0, shankLen: 4.5, headStyle: "dome",        construction: "solid",   bodyMat: "copper", facing: "none" }, hide: ["facing", "facingThk"] },
+    "copper":           { label: "Copper Rivet",           d: { headDia: 5.0, headThk: 1.1, shankDia: 2.2, shankLen: 4.0, headStyle: "dome",        construction: "solid",   bodyMat: "copper", facing: "none" }, hide: ["facing", "facingThk"] },
+    "trimetal-contact": { label: "Trimetal Contact Rivet", d: { headDia: 5.2, headThk: 1.15, shankDia: 2.1, shankLen: 3.2, headStyle: "flat",       construction: "solid",   bodyMat: "copper", facing: "AgNi",  facingThk: 0.6 }, hide: [] },
+    "weldable-button":  { label: "Weldable Button Contact Rivet", d: { headDia: 4.6, headThk: 0.9, shankDia: 1.6, shankLen: 1.0, headStyle: "dome", construction: "solid",   bodyMat: "copper", facing: "AgNi",  facingThk: 0.5 }, hide: [] },
+    "bimetal-contact":  { label: "Bimetal Contact Rivet",  d: { headDia: 5.0, headThk: 1.1, shankDia: 2.0, shankLen: 3.4, headStyle: "flat",        construction: "solid",   bodyMat: "copper", facing: "AgCdO", facingThk: 0.55 }, hide: [] },
+    "disc-contact":     { label: "Disc Contact Rivet",     d: { headDia: 6.0, headThk: 1.0, shankDia: 1.2, shankLen: 0.9, headStyle: "flat",        construction: "solid",   bodyMat: "copper", facing: "AgNi",  facingThk: 0.5 }, hide: [] }
+  };
+  var currentType = "semi-tubular";
+
   var mesh = null, rotY = 0.6, rotX = -0.42, spinning = !reduced;
   var dragging = false, lastX = 0, lastY = 0;
 
   function readSpec() {
     var facing = val("facing").value;
     return {
+      type: currentType,
       headDia: num("headDia"), headThk: num("headThk"),
       shankDia: num("shankDia"), shankLen: num("shankLen"),
       headStyle: val("headStyle").value,
@@ -71,6 +89,7 @@
 
   function rows(s) {
     return [
+      ["Construction type", (TYPES[s.type] || {}).label || "—"],
       ["Head diameter", s.headDia.toFixed(2) + " mm"],
       ["Head thickness", s.headThk.toFixed(2) + " mm"],
       ["Shank diameter", s.shankDia.toFixed(2) + " mm"],
@@ -189,7 +208,79 @@
       "&body=" + encodeURIComponent(body.join("\n"));
   });
 
+
+  /* Applying a construction sets its defaults and drops the fields that do
+     not apply to it, so the form only ever shows relevant inputs. */
+  function applyType(slug) {
+    var t = TYPES[slug];
+    if (!t) return;
+    currentType = slug;
+    Object.keys(t.d).forEach(function (k) {
+      var el = val(k);
+      if (!el) return;
+      el.value = t.d[k];
+      var out = root.querySelector('[data-out="' + k + '"]');
+      if (out) out.textContent = t.d[k] + " mm";
+    });
+    root.querySelectorAll(".cfg-field[data-field]").forEach(function (f) {
+      f.hidden = t.hide.indexOf(f.getAttribute("data-field")) !== -1;
+    });
+    var ftf = root.querySelector("#facingThkField");
+    if (ftf) ftf.hidden = t.hide.indexOf("facingThk") !== -1 || val("facing").value === "none";
+    root.querySelectorAll(".type-chip").forEach(function (c) {
+      c.setAttribute("aria-checked", c.getAttribute("data-type") === slug ? "true" : "false");
+    });
+    rebuild();
+  }
+
+  root.querySelectorAll(".type-chip").forEach(function (chip, i, all) {
+    chip.addEventListener("click", function () { applyType(chip.getAttribute("data-type")); });
+    // Radio-group semantics: arrows move and select, as a radiogroup should
+    chip.addEventListener("keydown", function (e) {
+      var d = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1
+            : e.key === "ArrowLeft"  || e.key === "ArrowUp"   ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      var next = all[(i + d + all.length) % all.length];
+      next.focus();
+      applyType(next.getAttribute("data-type"));
+    });
+  });
+
+  /* The custom-spec form carries whatever is already configured, so the
+     visitor is not re-typing what they just set. */
+  var customBtn = root.querySelector("#cfgCustom");
+  var customForm = root.querySelector("#customSpec");
+  if (customBtn && customForm) {
+    customBtn.addEventListener("click", function () {
+      var open = customForm.hidden;
+      customForm.hidden = !open;
+      customBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) {
+        var s = readSpec();
+        var seed = {
+          csHeadDia: s.headDia + " mm", csHeadThk: s.headThk + " mm",
+          csShankDia: s.shankDia + " mm", csShankLen: s.shankLen + " mm",
+          csMaterial: BODIES[s.bodyMat],
+          csFacing: s.facing === "none" ? "" : FACINGS[s.facing].label + (s.facingThk ? ", " + s.facingThk + " mm" : "")
+        };
+        Object.keys(seed).forEach(function (k) {
+          var el = customForm.querySelector("#" + k);
+          if (el && !el.value) el.value = seed[k];
+        });
+        customForm.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+        customForm.querySelector("#csName").focus({ preventScroll: true });
+      }
+    });
+    var closeBtn = root.querySelector("#cfgCustomClose");
+    if (closeBtn) closeBtn.addEventListener("click", function () {
+      customForm.hidden = true;
+      customBtn.setAttribute("aria-expanded", "false");
+      customBtn.focus();
+    });
+  }
+
   window.addEventListener("resize", draw, { passive: true });
-  rebuild();
+  if (root.querySelector('.type-chip')) applyType(currentType); else rebuild();
   loop();
 })();

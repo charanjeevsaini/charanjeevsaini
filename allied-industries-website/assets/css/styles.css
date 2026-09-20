@@ -1893,3 +1893,211 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .footer-contact-item svg { color: var(--band-copper); }
 .footer-certs span { border-color: var(--band-line); color: var(--band-dim); }
 .footer-bottom { border-top-color: var(--band-line); color: var(--band-dim); }
+
+/* ==========================================================================
+   PRODUCTS — family switch and configurator step controls
+   ========================================================================== */
+.type-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.cfg-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 22px;
+  margin-right: var(--space-2);
+  background: var(--copper);
+  color: var(--on-copper);
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 600;
+}
+
+.type-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.type-chip {
+  min-height: 44px;
+  padding: 0.55rem 1.05rem;
+  background: var(--surface);
+  border: 1px solid var(--line-bright);
+  border-radius: 100px;
+  color: var(--text-dim);
+  font: inherit;
+  font-size: var(--step--1);
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  touch-action: manipulation;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+.type-chip:hover { color: var(--text); border-color: var(--copper); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.type-chip:active { transform: translateY(0); box-shadow: inset 0 2px 4px rgba(42, 33, 27, 0.12); }
+.type-chip[aria-checked="true"] {
+  background: var(--copper);
+  border-color: var(--copper);
+  color: var(--on-copper);
+  box-shadow: var(--shadow-copper);
+}
+
+/* Fields that do not apply to the chosen construction are removed, not
+   disabled — a greyed control still reads as something you failed to use. */
+.cfg-field[hidden] { display: none; }
+
+.custom-spec {
+  margin-top: var(--space-7);
+  padding: clamp(var(--space-5), 4vw, var(--space-7));
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+.custom-spec[hidden] { display: none; }
+.custom-spec > h3 { margin-bottom: var(--space-2); }
+.custom-spec > .lede { margin-bottom: var(--space-5); }
+
+/* ==========================================================================
+   CONTACT
+   ========================================================================== */
+.contact-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: var(--space-4);
+}
+.contact-action {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: border-color var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+}
+.contact-action:hover { border-color: rgba(138, 97, 73, 0.42); box-shadow: var(--shadow-xl); }
+.contact-action-icon {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 50px; height: 50px;
+  flex: none;
+  background: var(--copper-wash);
+  border: 1px solid rgba(138, 97, 73, 0.22);
+  border-radius: var(--radius-md);
+  color: var(--copper-ink);
+}
+.contact-action-icon svg { width: 23px; height: 23px; }
+.contact-action-body { display: grid; gap: 2px; min-width: 0; }
+.contact-action-label {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.contact-action-value { font-size: var(--step-0); font-weight: 600; overflow-wrap: anywhere; }
+/* An email has no break opportunity, so it splits mid-word at the value
+   size. Step it down rather than let it hyphenate across two lines. */
+.contact-action-value.is-long { font-size: var(--step--1); letter-spacing: -0.005em; }
+.contact-action-note { font-size: var(--step--2); color: var(--text-dim); }
+.contact-action-go {
+  width: 20px; height: 20px;
+  flex: none;
+  margin-left: auto;
+  color: var(--copper);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.contact-action:hover .contact-action-go { transform: translateX(4px); }
+
+.contact-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: clamp(var(--space-5), 4vw, var(--space-7));
+  align-items: start;
+}
+.contact-form-card {
+  position: relative;
+  padding: clamp(var(--space-5), 4vw, var(--space-7));
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+.contact-side { display: grid; gap: var(--space-4); }
+.side-card {
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+.side-card-quiet { background: var(--surface-2); box-shadow: var(--shadow-sm); }
+.side-card-quiet a { color: var(--copper-ink); text-decoration: underline; text-underline-offset: 2px; }
+
+.person-list { display: grid; gap: var(--space-2); margin-top: var(--space-3); }
+.person {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 56px;
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.person:hover { border-color: var(--copper); background: var(--copper-wash); transform: translateX(2px); }
+.person-avatar {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 40px; height: 40px;
+  flex: none;
+  background: var(--band);
+  color: var(--band-copper);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  font-weight: 600;
+}
+.person-name { display: block; font-weight: 600; font-size: var(--step--1); }
+.person-role { display: block; font-size: var(--step--2); color: var(--text-dim); }
+.person-phone {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  color: var(--copper-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.site-address {
+  display: block;
+  margin: var(--space-3) 0 var(--space-4);
+  font-style: normal;
+  color: var(--text-dim);
+  font-size: var(--step--1);
+  line-height: 1.6;
+}
+.map-frame {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  /* The embed renders a bright map; knock it back into the warm palette */
+  filter: saturate(0.82) contrast(0.96);
+}
+
+@media (max-width: 900px) {
+  .contact-layout { grid-template-columns: 1fr; }
+}
