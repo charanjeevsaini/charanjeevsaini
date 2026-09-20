@@ -24,16 +24,16 @@
 <header class="site-header">
   <nav class="container nav-row" aria-label="Primary">
     <a class="brand" href="index.html">
-      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-        <circle cx="20" cy="20" r="18.5" fill="#2A211B" stroke="#4A3B31" stroke-width="1"/>
-        <circle cx="20" cy="20" r="14" fill="none" stroke="#B9A894" stroke-width="1.6"/>
-        <circle cx="20" cy="20" r="8.5" fill="#C9906B"/>
-        <circle cx="16.8" cy="16.6" r="2.4" fill="rgba(255,255,255,0.42)"/>
+      <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+        <defs><mask id="bm-slit"><rect width="100" height="100" fill="#fff"/><rect x="14" y="47.6" width="72" height="4.8" fill="#000"/></mask></defs>
+        <rect width="100" height="100" rx="26" fill="#1A1C20"/>
+        <circle cx="50" cy="26" r="8.6" fill="#C8763F"/>
+        <g mask="url(#bm-slit)" fill="#F2F0EB"><circle cx="31.5" cy="50" r="10.8"/><circle cx="68.5" cy="50" r="10.8"/></g>
+        <circle cx="27" cy="75" r="8.6" fill="#C8763F"/><circle cx="50" cy="75" r="8.6" fill="#C8763F"/><circle cx="73" cy="75" r="8.6" fill="#C8763F"/>
       </svg>
-      <span>
-        <span class="brand-name-full">Allied Industries</span>
-        <span class="brand-name-short">Allied</span>
-        <small>Est. 1998 · New Delhi</small>
+      <span class="brand-word">
+        <span class="brand-name">ALLIED</span>
+        <span class="brand-sub">Industries</span>
       </span>
     </a>
     <ul class="nav-links">
@@ -123,12 +123,17 @@
   <div class="container footer-grid">
     <div class="footer-brand">
       <a class="brand" href="index.html">
-        <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-          <circle cx="20" cy="20" r="18.5" fill="#2A211B" stroke="#4A3B31" stroke-width="1"/>
-          <circle cx="20" cy="20" r="14" fill="none" stroke="#B9A894" stroke-width="1.6"/>
-          <circle cx="20" cy="20" r="8.5" fill="#C9906B"/>
-        </svg>
-        <span>Allied Industries</span>
+        <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+        <defs><mask id="bm-slit"><rect width="100" height="100" fill="#fff"/><rect x="14" y="47.6" width="72" height="4.8" fill="#000"/></mask></defs>
+        <rect width="100" height="100" rx="26" fill="#1A1C20"/>
+        <circle cx="50" cy="26" r="8.6" fill="#C8763F"/>
+        <g mask="url(#bm-slit)" fill="#F2F0EB"><circle cx="31.5" cy="50" r="10.8"/><circle cx="68.5" cy="50" r="10.8"/></g>
+        <circle cx="27" cy="75" r="8.6" fill="#C8763F"/><circle cx="50" cy="75" r="8.6" fill="#C8763F"/><circle cx="73" cy="75" r="8.6" fill="#C8763F"/>
+      </svg>
+        <span class="brand-word">
+        <span class="brand-name">ALLIED</span>
+        <span class="brand-sub">Industries</span>
+      </span>
       </a>
       <p>Manufacturer, supplier &amp; exporter of precision metal rivets and electrical contact rivets. New Delhi, India — since 1998.</p>
       <div class="footer-certs">
@@ -186,6 +191,7 @@
   </a>
 </div>
 
+<script src="assets/js/ambient.js" defer></script>
 <script src="assets/js/main.js"></script>
 </body>
 </html>

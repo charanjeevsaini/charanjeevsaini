@@ -471,3 +471,35 @@
     select(tabs.find(function (t) { return t.getAttribute("aria-selected") === "true"; }) || tabs[0], false);
   });
 })();
+
+/* ============================================================================
+   Scroll spy for in-page jump links (the Products family switch).
+   Marking the link you are actually reading is honest; pre-filling one is not.
+   ========================================================================== */
+(function () {
+  "use strict";
+  var links = Array.prototype.slice.call(document.querySelectorAll('.type-switch a[href^="#"]'));
+  if (!links.length || !("IntersectionObserver" in window)) return;
+
+  var map = {};
+  links.forEach(function (a) {
+    var el = document.getElementById(a.getAttribute("href").slice(1));
+    if (el) map[el.id] = a;
+  });
+
+  var seen = {};
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { seen[e.target.id] = e.intersectionRatio; });
+    // Whichever target currently occupies most of the viewport wins
+    var best = null, bestRatio = 0;
+    Object.keys(seen).forEach(function (id) {
+      if (seen[id] > bestRatio) { bestRatio = seen[id]; best = id; }
+    });
+    links.forEach(function (a) {
+      var on = best && a.getAttribute("href") === "#" + best && bestRatio > 0.12;
+      a.setAttribute("aria-current", on ? "true" : "false");
+    });
+  }, { threshold: [0, 0.12, 0.3, 0.55, 0.8] });
+
+  Object.keys(map).forEach(function (id) { io.observe(document.getElementById(id)); });
+})();

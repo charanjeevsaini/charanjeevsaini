@@ -26,7 +26,9 @@
   var W = 0, H = 0, TX = 0, TY = 0, TS = 0;   // size + convergence target
   var paths = [], ripples = [], mass = reduced ? 1 : 0;
   var spin = 0.6, tiltTarget = -0.40, tilt = -0.40, spinBias = 0, running = false;
-  var shown = reduced ? 1 : 0;   // eased follower of `mass`
+  var shown = reduced ? 1 : 0;
+  var BUILD_MS = 1500;           // whole part, start to finish
+  var buildT0 = 0;
 
   var mesh = new window.Rivet3D.Mesh(
     window.Rivet3D.buildProfile({
@@ -113,7 +115,6 @@
       if (p.t >= 1) {
         p.t = 0;
         p.y += (Math.random() - 0.5) * 14;
-        if (mass < 1) mass = Math.min(1, mass + 0.011);   /* materialises over ~3s */
       }
 
       var pos = bez(p.t, q[0], q[1], q[2], q[3]);
@@ -142,9 +143,12 @@
     var dt = Math.min((now - last) || 16, 48) / 16.67;
     last = now;
     drawFlow(dt);
-    // Particle arrivals raise the target in steps; what we draw chases it
-    // smoothly, so the part grows continuously instead of clicking upward.
-    shown += (mass - shown) * Math.min(1, 0.045 * dt);
+    // Time-based, not arrival-based: a single eased curve, so nothing in
+    // the particle system can make the build stutter.
+    if (!buildT0) buildT0 = now;
+    var bp = Math.min(1, (now - buildT0) / BUILD_MS);
+    shown = 1 - Math.pow(1 - bp, 3);          // easeOutCubic
+    mass = shown;                              // glow intensity follows it
     if (shown > 0.005) {
       tilt += (tiltTarget - tilt) * 0.06 * dt;
       spin += 0.0042 * dt;

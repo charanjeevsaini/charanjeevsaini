@@ -24,16 +24,16 @@
 <header class="site-header">
   <nav class="container nav-row" aria-label="Primary">
     <a class="brand" href="index.html">
-      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-        <circle cx="20" cy="20" r="18.5" fill="#2A211B" stroke="#4A3B31" stroke-width="1"/>
-        <circle cx="20" cy="20" r="14" fill="none" stroke="#B9A894" stroke-width="1.6"/>
-        <circle cx="20" cy="20" r="8.5" fill="#C9906B"/>
-        <circle cx="16.8" cy="16.6" r="2.4" fill="rgba(255,255,255,0.42)"/>
+      <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+        <defs><mask id="bm-slit"><rect width="100" height="100" fill="#fff"/><rect x="14" y="47.6" width="72" height="4.8" fill="#000"/></mask></defs>
+        <rect width="100" height="100" rx="26" fill="#1A1C20"/>
+        <circle cx="50" cy="26" r="8.6" fill="#C8763F"/>
+        <g mask="url(#bm-slit)" fill="#F2F0EB"><circle cx="31.5" cy="50" r="10.8"/><circle cx="68.5" cy="50" r="10.8"/></g>
+        <circle cx="27" cy="75" r="8.6" fill="#C8763F"/><circle cx="50" cy="75" r="8.6" fill="#C8763F"/><circle cx="73" cy="75" r="8.6" fill="#C8763F"/>
       </svg>
-      <span>
-        <span class="brand-name-full">Allied Industries</span>
-        <span class="brand-name-short">Allied</span>
-        <small>Est. 1998 · New Delhi</small>
+      <span class="brand-word">
+        <span class="brand-name">ALLIED</span>
+        <span class="brand-sub">Industries</span>
       </span>
     </a>
     <ul class="nav-links">
@@ -91,15 +91,24 @@
       <div class="prose" data-reveal>
         <p class="lede">Established in 1998 at Delhi, India, Allied Industries has grown into a recognized manufacturer, exporter and supplier of a premium quality range of Metal Rivets and Contact Rivets — precision engineered from the best available raw material, on modern cold-heading equipment, to the dimensions our clients specify.</p>
         <p>Our product range includes Bimetal Contact Rivets, Trimetal Contact Rivets, Semi Tubular Rivets, Trimmed Rivets, Straight Head Rivets, Special Double Head &amp; Double Shank Rivets, Formed Rivets and Copper Rivets — used extensively in wiring harnesses, switchgear and electrical assemblies across the automotive and electrical component industries.</p>
-        <h2 style="font-size:var(--step-2);margin-top:var(--space-5);">How the work is organized</h2>
-        <p>To keep quality consistent at volume, our facility is divided into dedicated sub-units — production, R&amp;D, in-house quality testing, warehousing &amp; packaging, and after-sales support — each staffed by professionals with deep, hands-on experience in their area. These teams work in close coordination with client engineering teams so that finished parts match drawing requirements on the first run, not the third.</p>
-        <p>Raw material is sourced from certified vendors and examined by our quality controllers before it ever reaches the shop floor, so defects are caught before they become finished parts. Completed goods are stored by category and label in a dedicated warehousing unit, then packed for transit in material that keeps them free of damage — a detail that matters as much for a 500-piece sample order as it does for a container shipment.</p>
+        
       </div>
       <div data-reveal style="transition-delay:100ms;">
         <img src="assets/images/products/macro-copper-buttonhead.webp" alt="Close view of copper button-head rivets" loading="lazy" width="1200" height="800">
       </div>
     </div>
   </section>
+  <section class="section-sunken">
+    <div class="container">
+      <div class="container-narrow prose" data-reveal>
+        <span class="eyebrow">How we are set up</span>
+        <h2>How the work is organized</h2>
+        <p>To keep quality consistent at volume, our facility is divided into dedicated sub-units — production, R&amp;D, in-house quality testing, warehousing &amp; packaging, and after-sales support — each staffed by professionals with deep, hands-on experience in their area. These teams work in close coordination with client engineering teams so that finished parts match drawing requirements on the first run, not the third.</p>
+        <p>Raw material is sourced from certified vendors and examined by our quality controllers before it ever reaches the shop floor, so defects are caught before they become finished parts. Completed goods are stored by category and label in a dedicated warehousing unit, then packed for transit in material that keeps them free of damage — a detail that matters as much for a 500-piece sample order as it does for a container shipment.</p>
+      </div>
+    </div>
+  </section>
+
 
   <section class="section-sunken">
     <div class="container">
@@ -176,12 +185,17 @@
   <div class="container footer-grid">
     <div class="footer-brand">
       <a class="brand" href="index.html">
-        <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-          <circle cx="20" cy="20" r="18.5" fill="#2A211B" stroke="#4A3B31" stroke-width="1"/>
-          <circle cx="20" cy="20" r="14" fill="none" stroke="#B9A894" stroke-width="1.6"/>
-          <circle cx="20" cy="20" r="8.5" fill="#C9906B"/>
-        </svg>
-        <span>Allied Industries</span>
+        <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+        <defs><mask id="bm-slit"><rect width="100" height="100" fill="#fff"/><rect x="14" y="47.6" width="72" height="4.8" fill="#000"/></mask></defs>
+        <rect width="100" height="100" rx="26" fill="#1A1C20"/>
+        <circle cx="50" cy="26" r="8.6" fill="#C8763F"/>
+        <g mask="url(#bm-slit)" fill="#F2F0EB"><circle cx="31.5" cy="50" r="10.8"/><circle cx="68.5" cy="50" r="10.8"/></g>
+        <circle cx="27" cy="75" r="8.6" fill="#C8763F"/><circle cx="50" cy="75" r="8.6" fill="#C8763F"/><circle cx="73" cy="75" r="8.6" fill="#C8763F"/>
+      </svg>
+        <span class="brand-word">
+        <span class="brand-name">ALLIED</span>
+        <span class="brand-sub">Industries</span>
+      </span>
       </a>
       <p>Manufacturer, supplier &amp; exporter of precision metal rivets and electrical contact rivets. New Delhi, India — since 1998.</p>
       <div class="footer-certs">
@@ -239,6 +253,7 @@
   </a>
 </div>
 
+<script src="assets/js/ambient.js" defer></script>
 <script src="assets/js/main.js"></script>
 </body>
 </html>
