@@ -1,10 +1,11 @@
 /* ============================================================================
    Configurator teaser — landing page
    ----------------------------------------------------------------------------
-   A taste of the full "create your rivet" tool: three presets, a live render
-   and one head-diameter slider. Everything else is deliberately left to the
-   real configurator on the Products page, which this links to. Shares the same
-   renderer, so the part shown here is the part shown there.
+   An illustration, not a tool: one part turning slowly, with the detail and
+   the link beside it. It deliberately carries no controls — a single exposed
+   dimension implies the configurator only does that one thing. Shares the
+   renderer with the real configurator, so the part shown here is the part
+   the Products page draws.
    ========================================================================== */
 (function () {
   "use strict";
@@ -14,54 +15,19 @@
 
   var canvas = root.querySelector("#teaseCanvas");
   var ctx = canvas.getContext("2d");
-  var slider = root.querySelector("#teaseDia");
-  var readout = root.querySelector("#teaseDiaOut");
-  var note = root.querySelector("#teaseNote");
-  var link = root.querySelector("#teaseOpen");
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* Each preset mirrors the same-named construction in configurator.js, so the
-     link hands the full tool a part the visitor already recognises. */
-  var PRESETS = {
-    "semi-tubular": {
-      label: "Semi Tubular",
-      spec: { headDia: 5.0, headThk: 0.9, shankDia: 2.2, shankLen: 4.5,
-              headStyle: "flat", tubular: true, bodyMat: "copper", facingThk: 0 },
-      note: "Hollow shank, cold-headed from ETP copper — the workhorse for wiring harness joints."
-    },
-    "formed": {
-      label: "Formed",
-      spec: { headDia: 5.0, headThk: 1.0, shankDia: 2.0, shankLen: 4.5,
-              headStyle: "dome", tubular: false, bodyMat: "brass", facingThk: 0 },
-      note: "Solid brass with a domed head, formed to your drawing for structural fastening."
-    },
-    "bimetal-contact": {
-      label: "Bimetal Contact",
-      spec: { headDia: 5.0, headThk: 1.1, shankDia: 2.0, shankLen: 3.4,
-              headStyle: "flat", tubular: false, bodyMat: "copper",
-              facingThk: 0.55, facingMat: "silver" },
-      note: "Copper body under a silver-alloy contact facing, for switching duty."
-    }
-  };
+  /* A bimetal contact rivet: it shows both a body material and a contact
+     facing, so the illustration carries more of what the tool can do than a
+     plain rivet would. */
+  var mesh = new window.Rivet3D.Mesh(window.Rivet3D.buildProfile({
+    headDia: 5.0, headThk: 1.1, shankDia: 2.0, shankLen: 3.4,
+    headStyle: "flat", tubular: false, bodyMat: "copper",
+    facingThk: 0.55, facingMat: "silver"
+  }), 88);
 
-  var current = "semi-tubular";
-  var mesh = null, rotY = 0.6, rotX = -0.42, spinning = !reduced;
+  var rotY = 0.6, rotX = -0.42, spinning = !reduced;
   var dragging = false, lastX = 0, lastY = 0, resumeAt = 0;
-
-  function build() {
-    var p = PRESETS[current];
-    var spec = {};
-    for (var k in p.spec) spec[k] = p.spec[k];
-    spec.headDia = parseFloat(slider.value);
-    /* Keep the part a rivet: the shank tracks the head rather than outgrowing it. */
-    spec.shankDia = Math.min(p.spec.shankDia, spec.headDia * 0.55);
-
-    mesh = new window.Rivet3D.Mesh(window.Rivet3D.buildProfile(spec), 88);
-    readout.textContent = spec.headDia.toFixed(1) + " mm";
-    note.textContent = p.note;
-    link.href = "products.html#configurator";
-    draw();
-  }
 
   function draw() {
     var r = canvas.getBoundingClientRect();
@@ -73,7 +39,6 @@
     }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, r.width, r.height);
-    if (!mesh) return;
 
     var cx = r.width / 2, cy = r.height / 2;
     var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.min(r.width, r.height) * 0.55);
@@ -92,21 +57,6 @@
     if (spinning && !dragging && Date.now() > resumeAt) { rotY += 0.005; draw(); }
     window.requestAnimationFrame(loop);
   }
-
-  /* ---- preset buttons ---------------------------------------------------- */
-  var chips = root.querySelectorAll("[data-preset]");
-  Array.prototype.forEach.call(chips, function (chip) {
-    chip.addEventListener("click", function () {
-      current = chip.getAttribute("data-preset");
-      Array.prototype.forEach.call(chips, function (c) {
-        c.setAttribute("aria-pressed", String(c === chip));
-      });
-      slider.value = PRESETS[current].spec.headDia;
-      build();
-    });
-  });
-
-  slider.addEventListener("input", build);
 
   /* ---- drag to turn, same gesture as the hero ---------------------------- */
   canvas.addEventListener("pointerdown", function (e) {
@@ -133,6 +83,6 @@
   }
 
   window.addEventListener("resize", draw);
-  build();
+  draw();
   loop();
 })();

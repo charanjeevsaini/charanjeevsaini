@@ -60,8 +60,8 @@
   --focus:         #70503A;
 
   /* ---- Type ---- */
-  --font-display: 'IBM Plex Sans Condensed', 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
-  --font-body:    'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-display: 'Saira Condensed', 'Saira', 'Helvetica Neue', Arial, sans-serif;
+  --font-body:    'Saira', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-mono:    'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --step--2: clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
@@ -112,6 +112,13 @@
 
 /* ------------------------------------------------------------- base/reset -- */
 *, *::before, *::after { box-sizing: border-box; }
+
+/* Any author `display` beats the UA sheet's [hidden] rule, so a component
+   that sets one stays on screen while the markup says it is hidden. That is
+   how the configurator's "shank is as wide as the head" warning came to sit
+   permanently under a perfectly valid part. A more specific selector can
+   still override this deliberately, as .tech-panel[hidden] does in print. */
+[hidden] { display: none !important; }
 
 html {
   -webkit-text-size-adjust: 100%;
@@ -1813,12 +1820,12 @@ table.spec-table td:first-child { color: var(--text); font-weight: 500; }
 
 
 /* ---- landing-page teaser ----------------------------------------------- */
-/* Same renderer and the same engineering-drawing grid as the full tool, at a
-   size that reads as an invitation rather than a form to fill in. */
+/* An illustration and a description, not a second set of controls. Same
+   renderer and the same engineering-drawing grid as the full tool. */
 .cfg-tease-section { padding-block: var(--space-8); }
 .cfg-tease {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
   gap: clamp(var(--space-5), 4vw, var(--space-7));
   align-items: center;
   padding: clamp(var(--space-5), 4vw, var(--space-7));
@@ -1830,52 +1837,31 @@ table.spec-table td:first-child { color: var(--text); font-weight: 500; }
 .cfg-tease-copy > h2 { margin-bottom: var(--space-3); }
 .cfg-tease-copy > .lede { margin-bottom: var(--space-5); }
 
-.cfg-tease-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-5); }
-.cfg-tease-chip {
-  min-height: 44px;
-  padding: 0.5rem 1rem;
-  background: var(--surface);
-  border: 1px solid var(--line-bright);
-  border-radius: 100px;
-  color: var(--text-dim);
-  font: inherit;
-  font-size: var(--step--1);
-  font-weight: 500;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition:
-    color var(--dur-fast) var(--ease-out),
-    border-color var(--dur-fast) var(--ease-out),
-    background-color var(--dur-fast) var(--ease-out);
-}
-.cfg-tease-chip:hover { color: var(--text); border-color: var(--copper); }
-.cfg-tease-chip[aria-pressed="true"] {
-  background: var(--copper);
-  border-color: var(--copper);
-  color: var(--on-copper);
-}
-
-.cfg-tease-field {
+/* What the configurator actually exposes, as a spec sheet rather than prose */
+.cfg-tease-list {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-6);
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+.cfg-tease-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr);
   gap: var(--space-3);
-  margin-bottom: var(--space-4);
-}
-.cfg-tease-field label { font-size: var(--step--1); font-weight: 500; }
-.cfg-tease-field output {
-  font-family: var(--font-mono);
-  font-size: var(--step--1);
-  color: var(--copper-ink);
-  font-variant-numeric: tabular-nums;
-  min-width: 5.5ch;
-  text-align: right;
-}
-.cfg-tease-note {
-  min-height: 2.6em;                 /* hold height so presets do not jump the layout */
-  margin-bottom: var(--space-5);
+  padding-top: var(--space-2);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: var(--space-2);
   font-size: var(--step--1);
   color: var(--text-dim);
+}
+.cfg-tease-list li > span {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--copper-ink);
 }
 
 .cfg-tease-stage {
@@ -1908,8 +1894,7 @@ table.spec-table td:first-child { color: var(--text); font-weight: 500; }
 
 @media (max-width: 860px) {
   .cfg-tease { grid-template-columns: 1fr; }
-  .cfg-tease-stage { order: -1; }     /* show the part before the controls */
-  .cfg-tease-note { min-height: 0; }
+  .cfg-tease-list li { grid-template-columns: 1fr; gap: 2px; }
 }
 
 .cfg-fields { display: grid; gap: var(--space-4); }

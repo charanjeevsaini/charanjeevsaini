@@ -206,11 +206,66 @@
     var alpha = o.alpha == null ? 1 : o.alpha;
     var persp = o.persp == null ? 0.0016 : o.persp;
 
-    // Two-light product setup: a key from up-front-left and a dimmer, cooler
-    // fill from the right, plus a rim term so grazing edges catch light the
-    // way polished metal does.
-    var K = [-0.42, 0.74, 0.52];
-    var F = [0.78, 0.18, 0.40];
+    /* Two-light product setup. The key sits LOW and frontal on purpose: most
+       of a rivet is cylinder wall, whose normals are horizontal, and a high
+       key puts the specular half-vector out of their reach entirely. With the
+       old key at y=0.74 and an exponent of 49, the hot spot evaluated to 7e-10
+       on every wall facet — the specular term was doing nothing at all, and
+       what looked like lustre was only the ambient environment.
+
+       Both lights also need a NEGATIVE z. The viewer sits at -z (back faces
+       are culled at nz > 0.12), so the old lights at z = +0.52 and +0.40 were
+       standing behind the part: the key landed 0.000 on the head top and
+       0.000 on the front of the shank, and every surface actually facing the
+       camera was lit by ambient alone. */
+    var K = [-0.52, 0.42, -0.74];
+    var F = [0.78, 0.12, -0.60];
+
+    // Blinn half-vectors for a viewer down -z, precomputed once per frame.
+    function halfOf(L) {
+      var hx = L[0], hy = L[1], hz = L[2] - 1;
+      var hl = Math.hypot(hx, hy, hz) || 1;
+      return [hx / hl, hy / hl, hz / hl];
+    }
+    var HK = halfOf(K), HF = halfOf(F);
+
+    /* One shading model, used both for the flat per-face colour and for the
+       two end colours of the per-face gradient. It used to be written out
+       twice, which is how the two copies drifted apart. */
+    function shadeNormal(ax, ay, az, m) {
+      var up = ay;
+      var env = 0.14
+              + Math.pow(Math.max(0, up), 0.60) * 0.82            // sky
+              + Math.max(0, -up) * 0.04                            // dim floor
+              + Math.pow(1 - Math.abs(up), 26) * 0.80              // horizon band
+              + Math.pow(Math.max(0, up - 0.55) / 0.45, 3) * 0.42; // softbox
+
+      var key  = Math.max(0, ax * K[0] + ay * K[1] + az * K[2]);
+      var fill = Math.max(0, ax * F[0] + ay * F[1] + az * F[2]);
+
+      var ndhK = Math.max(0, ax * HK[0] + ay * HK[1] + az * HK[2]);
+      var ndhF = Math.max(0, ax * HF[0] + ay * HF[1] + az * HF[2]);
+
+      /* Three specular terms, because one lobe cannot be both a hot spot and
+         a sheen: a tight highlight, a broad sheen that grades around the
+         circumference (this is what reads as turned metal), and a softer one
+         from the fill so the shadow side is not dead. */
+      var hot   = Math.pow(ndhK, m.shine * 0.50) * m.spec * 1.95;
+      var sheen = Math.pow(ndhK, m.shine * 0.14) * m.spec * 0.42;
+      var hot2  = Math.pow(ndhF, m.shine * 0.40) * m.spec * 0.55;
+      var fres  = Math.pow(1 - Math.max(0, -az), 4) * 0.50 * m.spec;
+
+      var lum = 0.14 + key * 0.62 + fill * 0.17 + env * 0.40;
+      var hi  = hot + sheen + hot2 + fres * 0.80;
+
+      // Metals tint their reflections, so carry the base hue into the
+      // highlight instead of washing it out to white.
+      return [
+        Math.min(255, m.r * lum + 255 * hi * (0.55 + 0.45 * (m.r / 255))),
+        Math.min(255, m.g * lum + 255 * hi * (0.55 + 0.45 * (m.g / 255))),
+        Math.min(255, m.b * lum + 255 * hi * (0.55 + 0.45 * (m.b / 255)))
+      ];
+    }
     var quads = this.quads, out = [], i, k;
 
     /* The assembly used to cull whole profile bands, so the part arrived in
@@ -249,80 +304,30 @@
       var nz2 = n[1] * sxr + nz1 * cxr;
       if (nz2 > 0.12) continue;
 
-      // Shade an arbitrary rotated normal with the same model, so a face can
-      // be graded from one end to the other instead of filled flat.
-      function shadeN(ax, ay, az, m) {
-        var up = ay;
-        var env = 0.18
-                + Math.pow(Math.max(0, up), 0.65) * 0.72          // sky, biased bright
-                + Math.max(0, -up) * 0.06                          // dark floor
-                + Math.pow(1 - Math.abs(up), 22) * 0.95            // tight horizon strip
-                + Math.pow(Math.max(0, up - 0.55) / 0.45, 3) * 0.35; // overhead softbox
-        var kk = Math.max(0, ax * K[0] + ay * K[1] + az * K[2]);
-        var ff = Math.max(0, ax * F[0] + ay * F[1] + az * F[2]);
-        var hxx = K[0], hyy = K[1], hzz = K[2] - 1;
-        var hll = Math.hypot(hxx, hyy, hzz) || 1;
-        var ndhh = Math.max(0, (ax * hxx + ay * hyy + az * hzz) / hll);
-        var sp = Math.pow(ndhh, m.shine * 1.9) * m.spec * 1.9;
-        var fr = Math.pow(1 - Math.max(0, -az), 4) * 0.55 * m.spec;
-        var lu = 0.26 + kk * 0.56 + ff * 0.18 + env * 0.50;
-        var hh = sp * 0.95 + fr * 0.85;
-        return [
-          Math.min(255, m.r * lu + 255 * hh * (0.55 + 0.45 * (m.r / 255))),
-          Math.min(255, m.g * lu + 255 * hh * (0.55 + 0.45 * (m.g / 255))),
-          Math.min(255, m.b * lu + 255 * hh * (0.55 + 0.45 * (m.b / 255)))
-        ];
-      }
-
       function rotN(n3) {
         var x1 = n3[0] * cyr + n3[2] * syr;
         var z1 = -n3[0] * syr + n3[2] * cyr;
         return [x1, n3[1] * cxr - z1 * sxr, n3[1] * sxr + z1 * cxr];
       }
 
-      var vdot = -nz2;                                  // 1 when facing viewer
+      var flat = shadeNormal(nx1, ny2, nz2, q.m);
+      var rec = { p: pts, z: zsum, cap: !!q.cap, r: flat[0], g: flat[1], b: flat[2] };
 
-      /* Polished metal takes its character from what it reflects, so stand a
-         cheap environment in for one: bright sky above, dim floor below and a
-         tight bright horizon ring. That ring is what reads as lustre. */
-      var up = ny2;
-      var env = 0.18
-              + Math.pow(Math.max(0, up), 0.65) * 0.72
-              + Math.max(0, -up) * 0.06
-              + Math.pow(1 - Math.abs(up), 22) * 0.95
-              + Math.pow(Math.max(0, up - 0.55) / 0.45, 3) * 0.35;
-
-      var key  = Math.max(0, nx1 * K[0] + ny2 * K[1] + nz2 * K[2]);
-      var fill = Math.max(0, nx1 * F[0] + ny2 * F[1] + nz2 * F[2]);
-
-      // Blinn half-vector against a viewer at -z: a tighter, brighter hot spot
-      var hx = K[0], hy = K[1], hz = K[2] - 1;
-      var hl = Math.hypot(hx, hy, hz) || 1;
-      var ndh = Math.max(0, (nx1 * hx + ny2 * hy + nz2 * hz) / hl);
-      var spec = Math.pow(ndh, q.m.shine * 1.9) * q.m.spec * 1.9;
-
-      // Fresnel: every metal goes bright at a grazing angle
-      var fres = Math.pow(1 - Math.max(0, vdot), 4) * 0.55 * q.m.spec;
-
-      var lum = 0.26 + key * 0.56 + fill * 0.18 + env * 0.50;
-
-      // Metals tint their reflections, so carry the base hue into the
-      // highlight instead of washing it out to white.
-      var hi = spec * 0.95 + fres * 0.85;
-      var tr = 0.55 + 0.45 * (q.m.r / 255);
-      var tg = 0.55 + 0.45 * (q.m.g / 255);
-      var tb = 0.55 + 0.45 * (q.m.b / 255);
-
-      var rec = {
-        p: pts, z: zsum, cap: !!q.cap,
-        r: Math.min(255, q.m.r * lum + 255 * hi * tr),
-        g: Math.min(255, q.m.g * lum + 255 * hi * tg),
-        b: Math.min(255, q.m.b * lum + 255 * hi * tb)
-      };
+      /* A flat turned face has one normal, so a single shade leaves it dead.
+         Real turned metal carries concentric tool marks that smear the
+         reflection radially, so sample the model at normals tilted toward and
+         away from the key and let the cap gradient run between them. That is
+         a colour sweep, not the flat +/-8% brightness scale it replaces. */
+      if (q.cap) {
+        rec.capHot = shadeNormal(
+          nx1 + HK[0] * 0.75, ny2 + HK[1] * 0.75, nz2 + HK[2] * 0.75, q.m);
+        rec.capRim = shadeNormal(
+          nx1 - HK[0] * 0.55, ny2 - HK[1] * 0.55, nz2 - HK[2] * 0.55, q.m);
+      }
       if (q.nA && q.nB && pts.length === 4) {
         var ra = rotN(q.nA), rb = rotN(q.nB);
-        rec.cA = shadeN(ra[0], ra[1], ra[2], q.m);
-        rec.cB = shadeN(rb[0], rb[1], rb[2], q.m);
+        rec.cA = shadeNormal(ra[0], ra[1], ra[2], q.m);
+        rec.cB = shadeNormal(rb[0], rb[1], rb[2], q.m);
         rec.gA = [(pts[0][0] + pts[3][0]) / 2, (pts[0][1] + pts[3][1]) / 2];
         rec.gB = [(pts[1][0] + pts[2][0]) / 2, (pts[1][1] + pts[2][1]) / 2];
       }
@@ -394,10 +399,18 @@
         cxr2 /= f2.p.length; cyr2 /= f2.p.length;
         var rad = 0;
         for (var cq = 0; cq < f2.p.length; cq++) rad = Math.max(rad, Math.hypot(f2.p[cq][0] - cxr2, f2.p[cq][1] - cyr2));
-        var rg = ctx.createRadialGradient(cxr2 - rad * 0.32, cyr2 - rad * 0.36, rad * 0.05, cxr2, cyr2, rad * 1.15);
-        rg.addColorStop(0,   "rgb(" + Math.min(255, f2.r * 1.08 | 0) + "," + Math.min(255, f2.g * 1.07 | 0) + "," + Math.min(255, f2.b * 1.06 | 0) + ")");
-        rg.addColorStop(0.62, col);
-        rg.addColorStop(1,   "rgb(" + (f2.r * 0.90 | 0) + "," + (f2.g * 0.90 | 0) + "," + (f2.b * 0.92 | 0) + ")");
+        // Offset the bright pole toward where the key sits on screen (y is
+        // flipped going to screen space), so the sweep tracks the lighting.
+        var lx = HK[0], ly = -HK[1];
+        var ll = Math.hypot(lx, ly) || 1;
+        var rg = ctx.createRadialGradient(
+          cxr2 + (lx / ll) * rad * 0.52, cyr2 + (ly / ll) * rad * 0.52, rad * 0.04,
+          cxr2, cyr2, rad * 1.25);
+        var hotC = f2.capHot || [f2.r, f2.g, f2.b];
+        var rimC = f2.capRim || [f2.r, f2.g, f2.b];
+        rg.addColorStop(0,    "rgb(" + (hotC[0]|0) + "," + (hotC[1]|0) + "," + (hotC[2]|0) + ")");
+        rg.addColorStop(0.55, col);
+        rg.addColorStop(1,    "rgb(" + (rimC[0]|0) + "," + (rimC[1]|0) + "," + (rimC[2]|0) + ")");
         ctx.fillStyle = rg;
       } else {
         ctx.fillStyle = col;
