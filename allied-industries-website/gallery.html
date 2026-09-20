@@ -13,8 +13,8 @@
 <link rel="apple-touch-icon" href="assets/images/site/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;500;600;700&amp;family=Saira:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;500;600;700&amp;family=Saira:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap"></noscript>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap"></noscript>
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
@@ -88,55 +88,99 @@
 
   <section>
     <div class="container">
-      <div class="gal-grid" data-reveal-group="60">
-        <button type="button" class="gal-tile wide tall" data-reveal data-full="assets/images/products/gallery-1.webp" data-caption="Mixed silver and copper rivets, close view">
-          <img src="assets/images/products/gallery-1.webp" alt="Mixed silver and copper rivets, close view" loading="lazy">
-          <span class="gal-cap"><span class="gal-cap-text">Mixed silver and copper rivets, close view</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 3h6v6M10 14L21 3M21 14v7H3V3h7"/></svg></span>
-        </button>
-        <button type="button" class="gal-tile " data-reveal data-full="assets/images/products/gallery-2.webp" data-caption="Copper rivets, round head">
-          <img src="assets/images/products/gallery-2.webp" alt="Copper rivets, round head" loading="lazy">
-          <span class="gal-cap"><span class="gal-cap-text">Copper rivets, round head</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 3h6v6M10 14L21 3M21 14v7H3V3h7"/></svg></span>
-        </button>
-        <button type="button" class="gal-tile tall" data-reveal data-full="assets/images/products/gallery-3.webp" data-caption="Copper rivets, close macro view">
-          <img src="assets/images/products/gallery-3.webp" alt="Copper rivets, close macro view" loading="lazy">
-          <span class="gal-cap"><span class="gal-cap-text">Copper rivets, close macro view</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 3h6v6M10 14L21 3M21 14v7H3V3h7"/></svg></span>
-        </button>
-        <button type="button" class="gal-tile " data-reveal data-full="assets/images/products/gallery-4.webp" data-caption="Aluminium and copper rivets">
-          <img src="assets/images/products/gallery-4.webp" alt="Aluminium and copper rivets" loading="lazy">
-          <span class="gal-cap"><span class="gal-cap-text">Aluminium and copper rivets</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 3h6v6M10 14L21 3M21 14v7H3V3h7"/></svg></span>
-        </button>
-        <button type="button" class="gal-tile wide" data-reveal data-full="assets/images/products/gallery-5.webp" data-caption="Copper formed rivets, non-round head">
-          <img src="assets/images/products/gallery-5.webp" alt="Copper formed rivets, non-round head" loading="lazy">
-          <span class="gal-cap"><span class="gal-cap-text">Copper formed rivets, non-round head</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 3h6v6M10 14L21 3M21 14v7H3V3h7"/></svg></span>
-        </button>
-        <button type="button" class="gal-tile " data-reveal data-full="assets/images/products/gallery-6.webp" data-caption="Mixed silver and copper rivet assortment">
+      <div class="showcase" id="showcase" data-reveal>
+        <div class="showcase-stage">
+          <button type="button" class="showcase-arrow prev" aria-label="Previous image">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+          </button>
+
+          <div class="showcase-frame">
+        <figure class="shot is-current" data-slide="0">
+          <img src="assets/images/products/gallery-1.webp" alt="Mixed silver and copper rivets, close view" fetchpriority="high">
+        </figure>
+        <figure class="shot" data-slide="1" aria-hidden="true">
           <img src="assets/images/products/gallery-6.webp" alt="Mixed silver and copper rivet assortment" loading="lazy">
-          <span class="gal-cap"><span class="gal-cap-text">Mixed silver and copper rivet assortment</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 3h6v6M10 14L21 3M21 14v7H3V3h7"/></svg></span>
-        </button>
-        <button type="button" class="gal-tile " data-reveal data-full="assets/images/products/macro-silver-copper-1.webp" data-caption="Silver and copper contact rivets">
+        </figure>
+        <figure class="shot" data-slide="2" aria-hidden="true">
           <img src="assets/images/products/macro-silver-copper-1.webp" alt="Silver and copper contact rivets" loading="lazy">
-          <span class="gal-cap"><span class="gal-cap-text">Silver and copper contact rivets</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 3h6v6M10 14L21 3M21 14v7H3V3h7"/></svg></span>
-        </button>
-        <button type="button" class="gal-tile tall" data-reveal data-full="assets/images/products/macro-copper-scatter.webp" data-caption="Copper rivets scattered">
-          <img src="assets/images/products/macro-copper-scatter.webp" alt="Copper rivets scattered" loading="lazy">
-          <span class="gal-cap"><span class="gal-cap-text">Copper rivets scattered</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 3h6v6M10 14L21 3M21 14v7H3V3h7"/></svg></span>
-        </button>
-        <button type="button" class="gal-tile wide" data-reveal data-full="assets/images/products/macro-copper-buttonhead.webp" data-caption="Copper button-head rivets, close view">
+        </figure>
+        <figure class="shot" data-slide="3" aria-hidden="true">
+          <img src="assets/images/products/gallery-2.webp" alt="Copper rivets, round head" loading="lazy">
+        </figure>
+        <figure class="shot" data-slide="4" aria-hidden="true">
+          <img src="assets/images/products/gallery-3.webp" alt="Copper rivets, close macro view" loading="lazy">
+        </figure>
+        <figure class="shot" data-slide="5" aria-hidden="true">
           <img src="assets/images/products/macro-copper-buttonhead.webp" alt="Copper button-head rivets, close view" loading="lazy">
-          <span class="gal-cap"><span class="gal-cap-text">Copper button-head rivets, close view</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 3h6v6M10 14L21 3M21 14v7H3V3h7"/></svg></span>
-        </button>
-        <button type="button" class="gal-tile " data-reveal data-full="assets/images/products/contact-rivets-bimetal.webp" data-caption="Bimetal contact rivets">
+        </figure>
+        <figure class="shot" data-slide="6" aria-hidden="true">
+          <img src="assets/images/products/macro-copper-scatter.webp" alt="Copper rivets scattered" loading="lazy">
+        </figure>
+        <figure class="shot" data-slide="7" aria-hidden="true">
+          <img src="assets/images/products/gallery-5.webp" alt="Copper formed rivets, non-round head" loading="lazy">
+        </figure>
+        <figure class="shot" data-slide="8" aria-hidden="true">
           <img src="assets/images/products/contact-rivets-bimetal.webp" alt="Bimetal contact rivets" loading="lazy">
-          <span class="gal-cap"><span class="gal-cap-text">Bimetal contact rivets</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 3h6v6M10 14L21 3M21 14v7H3V3h7"/></svg></span>
-        </button>
-        <button type="button" class="gal-tile tall" data-reveal data-full="assets/images/products/formed-rivets-mixed.webp" data-caption="Aluminium and copper formed rivets">
+        </figure>
+        <figure class="shot" data-slide="9" aria-hidden="true">
+          <img src="assets/images/products/gallery-4.webp" alt="Aluminium and copper rivets" loading="lazy">
+        </figure>
+        <figure class="shot" data-slide="10" aria-hidden="true">
           <img src="assets/images/products/formed-rivets-mixed.webp" alt="Aluminium and copper formed rivets" loading="lazy">
-          <span class="gal-cap"><span class="gal-cap-text">Aluminium and copper formed rivets</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 3h6v6M10 14L21 3M21 14v7H3V3h7"/></svg></span>
-        </button>
-        <button type="button" class="gal-tile wide" data-reveal data-full="assets/images/products/banner-mixed-wide.webp" data-caption="Wide assortment of Allied Industries rivets">
+        </figure>
+        <figure class="shot" data-slide="11" aria-hidden="true">
           <img src="assets/images/products/banner-mixed-wide.webp" alt="Wide assortment of Allied Industries rivets" loading="lazy">
-          <span class="gal-cap"><span class="gal-cap-text">Wide assortment of Allied Industries rivets</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 3h6v6M10 14L21 3M21 14v7H3V3h7"/></svg></span>
-        </button>
+        </figure>
+          </div>
+
+          <button type="button" class="showcase-arrow next" aria-label="Next image">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <div class="showcase-bar">
+          <p class="showcase-cap" aria-live="polite"><span class="cap-line" data-cap="0">Mixed silver and copper rivets, close view</span><span class="cap-line" data-cap="1">Mixed silver and copper rivet assortment</span><span class="cap-line" data-cap="2">Silver and copper contact rivets</span><span class="cap-line" data-cap="3">Copper rivets, round head</span><span class="cap-line" data-cap="4">Copper rivets, close macro view</span><span class="cap-line" data-cap="5">Copper button-head rivets, close view</span><span class="cap-line" data-cap="6">Copper rivets scattered</span><span class="cap-line" data-cap="7">Copper formed rivets, non-round head</span><span class="cap-line" data-cap="8">Bimetal contact rivets</span><span class="cap-line" data-cap="9">Aluminium and copper rivets</span><span class="cap-line" data-cap="10">Aluminium and copper formed rivets</span><span class="cap-line" data-cap="11">Wide assortment of Allied Industries rivets</span></p>
+          <p class="showcase-count"><span id="shotNow">1</span> / 12</p>
+        </div>
+
+        <div class="showcase-rail" role="tablist" aria-label="Choose an image">
+          <button type="button" class="thumb is-current" data-goto="0" role="tab" aria-selected="true" tabindex="0" aria-label="Mixed silver and copper rivets, close view">
+            <img src="assets/images/products/gallery-1.webp" alt="" loading="lazy">
+          </button>
+          <button type="button" class="thumb" data-goto="1" role="tab" aria-selected="false" tabindex="-1" aria-label="Mixed silver and copper rivet assortment">
+            <img src="assets/images/products/gallery-6.webp" alt="" loading="lazy">
+          </button>
+          <button type="button" class="thumb" data-goto="2" role="tab" aria-selected="false" tabindex="-1" aria-label="Silver and copper contact rivets">
+            <img src="assets/images/products/macro-silver-copper-1.webp" alt="" loading="lazy">
+          </button>
+          <button type="button" class="thumb" data-goto="3" role="tab" aria-selected="false" tabindex="-1" aria-label="Copper rivets, round head">
+            <img src="assets/images/products/gallery-2.webp" alt="" loading="lazy">
+          </button>
+          <button type="button" class="thumb" data-goto="4" role="tab" aria-selected="false" tabindex="-1" aria-label="Copper rivets, close macro view">
+            <img src="assets/images/products/gallery-3.webp" alt="" loading="lazy">
+          </button>
+          <button type="button" class="thumb" data-goto="5" role="tab" aria-selected="false" tabindex="-1" aria-label="Copper button-head rivets, close view">
+            <img src="assets/images/products/macro-copper-buttonhead.webp" alt="" loading="lazy">
+          </button>
+          <button type="button" class="thumb" data-goto="6" role="tab" aria-selected="false" tabindex="-1" aria-label="Copper rivets scattered">
+            <img src="assets/images/products/macro-copper-scatter.webp" alt="" loading="lazy">
+          </button>
+          <button type="button" class="thumb" data-goto="7" role="tab" aria-selected="false" tabindex="-1" aria-label="Copper formed rivets, non-round head">
+            <img src="assets/images/products/gallery-5.webp" alt="" loading="lazy">
+          </button>
+          <button type="button" class="thumb" data-goto="8" role="tab" aria-selected="false" tabindex="-1" aria-label="Bimetal contact rivets">
+            <img src="assets/images/products/contact-rivets-bimetal.webp" alt="" loading="lazy">
+          </button>
+          <button type="button" class="thumb" data-goto="9" role="tab" aria-selected="false" tabindex="-1" aria-label="Aluminium and copper rivets">
+            <img src="assets/images/products/gallery-4.webp" alt="" loading="lazy">
+          </button>
+          <button type="button" class="thumb" data-goto="10" role="tab" aria-selected="false" tabindex="-1" aria-label="Aluminium and copper formed rivets">
+            <img src="assets/images/products/formed-rivets-mixed.webp" alt="" loading="lazy">
+          </button>
+          <button type="button" class="thumb" data-goto="11" role="tab" aria-selected="false" tabindex="-1" aria-label="Wide assortment of Allied Industries rivets">
+            <img src="assets/images/products/banner-mixed-wide.webp" alt="" loading="lazy">
+          </button>
+        </div>
       </div></div>
     </div>
   </section>
@@ -154,21 +198,7 @@
   </section>
 
 
-  <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Gallery image">
-    <button type="button" class="lightbox-close" aria-label="Close">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-    <button type="button" class="lightbox-nav prev" aria-label="Previous image">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
-    </button>
-    <figure class="lightbox-figure">
-      <img id="lightboxImg" src="" alt="">
-      <figcaption id="lightboxCap"></figcaption>
-    </figure>
-    <button type="button" class="lightbox-nav next" aria-label="Next image">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-    </button>
-  </div>
+
 
 </main>
 

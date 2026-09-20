@@ -6,6 +6,32 @@
    nothing to Cumulative Layout Shift.
    ========================================================================== */
 
+/* When the site is embedded — the artifact preview, or any iframe — the HOST
+   page keeps its own scroll position across an in-frame navigation. The new
+   page's own scrollY is already 0; it is the host that is still scrolled, so
+   a link clicked from halfway down one page appears to open the next page
+   halfway down. Ask the host to bring the top of the frame back into view.
+
+   Left alone on purpose: a URL carrying a hash (that navigation is meant to
+   land mid-page) and a back/forward step (the browser's restore is correct). */
+(function () {
+  "use strict";
+  if (window.top === window.self) return;          // not embedded, nothing to do
+  if (window.location.hash) return;                // deep link: land where asked
+
+  var entries = window.performance && window.performance.getEntriesByType
+    ? window.performance.getEntriesByType("navigation") : null;
+  if (entries && entries[0] && entries[0].type === "back_forward") return;
+
+  try {
+    // 'instant' matters: html has scroll-behavior:smooth, and a page that
+    // slides into place on every load reads as a glitch.
+    document.documentElement.scrollIntoView({ block: "start", inline: "nearest", behavior: "instant" });
+  } catch (e) {
+    try { document.documentElement.scrollIntoView(); } catch (e2) { /* already at top */ }
+  }
+})();
+
 /* Shared by the scroll-reveal observer and the tab panels, which live in
    separate IIFEs below.
 
@@ -549,59 +575,118 @@ var clearStagger = (function () {
 })();
 
 /* ============================================================================
-   Gallery lightbox — opens from a tile, arrows/Escape work, focus returns.
+   Gallery showcase — one large stage, a rail of thumbnails beneath.
+   Arrows, arrow keys and the rail all drive the same index; the stage
+   crossfades rather than jumping, and the caption is announced politely.
    ========================================================================== */
 (function () {
   "use strict";
-  var box = document.getElementById("lightbox");
-  var tiles = Array.prototype.slice.call(document.querySelectorAll(".gal-tile"));
-  if (!box || !tiles.length) return;
 
-  var img = document.getElementById("lightboxImg");
-  var cap = document.getElementById("lightboxCap");
-  var closeBtn = box.querySelector(".lightbox-close");
-  var prevBtn = box.querySelector(".lightbox-nav.prev");
-  var nextBtn = box.querySelector(".lightbox-nav.next");
-  var index = 0, opener = null;
+  var root = document.getElementById("showcase");
+  if (!root) return;
 
-  function show(i) {
-    index = (i + tiles.length) % tiles.length;
-    var t = tiles[index];
-    img.src = t.getAttribute("data-full");
-    img.alt = t.getAttribute("data-caption") || "";
-    cap.textContent = (index + 1) + " / " + tiles.length + " — " + (t.getAttribute("data-caption") || "");
+  var shots  = root.querySelectorAll(".shot");
+  var thumbs = root.querySelectorAll(".thumb");
+  var caps   = root.querySelectorAll(".cap-line");
+  var now    = document.getElementById("shotNow");
+  var prev   = root.querySelector(".showcase-arrow.prev");
+  var next   = root.querySelector(".showcase-arrow.next");
+  var rail   = root.querySelector(".showcase-rail");
+  if (!shots.length) return;
+
+  var count = shots.length;
+  var at = 0;
+
+  function show(i, moveFocus) {
+    at = (i + count) % count;
+
+    Array.prototype.forEach.call(shots, function (el, n) {
+      var on = n === at;
+      el.classList.toggle("is-current", on);
+      /* The outgoing figure stays in the layout for the crossfade, so hide it
+         from assistive tech explicitly rather than relying on opacity. */
+      if (on) { el.removeAttribute("aria-hidden"); }
+      else { el.setAttribute("aria-hidden", "true"); }
+    });
+
+    Array.prototype.forEach.call(thumbs, function (el, n) {
+      var on = n === at;
+      el.classList.toggle("is-current", on);
+      el.setAttribute("aria-selected", on ? "true" : "false");
+      el.tabIndex = on ? 0 : -1;                       // roving tabindex
+      if (on && moveFocus) el.focus();
+    });
+
+    Array.prototype.forEach.call(caps, function (el, n) {
+      el.classList.toggle("is-current", n === at);
+    });
+
+    if (now) now.textContent = String(at + 1);
+    keepThumbInView();
   }
 
-  function open(i) {
-    opener = tiles[i];
-    show(i);
-    box.hidden = false;
-    document.body.classList.add("nav-open");     // reuse the scroll lock
-    closeBtn.focus();
+  /* Keep the active thumbnail on screen without yanking the page around it. */
+  function keepThumbInView() {
+    if (!rail || !thumbs[at]) return;
+    var t = thumbs[at].getBoundingClientRect();
+    var r = rail.getBoundingClientRect();
+    if (t.left < r.left + 4) rail.scrollLeft -= (r.left + 4 - t.left);
+    else if (t.right > r.right - 4) rail.scrollLeft += (t.right - (r.right - 4));
   }
 
-  function close() {
-    box.hidden = true;
-    document.body.classList.remove("nav-open");
-    if (opener) opener.focus();
-  }
+  if (prev) prev.addEventListener("click", function () { show(at - 1, false); });
+  if (next) next.addEventListener("click", function () { show(at + 1, false); });
 
-  tiles.forEach(function (t, i) { t.addEventListener("click", function () { open(i); }); });
-  closeBtn.addEventListener("click", close);
-  prevBtn.addEventListener("click", function () { show(index - 1); });
-  nextBtn.addEventListener("click", function () { show(index + 1); });
-  box.addEventListener("click", function (e) { if (e.target === box) close(); });
-
-  document.addEventListener("keydown", function (e) {
-    if (box.hidden) return;
-    if (e.key === "Escape") { close(); return; }
-    if (e.key === "ArrowLeft") { e.preventDefault(); show(index - 1); }
-    if (e.key === "ArrowRight") { e.preventDefault(); show(index + 1); }
-    if (e.key !== "Tab") return;
-    // Keep Tab inside the dialog while it owns the screen
-    var items = [closeBtn, prevBtn, nextBtn];
-    var at = items.indexOf(document.activeElement);
-    e.preventDefault();
-    items[(at + (e.shiftKey ? -1 : 1) + items.length) % items.length].focus();
+  Array.prototype.forEach.call(thumbs, function (el) {
+    el.addEventListener("click", function () {
+      show(parseInt(el.getAttribute("data-goto"), 10) || 0, false);
+    });
   });
+
+  /* Arrow keys move the rail the way a tablist should; Home/End jump. */
+  if (rail) {
+    rail.addEventListener("keydown", function (e) {
+      var k = e.key, to = null;
+      if (k === "ArrowRight") to = at + 1;
+      else if (k === "ArrowLeft") to = at - 1;
+      else if (k === "Home") to = 0;
+      else if (k === "End") to = count - 1;
+      if (to === null) return;
+      e.preventDefault();
+      show(to, true);
+    });
+  }
+
+  /* Arrow keys also work from anywhere on the page, as long as the visitor
+     is not typing into something. */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    /* e.target can be `document`, which has no closest(), so check for it. */
+    var t = e.target;
+    if (t && typeof t.closest === "function" &&
+        (t.closest("input, textarea, select, [contenteditable]") || t.closest(".showcase-rail"))) return;
+    if (e.key === "ArrowRight") { show(at + 1, false); }
+    else if (e.key === "ArrowLeft") { show(at - 1, false); }
+    else return;
+    e.preventDefault();
+  });
+
+  /* Swipe on touch, which is what the rail invites on a phone. */
+  var sx = 0, sy = 0, tracking = false;
+  var frame = root.querySelector(".showcase-frame");
+  if (frame) {
+    frame.addEventListener("touchstart", function (e) {
+      if (e.touches.length !== 1) return;
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY; tracking = true;
+    }, { passive: true });
+    frame.addEventListener("touchend", function (e) {
+      if (!tracking) return;
+      tracking = false;
+      var t = e.changedTouches[0];
+      var dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy) * 1.4) show(at + (dx < 0 ? 1 : -1), false);
+    }, { passive: true });
+  }
+
+  show(0, false);
 })();
