@@ -153,6 +153,22 @@
     for (i = 0; i < profile.length - 1; i++) {
       var a0 = profile[i], b0 = profile[i + 1];
       if (a0.r === 0 && b0.r === 0) continue;         // degenerate band
+
+      // Flat cap: one disc, one polygon, no internal seams
+      if (a0.y === b0.y && (a0.r === 0 || b0.r === 0)) {
+        var rr = Math.max(a0.r, b0.r), ring = [];
+        for (j = 0; j <= seg; j++) ring.push([rr * cos[j], a0.y - cy, rr * sin[j]]);
+        quads.push({
+          v: ring,
+          n: [0, bn[i][1] >= 0 ? 1 : -1, 0],
+          m: materials[b0.mat] || materials.copper,
+          y: a0.y - cy,
+          band: i,
+          cap: true
+        });
+        continue;
+      }
+
       for (j = 0; j < seg; j++) {
         var nr = bn[i][0], ny = bn[i][1];
         var mj = (j + 0.5) / seg * Math.PI * 2;
@@ -165,11 +181,14 @@
           ],
           n: [nr * Math.cos(mj), ny, nr * Math.sin(mj)],
           m: materials[b0.mat] || materials.copper,
+          y: (a0.y + b0.y) / 2 - cy,
           band: i
         });
       }
     }
     this.quads = quads;
+    this.minY = minY - cy;
+    this.maxY = maxY - cy;
     return this;
   };
 
@@ -189,14 +208,23 @@
     var K = [-0.42, 0.74, 0.52];
     var F = [0.78, 0.18, 0.40];
     var quads = this.quads, out = [], i, k;
-    var bandMax = this.profile.length - 1;
+
+    /* The assembly used to cull whole profile bands, so the part arrived in
+       about ten visible chunks. Instead sweep a soft frontier up through the
+       form and fade each quad across it, which reads as continuous growth. */
+    var span = (this.maxY - this.minY) || 1;
+    var feather = span * 1.15;
+    var front = this.minY + (span + feather) * reveal;
 
     for (i = 0; i < quads.length; i++) {
       var q = quads[i];
-      if (q.band / bandMax > reveal) continue;        // assembly wipe, bottom-up
+      var qa = reveal >= 1 ? 1 : (front - q.y) / feather;
+      if (qa <= 0) continue;                           // not yet reached
+      if (qa > 1) qa = 1;
+      qa = qa * qa * (3 - 2 * qa);                     // smoothstep the edge
 
-      var pts = [], zsum = 0;
-      for (k = 0; k < 4; k++) {
+      var pts = [], zsum = 0, nv = q.v.length;
+      for (k = 0; k < nv; k++) {
         var v = q.v[k];
         // rotate Y then X
         var x1 = v[0] * cyr + v[2] * syr;
@@ -207,6 +235,7 @@
         pts.push([cx + x1 * scale * f, cy - y2 * scale * f]);
         zsum += z2;
       }
+      zsum /= nv;
 
       // Rotate the normal the same way and cull back faces
       var n = q.n;
@@ -216,22 +245,43 @@
       var nz2 = n[1] * sxr + nz1 * cxr;
       if (nz2 > 0.12) continue;
 
+      var vdot = -nz2;                                  // 1 when facing viewer
+
+      /* Polished metal takes its character from what it reflects, so stand a
+         cheap environment in for one: bright sky above, dim floor below and a
+         tight bright horizon ring. That ring is what reads as lustre. */
+      var up = ny2;
+      var env = 0.26
+              + Math.max(0, up) * 0.60
+              + Math.max(0, -up) * 0.10
+              + Math.pow(1 - Math.abs(up), 12) * 0.62;
+
       var key  = Math.max(0, nx1 * K[0] + ny2 * K[1] + nz2 * K[2]);
       var fill = Math.max(0, nx1 * F[0] + ny2 * F[1] + nz2 * F[2]);
-      // Hemispheric ambient: up-facing surfaces pick up more of the scene
-      var amb  = 0.34 + 0.16 * (ny2 * 0.5 + 0.5);
-      // Rim: strongest where the surface turns away from the viewer
-      var rim  = Math.pow(1 - Math.min(1, Math.abs(nz2)), 3) * 0.30;
 
-      var lum = amb + key * 0.78 + fill * 0.26 + rim;
-      var spec = Math.pow(Math.max(0, -nz2 * 0.5 + key * 0.8), q.m.shine * 0.22) * q.m.spec;
-      var hi = 255 * spec * 0.75 + 190 * rim * 0.5;
+      // Blinn half-vector against a viewer at -z: a tighter, brighter hot spot
+      var hx = K[0], hy = K[1], hz = K[2] - 1;
+      var hl = Math.hypot(hx, hy, hz) || 1;
+      var ndh = Math.max(0, (nx1 * hx + ny2 * hy + nz2 * hz) / hl);
+      var spec = Math.pow(ndh, q.m.shine) * q.m.spec;
+
+      // Fresnel: every metal goes bright at a grazing angle
+      var fres = Math.pow(1 - Math.max(0, vdot), 4) * 0.55 * q.m.spec;
+
+      var lum = 0.34 + key * 0.62 + fill * 0.22 + env * 0.55;
+
+      // Metals tint their reflections, so carry the base hue into the
+      // highlight instead of washing it out to white.
+      var hi = spec * 0.95 + fres * 0.85;
+      var tr = 0.55 + 0.45 * (q.m.r / 255);
+      var tg = 0.55 + 0.45 * (q.m.g / 255);
+      var tb = 0.55 + 0.45 * (q.m.b / 255);
 
       out.push({
         p: pts, z: zsum,
-        r: Math.min(255, q.m.r * lum + hi),
-        g: Math.min(255, q.m.g * lum + hi * 0.99),
-        b: Math.min(255, q.m.b * lum + hi * 1.02)
+        r: Math.min(255, q.m.r * lum + 255 * hi * tr),
+        g: Math.min(255, q.m.g * lum + 255 * hi * tg),
+        b: Math.min(255, q.m.b * lum + 255 * hi * tb)
       });
     }
 
@@ -239,25 +289,63 @@
     // quads must be laid down first and the nearest painted last.
     out.sort(function (a, b) { return b.z - a.z; });
 
-    ctx.save();
-    ctx.globalAlpha = alpha;
+    /* Translucent adjacent polygons antialias into visible seams, so the
+       materialise is done by masking the finished part with a single
+       gradient rather than by fading each quad separately. */
+    var masked = reveal < 1;
+    var target = ctx, gy0 = 0, gy1 = 0;
+    if (masked) {
+      var cw = ctx.canvas.width, chh = ctx.canvas.height;
+      if (!this._scratch) this._scratch = document.createElement("canvas");
+      var sc = this._scratch;
+      if (sc.width !== cw || sc.height !== chh) { sc.width = cw; sc.height = chh; }
+      var sctx = sc.getContext("2d");
+      sctx.setTransform(1, 0, 0, 1, 0, 0);
+      sctx.clearRect(0, 0, cw, chh);
+      sctx.setTransform(ctx.getTransform());
+      // Screen-space band the gradient runs across (y grows downward)
+      gy1 = o.cy - (this.minY - feather * 0.15) * scale;
+      gy0 = o.cy - (this.minY + (span + feather) * reveal) * scale;
+      target = sctx;
+    }
+
+    target.save();
+    target.globalAlpha = alpha;
+    var ctxOriginal = ctx;
+    ctx = target;
     for (i = 0; i < out.length; i++) {
       var f2 = out[i], p2 = f2.p;
       ctx.beginPath();
       ctx.moveTo(p2[0][0], p2[0][1]);
-      ctx.lineTo(p2[1][0], p2[1][1]);
-      ctx.lineTo(p2[2][0], p2[2][1]);
-      ctx.lineTo(p2[3][0], p2[3][1]);
+      for (var pv = 1; pv < p2.length; pv++) ctx.lineTo(p2[pv][0], p2[pv][1]);
       ctx.closePath();
       var col = "rgb(" + (f2.r | 0) + "," + (f2.g | 0) + "," + (f2.b | 0) + ")";
       ctx.fillStyle = col;
-      // Stroke with the same colour to hide seams between adjacent quads
-      ctx.strokeStyle = col;
-      ctx.lineWidth = 1;
       ctx.fill();
+      ctx.strokeStyle = col;      // hairline closes the seam to its neighbour
+      ctx.lineWidth = 1;
       ctx.stroke();
     }
     ctx.restore();
+    ctx = ctxOriginal;
+
+    if (masked) {
+      var sc2 = this._scratch, s2 = sc2.getContext("2d");
+      s2.save();
+      s2.setTransform(1, 0, 0, 1, 0, 0);
+      s2.globalCompositeOperation = "destination-in";
+      var tm = ctx.getTransform();
+      var g = s2.createLinearGradient(0, gy1 * tm.d + tm.f, 0, gy0 * tm.d + tm.f);
+      g.addColorStop(0, "rgba(0,0,0,1)");
+      g.addColorStop(1, "rgba(0,0,0,0)");
+      s2.fillStyle = g;
+      s2.fillRect(0, 0, sc2.width, sc2.height);
+      s2.restore();
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.drawImage(sc2, 0, 0);
+      ctx.restore();
+    }
   };
 
   global.Rivet3D = { buildProfile: buildProfile, Mesh: Mesh, materials: materials };

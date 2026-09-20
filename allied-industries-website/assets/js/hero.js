@@ -26,13 +26,14 @@
   var W = 0, H = 0, TX = 0, TY = 0, TS = 0;   // size + convergence target
   var paths = [], ripples = [], mass = reduced ? 1 : 0;
   var spin = 0.6, tiltTarget = -0.40, tilt = -0.40, spinBias = 0, running = false;
+  var shown = reduced ? 1 : 0;   // eased follower of `mass`
 
   var mesh = new window.Rivet3D.Mesh(
     window.Rivet3D.buildProfile({
       headDia: 5.2, headThk: 1.15, shankDia: 2.1, shankLen: 3.4,
       headStyle: "flat", facingThk: 0.62, bodyMat: "copper", facingMat: "silver"
     }),
-    coarse ? 34 : 52
+    coarse ? 44 : 88
   );
 
   function resize() {
@@ -112,7 +113,7 @@
       if (p.t >= 1) {
         p.t = 0;
         p.y += (Math.random() - 0.5) * 14;
-        if (mass < 1) mass = Math.min(1, mass + 0.045);   /* whole part in ~3s */
+        if (mass < 1) mass = Math.min(1, mass + 0.011);   /* materialises over ~3s */
       }
 
       var pos = bez(p.t, q[0], q[1], q[2], q[3]);
@@ -141,13 +142,17 @@
     var dt = Math.min((now - last) || 16, 48) / 16.67;
     last = now;
     drawFlow(dt);
-    if (mass > 0.01) {
+    // Particle arrivals raise the target in steps; what we draw chases it
+    // smoothly, so the part grows continuously instead of clicking upward.
+    shown += (mass - shown) * Math.min(1, 0.045 * dt);
+    if (shown > 0.005) {
       tilt += (tiltTarget - tilt) * 0.06 * dt;
       spin += 0.0042 * dt;
       mesh.render(ctx, {
-        cx: TX, cy: TY, scale: TS,
+        cx: TX, cy: TY,
+        scale: TS * (0.90 + 0.10 * shown),
         rotX: tilt, rotY: spin + spinBias,
-        reveal: mass, alpha: Math.min(1, mass * 1.5)
+        reveal: shown, alpha: 1
       });
     }
     window.requestAnimationFrame(frame);

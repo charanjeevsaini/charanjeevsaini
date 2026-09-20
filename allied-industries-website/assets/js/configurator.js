@@ -58,7 +58,7 @@
       headStyle: s.headStyle, tubular: s.tubular,
       bodyMat: s.bodyMat, facingThk: s.facingThk,
       facingMat: FACINGS[s.facing].mat
-    }), 56);
+    }), 88);
 
     // Shank can never exceed the head, or it is not a rivet
     var warn = root.querySelector("#cfgWarn");
