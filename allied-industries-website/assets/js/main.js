@@ -350,3 +350,104 @@
     el.textContent = new Date().getFullYear();
   });
 })();
+
+/* ============================================================================
+   Pointer-reactive surfaces: spotlight glow, 3D tilt, and the data tabs.
+   Kept in its own scope so the core page behaviour above stays independent.
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  var mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var reduced = mq.matches;
+  mq.addEventListener("change", function (e) { reduced = e.matches; });
+  var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  /* ------------------------------------------------- spotlight glow ------ */
+  /* Cards read --x/--y in viewport space; their gradients are
+     background-attachment: fixed, so the light appears to stay still in the
+     world while the cards move through it. */
+  var glows = Array.prototype.slice.call(document.querySelectorAll(".glow"));
+  if (glows.length && fine) {
+    var px = 0, py = 0, queued = false;
+
+    function flush() {
+      queued = false;
+      var xp = (px / window.innerWidth).toFixed(3);
+      for (var i = 0; i < glows.length; i++) {
+        var el = glows[i];
+        // Only pay for cards actually on screen
+        var r = el.getBoundingClientRect();
+        if (r.bottom < -200 || r.top > window.innerHeight + 200) continue;
+        el.style.setProperty("--x", px.toFixed(1));
+        el.style.setProperty("--y", py.toFixed(1));
+        el.style.setProperty("--xp", xp);
+      }
+    }
+
+    document.addEventListener("pointermove", function (e) {
+      px = e.clientX; py = e.clientY;
+      if (!queued) { queued = true; window.requestAnimationFrame(flush); }
+    }, { passive: true });
+  }
+
+  /* -------------------------------------------------------- 3D tilt ------ */
+  if (fine) {
+    Array.prototype.forEach.call(document.querySelectorAll(".tilt"), function (el) {
+      var max = parseFloat(el.getAttribute("data-tilt")) || 6;   // degrees
+
+      el.addEventListener("pointerenter", function () {
+        if (reduced) return;
+        el.classList.add("is-tilting");
+      });
+
+      el.addEventListener("pointermove", function (e) {
+        if (reduced) return;
+        var r = el.getBoundingClientRect();
+        var nx = (e.clientX - r.left) / r.width - 0.5;
+        var ny = (e.clientY - r.top) / r.height - 0.5;
+        el.style.setProperty("--tilt-y", (nx * max).toFixed(2) + "deg");
+        el.style.setProperty("--tilt-x", (-ny * max).toFixed(2) + "deg");
+        el.style.setProperty("--tilt-lift", "-6px");
+      });
+
+      el.addEventListener("pointerleave", function () {
+        el.classList.remove("is-tilting");     // longer easing on the way back
+        el.style.setProperty("--tilt-y", "0deg");
+        el.style.setProperty("--tilt-x", "0deg");
+        el.style.setProperty("--tilt-lift", "0px");
+      });
+    });
+  }
+
+  /* ---------------------------------------------------- data tabs -------- */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-tabs]"), function (group) {
+    var tabs = Array.prototype.slice.call(group.querySelectorAll('[role="tab"]'));
+    if (!tabs.length) return;
+
+    function select(tab, focus) {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        t.tabIndex = on ? 0 : -1;               // roving tabindex
+        var panel = document.getElementById(t.getAttribute("aria-controls"));
+        if (panel) panel.hidden = !on;
+      });
+      if (focus) tab.focus();
+    }
+
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener("click", function () { select(tab, false); });
+      tab.addEventListener("keydown", function (e) {
+        var next = null;
+        if (e.key === "ArrowRight") next = tabs[(i + 1) % tabs.length];
+        else if (e.key === "ArrowLeft") next = tabs[(i - 1 + tabs.length) % tabs.length];
+        else if (e.key === "Home") next = tabs[0];
+        else if (e.key === "End") next = tabs[tabs.length - 1];
+        if (next) { e.preventDefault(); select(next, true); }
+      });
+    });
+
+    select(tabs.find(function (t) { return t.getAttribute("aria-selected") === "true"; }) || tabs[0], false);
+  });
+})();

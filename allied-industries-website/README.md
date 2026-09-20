@@ -47,21 +47,41 @@ the visitor's email client with the message pre-filled to
 `contact.html` / `careers.html` with a `fetch()` POST to your form
 endpoint — no other changes needed.
 
+## 3D (no library)
+
+`assets/js/rivet3d.js` is a small software renderer for surfaces of
+revolution. A rivet is a lathe form, so it needs no general 3D engine: the
+profile is revolved, each quad is shaded with a key/fill/rim light model and
+painted back to front onto a 2D canvas. About 8KB, no dependency, and it runs
+at 60fps on low-end hardware — where three.js would have been ~600KB.
+
+Two things use it:
+
+- `assets/js/hero.js` — dashed bezier paths stream in from both edges and
+  converge on the centre. Arriving particles accumulate "mass", and that mass
+  drives the part's assembly from the shank up. Tap to send a ripple through
+  the flow; drag to steer it.
+- `assets/js/configurator.js` — the "Create your rivet" section on both
+  product pages. Form controls drive the same renderer live, and the spec
+  can be sent as a quote request.
+
+Profiles are built by `Rivet3D.buildProfile({headDia, headThk, shankDia,
+shankLen, headStyle, tubular, bodyMat, facingThk, facingMat})`, all in mm.
+
 ## Images
 
-Most of the product photography is shot on a white backdrop, which reads as a
-bright panel on a dark page. Two things handle this:
+**All photography and client logos have been removed.** In their place:
 
-- The hero art (`hero-cutout-rivets-cut.webp`) had its backdrop removed so the
-  parts float on the page. The same treatment was tried on the other photos
-  and rejected: where the parts are silver, they are too close in colour to
-  the backdrop and the cut eats into them.
-- Everywhere else the photo is presented as a lit panel with a gradient scrim
-  grounding its lower edge into the card.
-
-Client logos sit on light plates rather than being flattened to silhouettes —
-some of these logos are knockout text inside a filled shape, and silhouetting
-them erases the wordmark entirely.
+- `assets/images/rivets/*.webp` — ten labelled cross-section diagrams, one per
+  rivet type, extracted from the supplied `rivet-types-merged.pdf`. These are
+  real content and are used on the product pages and the homepage product
+  cards. They are drawn on a light ground, so their containers carry
+  `.is-diagram` (contain, light panel, no scrim) rather than being cropped and
+  darkened like a photo.
+- Everything else is a **deliberate placeholder** (`.ph`): a drawn panel with
+  crop-mark corners naming what belongs there. Replace each one with an
+  `<img>` when the real asset exists. Client logos use `.ph-logo` name plates,
+  which also avoids publishing third-party marks before that is cleared.
 
 ## Known follow-ups
 
@@ -72,6 +92,11 @@ them erases the wordmark entirely.
   request the chart. **No tolerance values have been invented.** To publish
   the real figures, replace the `.spec-params` list with a `<table
   class="spec-table">` inside a `.table-wrap` — both are already styled.
+
+- **Technical data** (both product pages): the material, plating and alloy
+  comparisons are **general engineering reference**, not Allied's published
+  capability list, and the page says so. Confirm the ranges, alloys and
+  finishes against what the plant actually runs before this goes live.
 
 - **Certificates**: the ISO 9001:2015 and IATF 16949:2016 certificate
   scans on `quality.html` show a validity date of 08 March 2025. If these

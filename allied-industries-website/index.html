@@ -101,9 +101,10 @@
           <a class="btn btn-ghost-invert" href="products/metal-rivets.html">Browse Products</a>
         </div>
       </div>
-      <div class="hero-media" data-reveal="scale" style="transition-delay: 140ms;" data-parallax="0.05">
-        <div class="hero-media-ring" aria-hidden="true"></div>
-        <img src="assets/images/products/hero-cutout-rivets-cut.webp" alt="Assortment of Allied Industries copper and silver-alloy rivets and electrical contacts" width="1200" height="797" fetchpriority="high">
+      <div class="hero-media" data-reveal="scale" style="transition-delay: 140ms;">
+        <div class="hero-stage" id="heroStage">
+          <p class="hero-stage-hint">Drag to turn · tap to disturb the flow</p>
+        </div>
       </div>
     </div>
   </section>
@@ -138,21 +139,20 @@
       <p class="strip-label" data-reveal>Manufacturing for India's leading OEMs</p>
       <div class="marquee" data-reveal>
         <div class="marquee-track">
-          <img src="assets/images/clients/tvs.webp" alt="TVS" loading="lazy" width="130" height="66">
-          <img src="assets/images/clients/honda.webp" alt="Honda" loading="lazy" width="130" height="66">
-          <img src="assets/images/clients/maruti-suzuki.webp" alt="Maruti Suzuki" loading="lazy" width="130" height="66">
-          <img src="assets/images/clients/hero.webp" alt="Hero" loading="lazy" width="216" height="66">
-          <img src="assets/images/clients/spark-minda.webp" alt="Spark Minda" loading="lazy" width="216" height="66">
-          <img src="assets/images/clients/jyoti.webp" alt="Jyoti Ltd" loading="lazy" width="274" height="66">
-          <img src="assets/images/clients/u-shin.webp" alt="U-Shin" loading="lazy" width="202" height="66">
-          <img src="assets/images/clients/gilard.webp" alt="Gilard" loading="lazy" width="130" height="66">
-          <img src="assets/images/clients/pavna-group.webp" alt="Pavna Group" loading="lazy" width="202" height="66">
+          <div class="ph ph-logo" role="img" aria-label="Client logo placeholder: TVS"><span>TVS</span></div>
+          <div class="ph ph-logo" role="img" aria-label="Client logo placeholder: Honda"><span>Honda</span></div>
+          <div class="ph ph-logo" role="img" aria-label="Client logo placeholder: Maruti Suzuki"><span>Maruti Suzuki</span></div>
+          <div class="ph ph-logo" role="img" aria-label="Client logo placeholder: Hero"><span>Hero</span></div>
+          <div class="ph ph-logo" role="img" aria-label="Client logo placeholder: Spark Minda"><span>Spark Minda</span></div>
+          <div class="ph ph-logo" role="img" aria-label="Client logo placeholder: Jyoti Ltd"><span>Jyoti Ltd</span></div>
+          <div class="ph ph-logo" role="img" aria-label="Client logo placeholder: U-Shin"><span>U-Shin</span></div>
+          <div class="ph ph-logo" role="img" aria-label="Client logo placeholder: Gilard"><span>Gilard</span></div>
+          <div class="ph ph-logo" role="img" aria-label="Client logo placeholder: Pavna Group"><span>Pavna Group</span></div>
         </div>
         <button type="button" class="marquee-pause" aria-pressed="false" aria-label="Pause logo scrolling">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="5" width="3.5" height="14" rx="1"/><rect x="13.5" y="5" width="3.5" height="14" rx="1"/></svg>
         </button>
       </div>
-    </div>
   </section>
 
   <!-- PRODUCT OVERVIEW -->
@@ -164,9 +164,10 @@
         <p class="lede">Every part is cold-headed and finished in-house, from raw wire to a component ready for your line — in copper, silver alloy, aluminum, mild steel and bimetal/trimetal constructions.</p>
       </div>
       <div class="card-grid cols-2" data-reveal-group>
-        <a class="product-card" href="products/metal-rivets.html" data-reveal>
+        <a class="product-card glow tilt" data-tilt="5" href="products/metal-rivets.html" data-reveal>
+          <div class="glow-wash" aria-hidden="true"></div>
           <div class="product-card-media">
-            <img src="assets/images/products/metal-rivets-hero.webp" alt="Metal rivets in silver and copper finishes" loading="lazy" width="768" height="512">
+            <img src="assets/images/rivets/semi-tubular.webp" alt="Labelled cross-section of a semi-tubular metal rivet" loading="lazy" width="1106" height="736">
           </div>
           <div class="product-card-body">
             <h3>Metal Rivets</h3>
@@ -176,9 +177,10 @@
             </span>
           </div>
         </a>
-        <a class="product-card" href="products/contact-rivets.html" data-reveal>
+        <a class="product-card glow tilt" data-tilt="5" href="products/contact-rivets.html" data-reveal>
+          <div class="glow-wash" aria-hidden="true"></div>
           <div class="product-card-media">
-            <img src="assets/images/products/macro-silver-copper-1.webp" alt="Macro view of silver-alloy and copper electrical contact rivets" loading="lazy" width="1200" height="800">
+            <img src="assets/images/rivets/bimetal-contact.webp" alt="Labelled cross-section of a bimetal contact rivet" loading="lazy" width="1106" height="736">
           </div>
           <div class="product-card-body">
             <h3>Contact Rivets</h3>
@@ -200,17 +202,20 @@
         <h2>Client-focused, quality-first, built to hold tolerance at volume</h2>
       </div>
       <div class="card-grid cols-3" data-reveal-group>
-        <div class="feature-card" data-reveal>
+        <div class="feature-card glow tilt" data-tilt="7" data-reveal>
+          <div class="glow-wash" aria-hidden="true"></div>
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.5L21 11l-6.6 2.5L12 20l-2.4-6.5L3 11l6.6-2.5L12 2z"/></svg></span>
           <h3>Certified quality system</h3>
           <p>Manufacturing is governed by a documented ISO 9001:2015 &amp; IATF 16949:2016 quality management system, with in-house testing at every stage.</p>
         </div>
-        <div class="feature-card" data-reveal>
+        <div class="feature-card glow tilt" data-tilt="7" data-reveal>
+          <div class="glow-wash" aria-hidden="true"></div>
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="1.5"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18"/></svg></span>
           <h3>Built for custom drawings</h3>
           <p>Close-tolerance production to customer drawings — head diameter, shank length, layer thickness and alloy composition specified by you.</p>
         </div>
-        <div class="feature-card" data-reveal>
+        <div class="feature-card glow tilt" data-tilt="7" data-reveal>
+          <div class="glow-wash" aria-hidden="true"></div>
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-8.5-8.5"/><path d="M20.5 12L12 12l4-7"/></svg></span>
           <h3>Full-cycle infrastructure</h3>
           <p>Production, R&amp;D, quality testing, warehousing &amp; packaging and after-sales support under one roof — able to absorb bulk orders with consistency.</p>
@@ -306,5 +311,7 @@
 </div>
 
 <script src="assets/js/main.js"></script>
+<script src="assets/js/rivet3d.js" defer></script>
+<script src="assets/js/hero.js" defer></script>
 </body>
 </html>
