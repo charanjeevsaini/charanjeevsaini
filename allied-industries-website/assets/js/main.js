@@ -431,7 +431,27 @@
         t.setAttribute("aria-selected", on ? "true" : "false");
         t.tabIndex = on ? 0 : -1;               // roving tabindex
         var panel = document.getElementById(t.getAttribute("aria-controls"));
-        if (panel) panel.hidden = !on;
+        if (!panel) return;
+        panel.hidden = !on;
+
+        /* A hidden panel is display:none, so its cards never intersect and
+           the observer never fires for them. Run the reveal here instead,
+           staggered, so switching tabs animates the panel in. */
+        if (on) {
+          var items = panel.querySelectorAll("[data-reveal]");
+          Array.prototype.forEach.call(items, function (el, i) {
+            el.classList.remove("is-visible");
+            el.style.transitionDelay = Math.min(i * 60, 360) + "ms";
+          });
+          // Next frame, so the removal above is actually painted first
+          window.requestAnimationFrame(function () {
+            window.requestAnimationFrame(function () {
+              Array.prototype.forEach.call(items, function (el) {
+                el.classList.add("is-visible");
+              });
+            });
+          });
+        }
       });
       if (focus) tab.focus();
     }

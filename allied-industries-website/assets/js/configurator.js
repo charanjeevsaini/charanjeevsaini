@@ -110,8 +110,8 @@
 
     var cx = r.width / 2, cy = r.height / 2;
     var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.min(r.width, r.height) * 0.55);
-    g.addColorStop(0, "rgba(217,125,63,0.13)");
-    g.addColorStop(1, "rgba(217,125,63,0)");
+    g.addColorStop(0, "rgba(166,127,103,0.20)");
+    g.addColorStop(1, "rgba(166,127,103,0)");
     ctx.fillStyle = g; ctx.fillRect(0, 0, r.width, r.height);
 
     mesh.render(ctx, {
