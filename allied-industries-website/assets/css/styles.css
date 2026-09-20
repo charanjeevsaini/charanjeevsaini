@@ -36,6 +36,9 @@
   --copper-strong: #6E4B36;
   --copper-soft:   #A67F67;
   --copper-brand:  #C8763F;   /* from the logo — fills and glows only */
+  /* Emphasis copper for hover and for small mono labels. On a light surface
+     emphasis means darker; the dark bands below flip it to the lighter cut. */
+  --copper-bright: var(--copper-strong);
   --copper-wash:   rgba(138, 97, 73, 0.08);
   --copper-glow:   rgba(166, 127, 103, 0.22);
   --on-copper:     #FFFFFF;
@@ -57,8 +60,8 @@
   --focus:         #70503A;
 
   /* ---- Type ---- */
-  --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
-  --font-body:    'Barlow', 'Helvetica Neue', Helvetica, sans-serif;
+  --font-display: 'IBM Plex Sans Condensed', 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-body:    'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-mono:    'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --step--2: clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
@@ -813,14 +816,6 @@ body { padding-top: var(--header-h); }
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   overflow: hidden;
-  transition:
-    border-color var(--dur-base) var(--ease-out),
-    transform var(--dur-base) var(--ease-out),
-    box-shadow var(--dur-base) var(--ease-out);
-}
-.product-card:hover {
-  border-color: rgba(138, 97, 73, 0.42);
-  box-shadow: var(--shadow-xl);
 }
 .product-card-media {
   position: relative;
@@ -872,8 +867,6 @@ body { padding-top: var(--header-h); }
     linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  transition: border-color var(--dur-base) var(--ease-out), background-color var(--dur-base) var(--ease-out);
   box-shadow: var(--shadow-sm);
 }
 .feature-card:not(.glow)::before,
@@ -888,9 +881,7 @@ body { padding-top: var(--header-h); }
 .feature-card:not(.glow)::before { top: -1px; left: -1px; border-width: 1.5px 0 0 1.5px; transform: translate(5px, 5px); }
 .feature-card:not(.glow)::after  { bottom: -1px; right: -1px; border-width: 0 1.5px 1.5px 0; transform: translate(-5px, -5px); }
 .feature-card:hover {
-  border-color: rgba(138, 97, 73, 0.40);
   background: linear-gradient(180deg, var(--surface) 0%, var(--surface) 100%);
-  box-shadow: var(--shadow-xl);
 }
 /* A copper hairline along the top edge, drawn in on hover */
 .feature-card::after {
@@ -932,10 +923,8 @@ body { padding-top: var(--header-h); }
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  transition: border-color var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
   box-shadow: var(--shadow-sm);
 }
-.cert-card:hover { border-color: rgba(138, 97, 73, 0.4); box-shadow: var(--shadow-lg); }
 .cert-card img {
   width: 100%;
   border-radius: var(--radius-sm);
@@ -1332,7 +1321,7 @@ table.spec-table td:first-child { color: var(--text); font-weight: 500; }
   width: 100%;
   transform: scaleX(0);
   transform-origin: 0 50%;
-  background: linear-gradient(90deg, var(--copper-deep), var(--copper-bright));
+  background: linear-gradient(90deg, var(--copper-strong), var(--copper-brand));
   pointer-events: none;
 }
 
@@ -1530,13 +1519,14 @@ table.spec-table td:first-child { color: var(--text); font-weight: 500; }
 /* ==========================================================================
    SPOTLIGHT GLOW — pointer-tracked border and wash
    Ported from the React spotlight card to plain CSS + a pointer listener.
-   Hue travels copper -> steel across the viewport rather than full rainbow,
-   so it stays inside the brand.
+   Hue stays inside a narrow copper-to-bronze band: travelling any further
+   around the wheel put the mid-screen glow at hue 112, which is green.
    ========================================================================== */
 .glow {
   --glow-size: 280;
   --glow-border: 1px;
-  --glow-hue: calc(24 + (var(--xp, 0.5) * 176));   /* copper -> steel */
+  --glow-hue: calc(20 + (var(--xp, 0.5) * 18));   /* warm copper -> bronze */
+  --glow-sat: 72%;
   position: relative;
   isolation: isolate;
 }
@@ -1565,7 +1555,7 @@ table.spec-table td:first-child { color: var(--text); font-weight: 500; }
   background-image: radial-gradient(
     calc(var(--glow-size) * 1px) calc(var(--glow-size) * 1px) at
     calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
-    hsl(var(--glow-hue) 78% 62% / 0.95), transparent 100%);
+    hsl(var(--glow-hue) var(--glow-sat) 58% / 0.95), transparent 100%);
   filter: brightness(1.5);
 }
 /* A tighter white core so the edge reads as a specular, not a colour wash */
@@ -1573,7 +1563,7 @@ table.spec-table td:first-child { color: var(--text); font-weight: 500; }
   background-image: radial-gradient(
     calc(var(--glow-size) * 0.5px) calc(var(--glow-size) * 0.5px) at
     calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
-    hsl(0 0% 100% / 0.85), transparent 100%);
+    hsl(32 45% 97% / 0.85), transparent 100%);
 }
 .glow::before, .glow::after { opacity: calc(var(--glow-on, 0) * 1); }
 .glow:focus-within::before, .glow:focus-within::after { opacity: 1; }
@@ -1590,11 +1580,66 @@ table.spec-table td:first-child { color: var(--text); font-weight: 500; }
   background-image: radial-gradient(
     calc(var(--glow-size) * 1.1px) calc(var(--glow-size) * 1.1px) at
     calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
-    hsl(var(--glow-hue) 70% 55% / 0.15), transparent 70%);
+    hsl(var(--glow-hue) var(--glow-sat) 48% / 0.16), transparent 70%);
 }
 .glow > .glow-wash { opacity: calc(var(--glow-on, 0) * 1); }
 .glow:focus-within > .glow-wash { opacity: 1; }
 .glow > *:not(.glow-wash) { position: relative; z-index: 1; }
+
+/* ==========================================================================
+   INTERACTIVE CARD CONTRACT
+   Four card types carry `glow tilt`, and each had grown its own transition
+   list and hover elevation — so a row of three answered the pointer at three
+   different speeds and settled at three different heights. Both the tilt
+   transform and the surface response are defined once here, in one list, so
+   the shadow and the lift move together instead of on separate clocks.
+   ========================================================================== */
+/* The reveal rule is `.js [data-reveal]` (0,2,0) and every one of these cards
+   carries data-reveal, so a bare `.feature-card` transition (0,1,0) lost and
+   the hover shadow snapped. The settled selectors below outrank it, and only
+   apply once the arrival is over — during the arrival the reveal still owns
+   the element. */
+.product-card,
+.feature-card,
+.cert-card,
+.contact-action,
+.js [data-reveal].is-settled.product-card,
+.js [data-reveal].is-settled.feature-card,
+.js [data-reveal].is-settled.cert-card,
+.js [data-reveal].is-settled.contact-action {
+  transition:
+    transform 420ms var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out);
+}
+/* Pointer is on it: track the tilt tightly, but let the surface keep its own
+   pace so the shadow does not snap on the same frame. */
+.product-card.is-tilting,
+.feature-card.is-tilting,
+.cert-card.is-tilting,
+.contact-action.is-tilting,
+.js [data-reveal].is-settled.product-card.is-tilting,
+.js [data-reveal].is-settled.feature-card.is-tilting,
+.js [data-reveal].is-settled.cert-card.is-tilting,
+.js [data-reveal].is-settled.contact-action.is-tilting {
+  transition:
+    transform 90ms linear,
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out);
+}
+.product-card:hover,
+.feature-card:hover,
+.cert-card:hover,
+.contact-action:hover,
+.product-card:focus-visible,
+.feature-card:focus-within,
+.cert-card:focus-within,
+.contact-action:focus-visible {
+  border-color: rgba(138, 97, 73, 0.42);
+  box-shadow: var(--shadow-xl);
+}
 
 /* ==========================================================================
    3D TILT — cards lean toward the pointer
@@ -1609,11 +1654,17 @@ table.spec-table td:first-child { color: var(--text); font-weight: 500; }
              translate3d(0, var(--tilt-lift, 0), 0);
   transform-style: preserve-3d;
 }
-.tilt:not([data-reveal]) { transition: transform 420ms var(--ease-out); }
-/* While the pointer is over it, track the cursor tightly; on leave the
-   longer easing takes back over and it settles. */
-.tilt.is-tilting,
-.js [data-reveal].is-visible.tilt.is-tilting { transition: transform 90ms linear; }
+/* Any other tilt element gets the same timing: 420ms to settle, 90ms while
+   tracking the pointer. The four card types are excluded by name — `.tilt`
+   (0,2,0) outranks a bare `.product-card` (0,1,0), so without this the
+   contract above lost its surface transitions on cards that never reveal
+   (the contact page's action cards) and their shadow snapped. */
+.tilt:not([data-reveal]):not(.product-card):not(.feature-card):not(.cert-card):not(.contact-action) {
+  transition: transform 420ms var(--ease-out);
+}
+.tilt.is-tilting:not(.product-card):not(.feature-card):not(.cert-card):not(.contact-action) {
+  transition: transform 90ms linear;
+}
 /* Lift the contents off the card face so the tilt reads as depth */
 .tilt > * { transform: translateZ(18px); }
 
@@ -1760,6 +1811,107 @@ table.spec-table td:first-child { color: var(--text); font-weight: 500; }
   color: var(--text-faint);
 }
 
+
+/* ---- landing-page teaser ----------------------------------------------- */
+/* Same renderer and the same engineering-drawing grid as the full tool, at a
+   size that reads as an invitation rather than a form to fill in. */
+.cfg-tease-section { padding-block: var(--space-8); }
+.cfg-tease {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  gap: clamp(var(--space-5), 4vw, var(--space-7));
+  align-items: center;
+  padding: clamp(var(--space-5), 4vw, var(--space-7));
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+.cfg-tease-copy > h2 { margin-bottom: var(--space-3); }
+.cfg-tease-copy > .lede { margin-bottom: var(--space-5); }
+
+.cfg-tease-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-5); }
+.cfg-tease-chip {
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line-bright);
+  border-radius: 100px;
+  color: var(--text-dim);
+  font: inherit;
+  font-size: var(--step--1);
+  font-weight: 500;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.cfg-tease-chip:hover { color: var(--text); border-color: var(--copper); }
+.cfg-tease-chip[aria-pressed="true"] {
+  background: var(--copper);
+  border-color: var(--copper);
+  color: var(--on-copper);
+}
+
+.cfg-tease-field {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.cfg-tease-field label { font-size: var(--step--1); font-weight: 500; }
+.cfg-tease-field output {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--copper-ink);
+  font-variant-numeric: tabular-nums;
+  min-width: 5.5ch;
+  text-align: right;
+}
+.cfg-tease-note {
+  min-height: 2.6em;                 /* hold height so presets do not jump the layout */
+  margin-bottom: var(--space-5);
+  font-size: var(--step--1);
+  color: var(--text-dim);
+}
+
+.cfg-tease-stage {
+  background:
+    linear-gradient(var(--hairline) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, var(--hairline) 1px, transparent 1px) 0 0 / 32px 32px,
+    var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+#teaseCanvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  cursor: grab;
+  border-radius: var(--radius-md);
+  touch-action: none;
+}
+#teaseCanvas:active { cursor: grabbing; }
+.cfg-tease-hint {
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  color: var(--text-faint);
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .cfg-tease { grid-template-columns: 1fr; }
+  .cfg-tease-stage { order: -1; }     /* show the part before the controls */
+  .cfg-tease-note { min-height: 0; }
+}
+
 .cfg-fields { display: grid; gap: var(--space-4); }
 .cfg-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: var(--space-4); }
 .cfg-field { display: flex; flex-direction: column; gap: 0.45rem; }
@@ -1801,11 +1953,11 @@ input[type="range"] {
 }
 input[type="range"]::-webkit-slider-runnable-track {
   height: 4px; border-radius: 2px;
-  background: linear-gradient(90deg, var(--copper-deep), var(--line-bright));
+  background: linear-gradient(90deg, var(--copper), var(--line-bright));
 }
 input[type="range"]::-moz-range-track {
   height: 4px; border-radius: 2px;
-  background: linear-gradient(90deg, var(--copper-deep), var(--line-bright));
+  background: linear-gradient(90deg, var(--copper), var(--line-bright));
 }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -1892,6 +2044,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 }
 .band h1, .band h2, .band h3, .band h4 { color: var(--band-text); }
 .band p, .band .lede { color: var(--band-dim); }
+.band { --copper-bright: var(--band-copper); }
 .band .eyebrow { color: var(--band-copper); }
 .band a:not(.btn) { color: var(--band-copper); }
 .band .btn-outline,
@@ -1934,6 +2087,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 
 /* Footer */
 .site-footer {
+  --copper-bright: var(--band-copper);
   background: var(--band);
   color: var(--band-text);
   border-top: 0;
@@ -2042,9 +2196,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
-  transition: border-color var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
 }
-.contact-action:hover { border-color: rgba(138, 97, 73, 0.42); box-shadow: var(--shadow-xl); }
 .contact-action-icon {
   display: inline-flex;
   align-items: center; justify-content: center;

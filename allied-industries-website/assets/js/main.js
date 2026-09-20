@@ -110,12 +110,32 @@
     });
   });
 
+  /* The stagger delay is for the arrival only. Left on the element it also
+     delays every later transition — hover lift, tilt, glow — so the second
+     and third card in a row answered the pointer late and out of step with
+     the first. Drop it once the reveal has finished. */
+  function ms(value) {
+    var n = parseFloat(value) || 0;
+    return /ms/.test(value) ? n : n * 1000;       /* computed values are in s */
+  }
+
+  function clearStagger(el) {
+    var longest = 0;
+    getComputedStyle(el).transitionDuration.split(",").forEach(function (d) {
+      longest = Math.max(longest, ms(d));
+    });
+    window.setTimeout(function () {
+      el.style.transitionDelay = "";
+      el.classList.add("is-settled");     /* arrival over: tilt takes the wheel */
+    }, ms(el.style.transitionDelay) + longest + 60);
+  }
+
   var reveals = document.querySelectorAll("[data-reveal]");
 
   if (!supportsIO || reduced) {
     /* No observer, or motion is not wanted: show the finished state now */
     Array.prototype.forEach.call(reveals, function (el) {
-      el.classList.add("is-visible");
+      el.classList.add("is-visible", "is-settled");
       el.style.transitionDelay = "";
     });
   } else {
@@ -123,6 +143,7 @@
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
         entry.target.classList.add("is-visible");
+        clearStagger(entry.target);
         revealObserver.unobserve(entry.target);   /* reveal once, then stop */
       });
     }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
@@ -456,7 +477,7 @@
         if (on) {
           var items = panel.querySelectorAll("[data-reveal]");
           Array.prototype.forEach.call(items, function (el, i) {
-            el.classList.remove("is-visible");
+            el.classList.remove("is-visible", "is-settled");
             el.style.transitionDelay = Math.min(i * 60, 360) + "ms";
           });
           // Next frame, so the removal above is actually painted first
@@ -464,6 +485,7 @@
             window.requestAnimationFrame(function () {
               Array.prototype.forEach.call(items, function (el) {
                 el.classList.add("is-visible");
+                clearStagger(el);
               });
             });
           });
