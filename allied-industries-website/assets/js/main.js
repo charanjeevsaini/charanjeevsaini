@@ -369,25 +369,41 @@
      world while the cards move through it. */
   var glows = Array.prototype.slice.call(document.querySelectorAll(".glow"));
   if (glows.length && fine) {
-    var px = 0, py = 0, queued = false;
+    var gx = 0, gy = 0, gQueued = false;
 
-    function flush() {
-      queued = false;
-      var xp = (px / window.innerWidth).toFixed(3);
+    function flushGlow() {
+      gQueued = false;
+      var vw = window.innerWidth;
       for (var i = 0; i < glows.length; i++) {
         var el = glows[i];
-        // Only pay for cards actually on screen
         var r = el.getBoundingClientRect();
-        if (r.bottom < -200 || r.top > window.innerHeight + 200) continue;
-        el.style.setProperty("--x", px.toFixed(1));
-        el.style.setProperty("--y", py.toFixed(1));
-        el.style.setProperty("--xp", xp);
+        if (r.bottom < -240 || r.top > window.innerHeight + 240) continue;
+
+        /* Element-local, not viewport. The cards are transformed, which makes
+           `background-attachment: fixed` resolve against the card rather than
+           the viewport — so viewport coordinates put the spotlight outside
+           every card except whichever one happened to contain them. */
+        el.style.setProperty("--x", (gx - r.left).toFixed(1));
+        el.style.setProperty("--y", (gy - r.top).toFixed(1));
+        el.style.setProperty("--xp", (gx / vw).toFixed(3));
+
+        /* Fade the whole effect out as the pointer leaves the card, so the
+           spotlight belongs to the card under the cursor rather than smearing
+           a highlight across every card in the row. */
+        var near = Math.max(
+          Math.abs(gx - (r.left + r.width / 2)) / (r.width / 2 + 140),
+          Math.abs(gy - (r.top + r.height / 2)) / (r.height / 2 + 140)
+        );
+        el.style.setProperty("--glow-on", String(Math.max(0, 1 - near).toFixed(3)));
       }
     }
 
     document.addEventListener("pointermove", function (e) {
-      px = e.clientX; py = e.clientY;
-      if (!queued) { queued = true; window.requestAnimationFrame(flush); }
+      gx = e.clientX; gy = e.clientY;
+      if (!gQueued) { gQueued = true; window.requestAnimationFrame(flushGlow); }
+    }, { passive: true });
+    window.addEventListener("scroll", function () {
+      if (!gQueued) { gQueued = true; window.requestAnimationFrame(flushGlow); }
     }, { passive: true });
   }
 
@@ -502,4 +518,62 @@
   }, { threshold: [0, 0.12, 0.3, 0.55, 0.8] });
 
   Object.keys(map).forEach(function (id) { io.observe(document.getElementById(id)); });
+})();
+
+/* ============================================================================
+   Gallery lightbox — opens from a tile, arrows/Escape work, focus returns.
+   ========================================================================== */
+(function () {
+  "use strict";
+  var box = document.getElementById("lightbox");
+  var tiles = Array.prototype.slice.call(document.querySelectorAll(".gal-tile"));
+  if (!box || !tiles.length) return;
+
+  var img = document.getElementById("lightboxImg");
+  var cap = document.getElementById("lightboxCap");
+  var closeBtn = box.querySelector(".lightbox-close");
+  var prevBtn = box.querySelector(".lightbox-nav.prev");
+  var nextBtn = box.querySelector(".lightbox-nav.next");
+  var index = 0, opener = null;
+
+  function show(i) {
+    index = (i + tiles.length) % tiles.length;
+    var t = tiles[index];
+    img.src = t.getAttribute("data-full");
+    img.alt = t.getAttribute("data-caption") || "";
+    cap.textContent = (index + 1) + " / " + tiles.length + " — " + (t.getAttribute("data-caption") || "");
+  }
+
+  function open(i) {
+    opener = tiles[i];
+    show(i);
+    box.hidden = false;
+    document.body.classList.add("nav-open");     // reuse the scroll lock
+    closeBtn.focus();
+  }
+
+  function close() {
+    box.hidden = true;
+    document.body.classList.remove("nav-open");
+    if (opener) opener.focus();
+  }
+
+  tiles.forEach(function (t, i) { t.addEventListener("click", function () { open(i); }); });
+  closeBtn.addEventListener("click", close);
+  prevBtn.addEventListener("click", function () { show(index - 1); });
+  nextBtn.addEventListener("click", function () { show(index + 1); });
+  box.addEventListener("click", function (e) { if (e.target === box) close(); });
+
+  document.addEventListener("keydown", function (e) {
+    if (box.hidden) return;
+    if (e.key === "Escape") { close(); return; }
+    if (e.key === "ArrowLeft") { e.preventDefault(); show(index - 1); }
+    if (e.key === "ArrowRight") { e.preventDefault(); show(index + 1); }
+    if (e.key !== "Tab") return;
+    // Keep Tab inside the dialog while it owns the screen
+    var items = [closeBtn, prevBtn, nextBtn];
+    var at = items.indexOf(document.activeElement);
+    e.preventDefault();
+    items[(at + (e.shiftKey ? -1 : 1) + items.length) % items.length].focus();
+  });
 })();

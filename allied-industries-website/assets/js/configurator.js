@@ -146,7 +146,7 @@
   }
 
   /* ---- input wiring ------------------------------------------------------ */
-  root.querySelectorAll("input, select").forEach(function (el) {
+  root.querySelectorAll(".cfg-fields input, .cfg-fields select").forEach(function (el) {
     el.addEventListener("input", function () {
       var out = root.querySelector('[data-out="' + el.name + '"]');
       if (out) out.textContent = el.value + " mm";
@@ -230,7 +230,14 @@
     root.querySelectorAll(".type-chip").forEach(function (c) {
       c.setAttribute("aria-checked", c.getAttribute("data-type") === slug ? "true" : "false");
     });
+    var ts = root.querySelector("#typeSelect");
+    if (ts && ts.value !== slug) ts.value = slug;
     rebuild();
+  }
+
+  var typeSelect = root.querySelector("#typeSelect");
+  if (typeSelect) {
+    typeSelect.addEventListener("change", function () { applyType(typeSelect.value); });
   }
 
   root.querySelectorAll(".type-chip").forEach(function (chip, i, all) {

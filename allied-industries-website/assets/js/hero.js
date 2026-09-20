@@ -150,12 +150,14 @@
     shown = 1 - Math.pow(1 - bp, 3);          // easeOutCubic
     mass = shown;                              // glow intensity follows it
     if (shown > 0.005) {
-      tilt += (tiltTarget - tilt) * 0.06 * dt;
-      spin += 0.0042 * dt;
+      if (!dragging) {
+        tilt += (tiltTarget - tilt) * 0.06 * dt;
+        if (now > resumeAt) spin += 0.0042 * dt;
+      }
       mesh.render(ctx, {
         cx: TX, cy: TY,
         scale: TS * (0.90 + 0.10 * shown),
-        rotX: tilt, rotY: spin + spinBias,
+        rotX: tilt, rotY: spin + (dragging ? 0 : spinBias),
         reveal: shown, alpha: 1
       });
     }
@@ -174,18 +176,54 @@
   function start() { if (!running && !reduced) { running = true; last = performance.now(); window.requestAnimationFrame(frame); } }
   function stop()  { running = false; }
 
-  if (!coarse && !reduced) {
-    stage.addEventListener("pointermove", function (e) {
-      var r = stage.getBoundingClientRect();
-      spinBias = ((e.clientX - r.left) / r.width - 0.5) * 0.85;
-      tiltTarget = -0.40 + ((e.clientY - r.top) / r.height - 0.5) * 0.45;
-    });
-    stage.addEventListener("pointerleave", function () { spinBias = 0; tiltTarget = -0.40; });
-  }
+  /* ---- drag to rotate ---------------------------------------------------
+     Horizontal drag spins the part; vertical drag tips it through a full
+     180 degrees, clamped so it never flips past its poles. Auto-spin stops
+     while you hold it and resumes a moment after release. */
+  var dragging = false, dragMoved = 0, lastX = 0, lastY = 0, resumeAt = 0;
+  var HALF_PI = Math.PI / 2;
+
   stage.addEventListener("pointerdown", function (e) {
-    if (reduced) return;
-    var r = band.getBoundingClientRect();
-    ripples.push({ x: e.clientX - r.left, y: e.clientY - r.top, radius: 0, life: 1 });
+    dragging = true; dragMoved = 0;
+    lastX = e.clientX; lastY = e.clientY;
+    try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+    stage.classList.add("is-dragging");
+  });
+
+  stage.addEventListener("pointermove", function (e) {
+    if (dragging) {
+      var dx = e.clientX - lastX, dy = e.clientY - lastY;
+      lastX = e.clientX; lastY = e.clientY;
+      dragMoved += Math.abs(dx) + Math.abs(dy);
+      spin += dx * 0.011;
+      // Full 180 degrees of vertical travel, pole to pole
+      tilt = Math.max(-HALF_PI, Math.min(HALF_PI, tilt + dy * 0.009));
+      tiltTarget = tilt;
+      return;
+    }
+    if (coarse || reduced) return;
+    var r = stage.getBoundingClientRect();
+    spinBias = ((e.clientX - r.left) / r.width - 0.5) * 0.5;
+    tiltTarget = -0.40 + ((e.clientY - r.top) / r.height - 0.5) * 0.30;
+  });
+
+  function endDrag(e) {
+    if (!dragging) return;
+    dragging = false;
+    stage.classList.remove("is-dragging");
+    resumeAt = performance.now() + 900;
+    // A tap that barely moved is a tap, so send a ripple through the flow
+    if (dragMoved < 6 && !reduced) {
+      var r = band.getBoundingClientRect();
+      ripples.push({ x: e.clientX - r.left, y: e.clientY - r.top, radius: 0, life: 1 });
+    }
+  }
+  stage.addEventListener("pointerup", endDrag);
+  stage.addEventListener("pointercancel", endDrag);
+
+  stage.addEventListener("pointerleave", function () {
+    if (dragging) return;
+    spinBias = 0; tiltTarget = -0.40;
   });
 
   new ResizeObserver(function () { resize(); if (reduced) renderStatic(); }).observe(band);

@@ -141,10 +141,11 @@
       return [br / bl, by / bl];
     }
     // For each band, the normal at each of its ends, creases respected
-    var bn = [];
+    var bn = [], bnA = [], bnB = [];
     for (i = 0; i < en.length; i++) {
       var nA = blend(en[i - 1], en[i]) || en[i];
       var nB = blend(en[i], en[i + 1]) || en[i];
+      bnA.push(nA); bnB.push(nB);
       var mr = (nA[0] + nB[0]) / 2, my = (nA[1] + nB[1]) / 2;
       var ml = Math.hypot(mr, my) || 1;
       bn.push([mr / ml, my / ml]);
@@ -171,6 +172,7 @@
 
       for (j = 0; j < seg; j++) {
         var nr = bn[i][0], ny = bn[i][1];
+        var aR = bnA[i], bR = bnB[i];
         var mj = (j + 0.5) / seg * Math.PI * 2;
         quads.push({
           v: [
@@ -180,6 +182,8 @@
             [a0.r * cos[j + 1], a0.y - cy, a0.r * sin[j + 1]]
           ],
           n: [nr * Math.cos(mj), ny, nr * Math.sin(mj)],
+          nA: [aR[0] * Math.cos(mj), aR[1], aR[0] * Math.sin(mj)],
+          nB: [bR[0] * Math.cos(mj), bR[1], bR[0] * Math.sin(mj)],
           m: materials[b0.mat] || materials.copper,
           y: (a0.y + b0.y) / 2 - cy,
           band: i
@@ -245,16 +249,48 @@
       var nz2 = n[1] * sxr + nz1 * cxr;
       if (nz2 > 0.12) continue;
 
+      // Shade an arbitrary rotated normal with the same model, so a face can
+      // be graded from one end to the other instead of filled flat.
+      function shadeN(ax, ay, az, m) {
+        var up = ay;
+        var env = 0.18
+                + Math.pow(Math.max(0, up), 0.65) * 0.72          // sky, biased bright
+                + Math.max(0, -up) * 0.06                          // dark floor
+                + Math.pow(1 - Math.abs(up), 22) * 0.95            // tight horizon strip
+                + Math.pow(Math.max(0, up - 0.55) / 0.45, 3) * 0.35; // overhead softbox
+        var kk = Math.max(0, ax * K[0] + ay * K[1] + az * K[2]);
+        var ff = Math.max(0, ax * F[0] + ay * F[1] + az * F[2]);
+        var hxx = K[0], hyy = K[1], hzz = K[2] - 1;
+        var hll = Math.hypot(hxx, hyy, hzz) || 1;
+        var ndhh = Math.max(0, (ax * hxx + ay * hyy + az * hzz) / hll);
+        var sp = Math.pow(ndhh, m.shine * 1.9) * m.spec * 1.9;
+        var fr = Math.pow(1 - Math.max(0, -az), 4) * 0.55 * m.spec;
+        var lu = 0.26 + kk * 0.56 + ff * 0.18 + env * 0.50;
+        var hh = sp * 0.95 + fr * 0.85;
+        return [
+          Math.min(255, m.r * lu + 255 * hh * (0.55 + 0.45 * (m.r / 255))),
+          Math.min(255, m.g * lu + 255 * hh * (0.55 + 0.45 * (m.g / 255))),
+          Math.min(255, m.b * lu + 255 * hh * (0.55 + 0.45 * (m.b / 255)))
+        ];
+      }
+
+      function rotN(n3) {
+        var x1 = n3[0] * cyr + n3[2] * syr;
+        var z1 = -n3[0] * syr + n3[2] * cyr;
+        return [x1, n3[1] * cxr - z1 * sxr, n3[1] * sxr + z1 * cxr];
+      }
+
       var vdot = -nz2;                                  // 1 when facing viewer
 
       /* Polished metal takes its character from what it reflects, so stand a
          cheap environment in for one: bright sky above, dim floor below and a
          tight bright horizon ring. That ring is what reads as lustre. */
       var up = ny2;
-      var env = 0.26
-              + Math.max(0, up) * 0.60
-              + Math.max(0, -up) * 0.10
-              + Math.pow(1 - Math.abs(up), 12) * 0.62;
+      var env = 0.18
+              + Math.pow(Math.max(0, up), 0.65) * 0.72
+              + Math.max(0, -up) * 0.06
+              + Math.pow(1 - Math.abs(up), 22) * 0.95
+              + Math.pow(Math.max(0, up - 0.55) / 0.45, 3) * 0.35;
 
       var key  = Math.max(0, nx1 * K[0] + ny2 * K[1] + nz2 * K[2]);
       var fill = Math.max(0, nx1 * F[0] + ny2 * F[1] + nz2 * F[2]);
@@ -263,12 +299,12 @@
       var hx = K[0], hy = K[1], hz = K[2] - 1;
       var hl = Math.hypot(hx, hy, hz) || 1;
       var ndh = Math.max(0, (nx1 * hx + ny2 * hy + nz2 * hz) / hl);
-      var spec = Math.pow(ndh, q.m.shine) * q.m.spec;
+      var spec = Math.pow(ndh, q.m.shine * 1.9) * q.m.spec * 1.9;
 
       // Fresnel: every metal goes bright at a grazing angle
       var fres = Math.pow(1 - Math.max(0, vdot), 4) * 0.55 * q.m.spec;
 
-      var lum = 0.34 + key * 0.62 + fill * 0.22 + env * 0.55;
+      var lum = 0.26 + key * 0.56 + fill * 0.18 + env * 0.50;
 
       // Metals tint their reflections, so carry the base hue into the
       // highlight instead of washing it out to white.
@@ -277,12 +313,20 @@
       var tg = 0.55 + 0.45 * (q.m.g / 255);
       var tb = 0.55 + 0.45 * (q.m.b / 255);
 
-      out.push({
-        p: pts, z: zsum,
+      var rec = {
+        p: pts, z: zsum, cap: !!q.cap,
         r: Math.min(255, q.m.r * lum + 255 * hi * tr),
         g: Math.min(255, q.m.g * lum + 255 * hi * tg),
         b: Math.min(255, q.m.b * lum + 255 * hi * tb)
-      });
+      };
+      if (q.nA && q.nB && pts.length === 4) {
+        var ra = rotN(q.nA), rb = rotN(q.nB);
+        rec.cA = shadeN(ra[0], ra[1], ra[2], q.m);
+        rec.cB = shadeN(rb[0], rb[1], rb[2], q.m);
+        rec.gA = [(pts[0][0] + pts[3][0]) / 2, (pts[0][1] + pts[3][1]) / 2];
+        rec.gB = [(pts[1][0] + pts[2][0]) / 2, (pts[1][1] + pts[2][1]) / 2];
+      }
+      out.push(rec);
     }
 
     // Painter's algorithm: +z is away from the viewer, so the farthest
@@ -292,6 +336,24 @@
     /* Translucent adjacent polygons antialias into visible seams, so the
        materialise is done by masking the finished part with a single
        gradient rather than by fading each quad separately. */
+    /* A part with no shadow floats. Lay a soft contact ellipse under it
+       first, scaled to how far the form is tipped. */
+    if (o.shadow !== false) {
+      var sw = this.extent * scale * 0.62;
+      var sh = sw * (0.16 + Math.abs(Math.cos(rx)) * 0.20);
+      var sy = cy + this.extent * scale * 0.42 * Math.cos(rx);
+      ctx.save();
+      ctx.globalAlpha = (o.alpha == null ? 1 : o.alpha) * 0.5 * reveal;
+      var sg = ctx.createRadialGradient(cx, sy, 0, cx, sy, sw);
+      sg.addColorStop(0,   "rgba(0,0,0,0.55)");
+      sg.addColorStop(0.5, "rgba(0,0,0,0.22)");
+      sg.addColorStop(1,   "rgba(0,0,0,0)");
+      ctx.translate(cx, sy); ctx.scale(1, sh / sw); ctx.translate(-cx, -sy);
+      ctx.fillStyle = sg;
+      ctx.beginPath(); ctx.arc(cx, sy, sw, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+
     var masked = reveal < 1;
     var target = ctx, gy0 = 0, gy1 = 0;
     if (masked) {
@@ -320,9 +382,28 @@
       for (var pv = 1; pv < p2.length; pv++) ctx.lineTo(p2[pv][0], p2[pv][1]);
       ctx.closePath();
       var col = "rgb(" + (f2.r | 0) + "," + (f2.g | 0) + "," + (f2.b | 0) + ")";
-      ctx.fillStyle = col;
+      if (f2.cA && (f2.gA[0] !== f2.gB[0] || f2.gA[1] !== f2.gB[1])) {
+        var lg = ctx.createLinearGradient(f2.gA[0], f2.gA[1], f2.gB[0], f2.gB[1]);
+        lg.addColorStop(0, "rgb(" + (f2.cA[0]|0) + "," + (f2.cA[1]|0) + "," + (f2.cA[2]|0) + ")");
+        lg.addColorStop(1, "rgb(" + (f2.cB[0]|0) + "," + (f2.cB[1]|0) + "," + (f2.cB[2]|0) + ")");
+        ctx.fillStyle = lg;
+      } else if (f2.cap) {
+        // A turned face is brightest off-centre, where the light rakes it
+        var cxr2 = 0, cyr2 = 0;
+        for (var cp = 0; cp < f2.p.length; cp++) { cxr2 += f2.p[cp][0]; cyr2 += f2.p[cp][1]; }
+        cxr2 /= f2.p.length; cyr2 /= f2.p.length;
+        var rad = 0;
+        for (var cq = 0; cq < f2.p.length; cq++) rad = Math.max(rad, Math.hypot(f2.p[cq][0] - cxr2, f2.p[cq][1] - cyr2));
+        var rg = ctx.createRadialGradient(cxr2 - rad * 0.32, cyr2 - rad * 0.36, rad * 0.05, cxr2, cyr2, rad * 1.15);
+        rg.addColorStop(0,   "rgb(" + Math.min(255, f2.r * 1.08 | 0) + "," + Math.min(255, f2.g * 1.07 | 0) + "," + Math.min(255, f2.b * 1.06 | 0) + ")");
+        rg.addColorStop(0.62, col);
+        rg.addColorStop(1,   "rgb(" + (f2.r * 0.90 | 0) + "," + (f2.g * 0.90 | 0) + "," + (f2.b * 0.92 | 0) + ")");
+        ctx.fillStyle = rg;
+      } else {
+        ctx.fillStyle = col;
+      }
       ctx.fill();
-      ctx.strokeStyle = col;      // hairline closes the seam to its neighbour
+      ctx.strokeStyle = ctx.fillStyle;   // closes the seam without banding
       ctx.lineWidth = 1;
       ctx.stroke();
     }

@@ -24,12 +24,13 @@
   var scrollY = 0, targetScroll = 0;
   var trail = [];
   var running = false, lastSpawn = 0;
+  var speed = 0, lastPx = 0, lastPy = 0;
 
   // Large, slow shapes. Each parallaxes at its own rate so the field has depth.
   var blobs = [
-    { x: 0.18, y: 0.22, r: 0.42, a: 0.105, sp: 0.045, ph: 0.0 },
-    { x: 0.82, y: 0.38, r: 0.36, a: 0.085, sp: 0.075, ph: 2.1 },
-    { x: 0.46, y: 0.78, r: 0.48, a: 0.075, sp: 0.030, ph: 4.2 }
+    { x: 0.18, y: 0.22, r: 0.46, a: 0.075, sp: 0.014, ph: 0.0 },
+    { x: 0.82, y: 0.38, r: 0.40, a: 0.060, sp: 0.022, ph: 2.1 },
+    { x: 0.46, y: 0.78, r: 0.52, a: 0.055, sp: 0.010, ph: 4.2 }
   ];
 
   function resize() {
@@ -62,9 +63,9 @@
 
     // Pointer eases toward the cursor so the field lags a little — that lag
     // is most of what makes it feel expensive rather than twitchy.
-    px += (tx - px) * 0.075;
-    py += (ty - py) * 0.075;
-    scrollY += (targetScroll - scrollY) * 0.08;
+    px += (tx - px) * 0.14;
+    py += (ty - py) * 0.14;
+    scrollY += (targetScroll - scrollY) * 0.10;
 
     var min = Math.min(W, H);
     var nx = fine && px > -9000 ? (px / W - 0.5) : 0;
@@ -76,27 +77,33 @@
       var driftX = Math.cos(t) * min * 0.05;
       var driftY = Math.sin(t * 0.8) * min * 0.04;
       blob(
-        bl.x * W + driftX - nx * min * bl.sp * 5,
-        bl.y * H + driftY - ny * min * bl.sp * 5 - scrollY * bl.sp,
+        bl.x * W + driftX - nx * min * bl.sp * 2.2,
+        bl.y * H + driftY - ny * min * bl.sp * 2.2 - scrollY * bl.sp * 0.55,
         bl.r * min, bl.a, false
       );
     }
 
     if (!reduced && fine) {
-      // Spawn a trail point when the pointer has actually moved
-      if (now - lastSpawn > 28 && Math.hypot(tx - px, ty - py) > 1.2) {
+      // Instantaneous speed, smoothed, normalised to roughly 0..1
+      var moved = Math.hypot(px - lastPx, py - lastPy);
+      lastPx = px; lastPy = py;
+      speed += (Math.min(1, moved / 22) - speed) * 0.12;
+
+      if (now - lastSpawn > 34 && moved > 0.9) {
         trail.push({ x: px, y: py, born: now });
         lastSpawn = now;
       }
       for (var k = trail.length - 1; k >= 0; k--) {
         var p = trail[k];
-        var age = (now - p.born) / 1400;
+        var age = (now - p.born) / 900;
         if (age >= 1) { trail.splice(k, 1); continue; }
         var fade = (1 - age) * (1 - age);
-        blob(p.x, p.y, min * (0.06 + age * 0.16), 0.14 * fade, true);
+        blob(p.x, p.y, min * (0.045 + age * 0.10), 0.075 * fade, true);
       }
-      // The live cursor glow, brightest at the point itself
-      blob(px, py, min * 0.13, 0.18, true);
+
+      // Strength follows movement, so a parked pointer leaves no hot spot
+      // sitting over the copy. Moving fast, it reads as a wake.
+      if (speed > 0.01) blob(px, py, min * (0.07 + speed * 0.05), 0.11 * speed, true);
     }
 
     ctx.globalCompositeOperation = "source-over";

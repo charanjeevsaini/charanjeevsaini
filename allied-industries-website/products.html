@@ -13,8 +13,8 @@
 <link rel="apple-touch-icon" href="assets/images/site/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&amp;family=Karla:ital,wght@0,300..700;1,400&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&amp;family=Karla:ital,wght@0,300..700;1,400&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap"></noscript>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&amp;family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&amp;family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap"></noscript>
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
@@ -289,12 +289,31 @@
     <div class="container">
       <div class="section-head" data-reveal>
         <span class="eyebrow">Create your rivet</span>
-        <h2>Build the part, then send us the spec</h2>
-        <p class="lede">Pick the construction you are working from, set the dimensions, and the preview updates as you go.</p>
+        <h2>Configure a rivet to your own dimensions</h2>
+        <p class="lede">Pick the construction you are working from and set the dimensions — the preview updates as you go. Send it over whenever you are ready, or just use it to sanity-check a drawing.</p>
       </div>
 
       <div class="cfg-step" data-reveal>
         <p class="matrix-label"><span class="cfg-step-num">1</span> Choose a construction</p>
+        <div class="type-pick">
+          <label class="visually-hidden" for="typeSelect">Rivet construction</label>
+          <select id="typeSelect" class="type-select">
+            <optgroup label="Metal rivets">
+              <option value="semi-tubular">Semi Tubular</option>
+              <option value="trimmed">Trimmed</option>
+              <option value="straight-head">Straight Head</option>
+              <option value="double-head-shank">Double Head &amp; Shank</option>
+              <option value="formed">Formed</option>
+              <option value="copper">Copper</option>
+            </optgroup>
+            <optgroup label="Contact rivets">
+              <option value="trimetal-contact">Trimetal Contact</option>
+              <option value="weldable-button">Weldable Button</option>
+              <option value="bimetal-contact">Bimetal Contact</option>
+              <option value="disc-contact">Disc Contact</option>
+            </optgroup>
+          </select>
+        </div>
         <div class="type-chips" role="radiogroup" aria-label="Rivet construction">
             <button type="button" class="type-chip" role="radio" aria-checked="true" data-type="semi-tubular">Semi Tubular</button>
             <button type="button" class="type-chip" role="radio" aria-checked="false" data-type="trimmed">Trimmed</button>
