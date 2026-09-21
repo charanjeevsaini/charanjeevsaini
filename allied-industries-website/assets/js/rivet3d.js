@@ -12,12 +12,12 @@
 
   /* Material palette — tuned to the site's copper/steel tokens */
   var materials = {
-    copper: { r: 196, g: 118, b: 70, spec: 0.85, shine: 26 },
-    silver: { r: 206, g: 212, b: 218, spec: 1.00, shine: 42 },
-    brass:  { r: 201, g: 166, b: 92, spec: 0.80, shine: 24 },
-    steel:  { r: 150, g: 158, b: 166, spec: 0.75, shine: 30 },
-    nickel: { r: 176, g: 180, b: 178, spec: 0.85, shine: 34 },
-    alum:   { r: 188, g: 192, b: 196, spec: 0.60, shine: 18 }
+    copper: { r: 216, g: 150, b: 116, spec: 0.42, shine: 20 },
+    silver: { r: 212, g: 216, b: 220, spec: 0.50, shine: 30 },
+    brass:  { r: 214, g: 184, b: 118, spec: 0.42, shine: 20 },
+    steel:  { r: 176, g: 182, b: 188, spec: 0.40, shine: 24 },
+    nickel: { r: 194, g: 198, b: 196, spec: 0.44, shine: 26 },
+    alum:   { r: 198, g: 202, b: 206, spec: 0.34, shine: 16 }
   };
 
   /* --------------------------------------------------------------------------
@@ -170,11 +170,28 @@
         continue;
       }
 
+      /* Which way does the shading actually change across this band?
+
+         On a straight run — the shank, the head wall, every cylinder — the
+         profile normal is the same at both ends, so a gradient along the
+         profile has nothing to grade and each facet fills flat. Around the
+         axis, though, the normal swings by a full segment's worth. Shading
+         the profile direction there is what drew the vertical lines down
+         the shank: 88 flat stripes.
+
+         On a curved run — the dome — the profile normal does change, and
+         that is the direction worth grading.
+
+         Canvas gradients are linear, so it is one axis per quad. Pick per
+         band, which also keeps this at two shade calls per quad. */
+      var straight = Math.abs(bnA[i][0] - bnB[i][0]) < 1e-4 &&
+                     Math.abs(bnA[i][1] - bnB[i][1]) < 1e-4;
+
       for (j = 0; j < seg; j++) {
         var nr = bn[i][0], ny = bn[i][1];
         var aR = bnA[i], bR = bnB[i];
         var mj = (j + 0.5) / seg * Math.PI * 2;
-        quads.push({
+        var q = {
           v: [
             [a0.r * cos[j],     a0.y - cy, a0.r * sin[j]],
             [b0.r * cos[j],     b0.y - cy, b0.r * sin[j]],
@@ -182,12 +199,20 @@
             [a0.r * cos[j + 1], a0.y - cy, a0.r * sin[j + 1]]
           ],
           n: [nr * Math.cos(mj), ny, nr * Math.sin(mj)],
-          nA: [aR[0] * Math.cos(mj), aR[1], aR[0] * Math.sin(mj)],
-          nB: [bR[0] * Math.cos(mj), bR[1], bR[0] * Math.sin(mj)],
           m: materials[b0.mat] || materials.copper,
           y: (a0.y + b0.y) / 2 - cy,
           band: i
-        });
+        };
+        if (straight) {
+          // Grade around the axis: the normal at this segment's two edges.
+          q.nA = [nr * cos[j], ny, nr * sin[j]];
+          q.nB = [nr * cos[j + 1], ny, nr * sin[j + 1]];
+          q.across = true;                       // edges 0-1 to edges 3-2
+        } else {
+          q.nA = [aR[0] * Math.cos(mj), aR[1], aR[0] * Math.sin(mj)];
+          q.nB = [bR[0] * Math.cos(mj), bR[1], bR[0] * Math.sin(mj)];
+        }
+        quads.push(q);
       }
     }
     this.quads = quads;
@@ -218,8 +243,11 @@
        standing behind the part: the key landed 0.000 on the head top and
        0.000 on the front of the shank, and every surface actually facing the
        camera was lit by ambient alone. */
-    var K = [-0.52, 0.42, -0.74];
-    var F = [0.78, 0.12, -0.60];
+    /* The key is oblique rather than head-on. Pointed straight at the camera
+       it lit the whole front of a cylinder evenly, which left the walls
+       looking flat; from the side it carries the roundness. */
+    var K = [-0.74, 0.36, -0.57];
+    var F = [0.80, 0.10, -0.59];
 
     // Blinn half-vectors for a viewer down -z, precomputed once per frame.
     function halfOf(L) {
@@ -234,11 +262,14 @@
        twice, which is how the two copies drifted apart. */
     function shadeNormal(ax, ay, az, m) {
       var up = ay;
-      var env = 0.14
-              + Math.pow(Math.max(0, up), 0.60) * 0.82            // sky
-              + Math.max(0, -up) * 0.04                            // dim floor
-              + Math.pow(1 - Math.abs(up), 26) * 0.80              // horizon band
-              + Math.pow(Math.max(0, up - 0.55) / 0.45, 3) * 0.42; // softbox
+      /* A workshop, not a mirror box. The old horizon term was a hard bright
+         ring that wrapped the part and read as a light effect painted onto a
+         drawing rather than as metal. It is now a soft wrap. */
+      var env = 0.30
+              + Math.pow(Math.max(0, up), 0.70) * 0.64             // sky
+              + Math.max(0, -up) * 0.10                            // bounce
+              + Math.pow(1 - Math.abs(up), 8) * 0.18               // soft horizon
+              + Math.pow(Math.max(0, up - 0.55) / 0.45, 3) * 0.28; // softbox
 
       var key  = Math.max(0, ax * K[0] + ay * K[1] + az * K[2]);
       var fill = Math.max(0, ax * F[0] + ay * F[1] + az * F[2]);
@@ -246,24 +277,27 @@
       var ndhK = Math.max(0, ax * HK[0] + ay * HK[1] + az * HK[2]);
       var ndhF = Math.max(0, ax * HF[0] + ay * HF[1] + az * HF[2]);
 
-      /* Three specular terms, because one lobe cannot be both a hot spot and
-         a sheen: a tight highlight, a broad sheen that grades around the
-         circumference (this is what reads as turned metal), and a softer one
-         from the fill so the shadow side is not dead. */
-      var hot   = Math.pow(ndhK, m.shine * 0.50) * m.spec * 1.95;
-      var sheen = Math.pow(ndhK, m.shine * 0.14) * m.spec * 0.42;
-      var hot2  = Math.pow(ndhF, m.shine * 0.40) * m.spec * 0.55;
-      var fres  = Math.pow(1 - Math.max(0, -az), 4) * 0.50 * m.spec;
+      /* A cold-headed rivet is satin, not chrome. Three soft terms rather
+         than one hard one: a broad highlight, a wider sheen that grades
+         around the circumference, and a little from the fill so the shadow
+         side keeps its shape. */
+      var hot   = Math.pow(ndhK, m.shine * 0.55) * m.spec * 0.95;
+      var sheen = Math.pow(ndhK, m.shine * 0.12) * m.spec * 0.22;
+      var hot2  = Math.pow(ndhF, m.shine * 0.40) * m.spec * 0.15;
+      var fres  = Math.pow(1 - Math.max(0, -az), 4) * 0.28 * m.spec;
 
-      var lum = 0.14 + key * 0.62 + fill * 0.17 + env * 0.40;
-      var hi  = hot + sheen + hot2 + fres * 0.80;
+      /* Weighted toward diffuse: in the reference photographs the form is
+         carried by shading across a fairly bright body, and the copper never
+         washes out — even the brightest pixel stays warm. */
+      var lum = 0.31 + key * 0.48 + fill * 0.18 + env * 0.38;
+      var hi  = hot + sheen + hot2 + fres * 0.70;
 
-      // Metals tint their reflections, so carry the base hue into the
-      // highlight instead of washing it out to white.
+      // Metals tint their reflections. Weighted hard toward the base hue so a
+      // highlight on copper stays copper instead of going to white.
       return [
-        Math.min(255, m.r * lum + 255 * hi * (0.55 + 0.45 * (m.r / 255))),
-        Math.min(255, m.g * lum + 255 * hi * (0.55 + 0.45 * (m.g / 255))),
-        Math.min(255, m.b * lum + 255 * hi * (0.55 + 0.45 * (m.b / 255)))
+        Math.min(255, m.r * lum + 255 * hi * (0.28 + 0.72 * (m.r / 255))),
+        Math.min(255, m.g * lum + 255 * hi * (0.28 + 0.72 * (m.g / 255))),
+        Math.min(255, m.b * lum + 255 * hi * (0.28 + 0.72 * (m.b / 255)))
       ];
     }
     var quads = this.quads, out = [], i, k;
@@ -328,8 +362,14 @@
         var ra = rotN(q.nA), rb = rotN(q.nB);
         rec.cA = shadeNormal(ra[0], ra[1], ra[2], q.m);
         rec.cB = shadeNormal(rb[0], rb[1], rb[2], q.m);
-        rec.gA = [(pts[0][0] + pts[3][0]) / 2, (pts[0][1] + pts[3][1]) / 2];
-        rec.gB = [(pts[1][0] + pts[2][0]) / 2, (pts[1][1] + pts[2][1]) / 2];
+        if (q.across) {
+          // Around the axis: midpoint of edge 0-1 to midpoint of edge 3-2.
+          rec.gA = [(pts[0][0] + pts[1][0]) / 2, (pts[0][1] + pts[1][1]) / 2];
+          rec.gB = [(pts[3][0] + pts[2][0]) / 2, (pts[3][1] + pts[2][1]) / 2];
+        } else {
+          rec.gA = [(pts[0][0] + pts[3][0]) / 2, (pts[0][1] + pts[3][1]) / 2];
+          rec.gB = [(pts[1][0] + pts[2][0]) / 2, (pts[1][1] + pts[2][1]) / 2];
+        }
       }
       out.push(rec);
     }
