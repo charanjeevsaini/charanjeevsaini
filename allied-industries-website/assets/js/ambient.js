@@ -61,11 +61,12 @@
     ctx.clearRect(0, 0, W, H);
     ctx.globalCompositeOperation = "lighter";   // overlaps bloom
 
-    // Pointer eases toward the cursor so the field lags a little — that lag
-    // is most of what makes it feel expensive rather than twitchy.
-    px += (tx - px) * 0.14;
-    py += (ty - py) * 0.14;
-    scrollY += (targetScroll - scrollY) * 0.10;
+    // The field tracks the cursor closely. An earlier, slower ease was meant
+    // to read as weight, but at 0.14 the lag was long enough to look like the
+    // page was struggling to keep up.
+    px += (tx - px) * 0.38;
+    py += (ty - py) * 0.38;
+    scrollY += (targetScroll - scrollY) * 0.16;
 
     var min = Math.min(W, H);
     var nx = fine && px > -9000 ? (px / W - 0.5) : 0;
@@ -84,26 +85,28 @@
     }
 
     if (!reduced && fine) {
-      // Instantaneous speed, smoothed, normalised to roughly 0..1
-      var moved = Math.hypot(px - lastPx, py - lastPy);
-      lastPx = px; lastPy = py;
-      speed += (Math.min(1, moved / 22) - speed) * 0.12;
+      /* Speed and the wake both read off the true cursor rather than the
+         eased position: anchoring them to the lagged point put the brightest
+         part of the effect a visible distance behind the pointer. */
+      var moved = Math.hypot(tx - lastPx, ty - lastPy);
+      lastPx = tx; lastPy = ty;
+      speed += (Math.min(1, moved / 22) - speed) * 0.26;
 
-      if (now - lastSpawn > 34 && moved > 0.9) {
-        trail.push({ x: px, y: py, born: now });
+      if (now - lastSpawn > 20 && moved > 0.8) {
+        trail.push({ x: tx, y: ty, born: now });
         lastSpawn = now;
       }
       for (var k = trail.length - 1; k >= 0; k--) {
         var p = trail[k];
-        var age = (now - p.born) / 900;
+        var age = (now - p.born) / 520;          // a shorter, tighter wake
         if (age >= 1) { trail.splice(k, 1); continue; }
         var fade = (1 - age) * (1 - age);
-        blob(p.x, p.y, min * (0.045 + age * 0.10), 0.075 * fade, true);
+        blob(p.x, p.y, min * (0.040 + age * 0.075), 0.075 * fade, true);
       }
 
       // Strength follows movement, so a parked pointer leaves no hot spot
       // sitting over the copy. Moving fast, it reads as a wake.
-      if (speed > 0.01) blob(px, py, min * (0.07 + speed * 0.05), 0.11 * speed, true);
+      if (speed > 0.01) blob(tx, ty, min * (0.07 + speed * 0.05), 0.11 * speed, true);
     }
 
     ctx.globalCompositeOperation = "source-over";

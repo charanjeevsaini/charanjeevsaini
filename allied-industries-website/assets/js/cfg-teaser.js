@@ -26,7 +26,7 @@
     facingThk: 0.55, facingMat: "silver"
   }), 88);
 
-  var rotY = 0.6, rotX = -0.42, spinning = !reduced;
+  var rotY = 0.6, rotX = -0.42;
   var dragging = false, lastX = 0, lastY = 0, resumeAt = 0;
 
   function draw() {
@@ -53,9 +53,20 @@
     });
   }
 
+  /* The loop stops rather than idling: re-scheduling a callback every frame
+     for a canvas nobody can see keeps the compositor awake for nothing. */
+  var running = false;
   function loop() {
-    if (spinning && !dragging && Date.now() > resumeAt) { rotY += 0.005; draw(); }
+    if (!running) return;
+    if (!dragging && Date.now() > resumeAt) { rotY += 0.005; draw(); }
     window.requestAnimationFrame(loop);
+  }
+  var onScreen = true, pageVisible = !document.hidden;
+  function sync() {
+    var want = onScreen && pageVisible && !reduced;
+    if (want === running) return;
+    running = want;
+    if (running) window.requestAnimationFrame(loop);
   }
 
   /* ---- drag to turn, same gesture as the hero ---------------------------- */
@@ -78,11 +89,19 @@
      nothing, which is what a low-end phone feels first. */
   if (window.IntersectionObserver) {
     new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) { spinning = !reduced && en.isIntersecting; });
+      entries.forEach(function (en) { onScreen = en.isIntersecting; });
+      sync();
     }, { threshold: 0.1 }).observe(canvas);
   }
+  /* Two independent facts, one decision. An IntersectionObserver callback
+     arrives asynchronously, so a plain start()/stop() pair could let a late
+     "still on screen" undo a "tab was hidden". */
+  document.addEventListener("visibilitychange", function () {
+    pageVisible = !document.hidden;
+    sync();
+  });
+  sync();
 
   window.addEventListener("resize", draw);
   draw();
-  loop();
 })();

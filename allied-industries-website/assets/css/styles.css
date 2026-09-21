@@ -224,13 +224,7 @@ main > section.trust-strip { padding-block: 0; }
   flex: none;
 }
 
-.mono { font-family: var(--font-mono); }
-.muted { color: var(--text-dim); }
-.text-center { text-align: center; }
 .text-center .section-head,
-.text-center .lede { margin-inline: auto; }
-.stack > * + * { margin-top: var(--space-3); }
-.divider { height: 1px; background: var(--line); border: 0; margin: 0; }
 
 .visually-hidden {
   position: absolute; width: 1px; height: 1px;
@@ -250,19 +244,6 @@ main > section.trust-strip { padding-block: 0; }
 .skip-link:focus { top: var(--space-3); }
 
 /* Engineering grid — a faint blueprint texture behind dark sections */
-.grid-bg { position: relative; isolation: isolate; }
-.grid-bg::before {
-  content: "";
-  position: absolute; inset: 0;
-  z-index: -1;
-  background-image:
-    linear-gradient(var(--hairline) 1px, transparent 1px),
-    linear-gradient(90deg, var(--hairline) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 20%, transparent 78%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 20%, transparent 78%);
-  pointer-events: none;
-}
 
 .section-sunken { background: var(--surface); }
 
@@ -1383,7 +1364,7 @@ table.spec-table td:first-child { color: var(--text); font-weight: 500; }
   .eyebrow::before { width: 14px; }
   .hero-media { max-width: 330px; }
   .brand-name-full { display: none; }
-  .brand-name-short { display: inline; }
+
   .footer-grid { grid-template-columns: 1fr; gap: var(--space-5); }
   .stat-grid { grid-template-columns: 1fr 1fr; gap: var(--space-4); }
   .btn-group { flex-direction: column; align-items: stretch; }
@@ -1818,7 +1799,6 @@ table.spec-table td:first-child { color: var(--text); font-weight: 500; }
   color: var(--text-faint);
 }
 
-
 /* ---- landing-page teaser ----------------------------------------------- */
 /* An illustration and a description, not a second set of controls. Same
    renderer and the same engineering-drawing grid as the full tool. */
@@ -2016,7 +1996,6 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .product-card-media.is-diagram::after { display: none; }
 .product-card:hover .product-card-media.is-diagram img,
 .feature-card:hover .product-card-media.is-diagram img { transform: none; }
-
 
 /* ==========================================================================
    DARK BANDS
@@ -2294,7 +2273,6 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
   .contact-layout { grid-template-columns: 1fr; }
 }
 
-
 /* ==========================================================================
    AMBIENT FIELD + BRAND LOCKUP
    ========================================================================== */
@@ -2398,23 +2376,19 @@ table.spec-table tbody tr:hover { background: var(--copper-wash); }
   .js [data-reveal] .eyebrow::before { transform: scaleX(1) !important; }
 }
 
-
 /* A short image against a long column of prose was centring itself against
    the text's full height, leaving big dead areas above and below. Pin it to
    the top and let it ride alongside as the copy scrolls. */
 .two-col > :last-child img { box-shadow: var(--shadow-lg); }
 
-/* ITEM 8: these two are jump links, not a selected state. Giving one a
-   filled treatment made Metal Rivets look pre-selected. Match them, and
-   mark whichever section you are actually in. */
+/* These two are jump links, not a filter. The page shows both families
+   whichever one you are nearest, so marking the current section flipped
+   Metal Rivets to white-on-copper the moment the page loaded and left it
+   looking like a different control from its neighbour. They now stay
+   identical; aria-current is still set, so a screen reader keeps the
+   wayfinding cue without a colour change implying a selection. */
 .type-switch .btn { --btn-bg: var(--surface); --btn-fg: var(--text); --btn-bd: var(--line-bright); }
 .type-switch .btn:hover { --btn-bd: var(--copper); --btn-fg: var(--copper-ink); background: var(--copper-wash); }
-.type-switch .btn[aria-current="true"] {
-  --btn-bg: var(--copper);
-  --btn-fg: var(--on-copper);
-  --btn-bd: var(--copper);
-  box-shadow: var(--shadow-copper);
-}
 
 /* Construction picker: a dropdown for speed, chips for scanning. Both drive
    the same state, so either route works. */

@@ -1,2 +1,46 @@
+# Allied Industries — static host configuration (Apache)
+
+# ---- Redirects -------------------------------------------------------------
+# The two product pages were merged into one. Keep the old URLs working.
 Redirect 301 /products/metal-rivets.html   /products.html#metal-rivets
 Redirect 301 /products/contact-rivets.html /products.html#contact-rivets
+
+# ---- Compression -----------------------------------------------------------
+# Text assets compress to roughly a quarter of their size. Images are already
+# compressed (WebP), so leave them alone.
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# ---- Caching ---------------------------------------------------------------
+# Filenames are not content-hashed, so CSS and JS get a week rather than a
+# year: long enough to help a return visit, short enough that a deploy is
+# picked up without anyone having to hard-refresh. HTML always revalidates.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/webp              "access plus 1 year"
+  ExpiresByType image/png               "access plus 1 year"
+  ExpiresByType image/jpeg              "access plus 1 year"
+  ExpiresByType image/svg+xml           "access plus 1 year"
+  ExpiresByType font/woff2              "access plus 1 year"
+  ExpiresByType text/css                "access plus 1 week"
+  ExpiresByType application/javascript  "access plus 1 week"
+  ExpiresByType text/html               "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(webp|png|jpe?g|svg|woff2)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+  # Sensible defaults for a brochure site.
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

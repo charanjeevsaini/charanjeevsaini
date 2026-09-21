@@ -10,10 +10,15 @@
    page keeps its own scroll position across an in-frame navigation. The new
    page's own scrollY is already 0; it is the host that is still scrolled, so
    a link clicked from halfway down one page appears to open the next page
-   halfway down. Ask the host to bring the top of the frame back into view.
+   halfway down.
+
+   A single nudge on load is not enough: a viewer that restores its scroll
+   does so after the frame reports loaded, and whatever we did before that
+   is simply undone. So keep asking for about a second and a half, and stop
+   the moment the visitor takes over.
 
    Left alone on purpose: a URL carrying a hash (that navigation is meant to
-   land mid-page) and a back/forward step (the browser's restore is correct). */
+   land mid-page) and a back/forward step (the browser's restore is right). */
 (function () {
   "use strict";
   if (window.top === window.self) return;          // not embedded, nothing to do
@@ -23,13 +28,32 @@
     ? window.performance.getEntriesByType("navigation") : null;
   if (entries && entries[0] && entries[0].type === "back_forward") return;
 
-  try {
-    // 'instant' matters: html has scroll-behavior:smooth, and a page that
-    // slides into place on every load reads as a glitch.
-    document.documentElement.scrollIntoView({ block: "start", inline: "nearest", behavior: "instant" });
-  } catch (e) {
-    try { document.documentElement.scrollIntoView(); } catch (e2) { /* already at top */ }
+  var until = Date.now() + 1500;
+  var done = false;
+
+  function stop() { done = true; }
+
+  /* Any sign the visitor is driving hands control straight back to them. */
+  ["wheel", "touchstart", "keydown", "pointerdown"].forEach(function (ev) {
+    window.addEventListener(ev, stop, { passive: true, once: true });
+  });
+
+  function toTop() {
+    if (done) return;
+    try {
+      window.scrollTo(0, 0);                       // this frame's own scroll
+      // ...and ask every ancestor scroller to bring the frame back into view.
+      // 'instant' matters: html has scroll-behavior:smooth, and a page that
+      // slides into place on every load reads as a glitch.
+      document.documentElement.scrollIntoView({ block: "start", inline: "nearest", behavior: "instant" });
+    } catch (e) {
+      try { document.documentElement.scrollIntoView(); } catch (e2) { /* already there */ }
+    }
+    if (Date.now() < until) window.requestAnimationFrame(toTop);
   }
+
+  toTop();
+  window.addEventListener("load", function () { if (!done) toTop(); });
 })();
 
 /* Shared by the scroll-reveal observer and the tab panels, which live in
@@ -597,8 +621,29 @@ var clearStagger = (function () {
   var count = shots.length;
   var at = 0;
 
+  /* Only the first shot ships with a src. The rest sit inside the stage, so
+     the browser counts them as in-viewport and loading="lazy" never defers
+     them — all twelve full-size files downloaded on arrival. Load the current
+     one and its two neighbours instead, so paging is still instant. */
+  function load(i) {
+    var fig = shots[(i + count) % count];
+    if (!fig) return;
+    var img = fig.querySelector("img[data-src]");
+    if (!img) return;
+    img.src = img.getAttribute("data-src");
+    img.removeAttribute("data-src");
+  }
+
   function show(i, moveFocus) {
     at = (i + count) % count;
+    /* This shot and the two either side of it, wrapping. Enough that every
+       adjacent move is instant, without pulling the whole deck: a visitor
+       who glances at the gallery and leaves pays for three images, not
+       twelve. Backfilling the rest on idle was tried and dropped — it put
+       every byte back. */
+    load(at);
+    load((at + 1) % count);
+    load((at - 1 + count) % count);
 
     Array.prototype.forEach.call(shots, function (el, n) {
       var on = n === at;

@@ -140,9 +140,22 @@
     });
   }
 
+  /* `spinning` is the visitor's pause control. `running` is whether the
+     canvas is worth drawing at all — scrolled past, or the tab in the
+     background. Without it this loop rendered a software 3D scene every
+     frame for the whole life of the page, on screen or not. */
+  var running = false;
   function loop() {
+    if (!running) return;
     if (spinning && !dragging) { rotY += 0.005; draw(); }
     window.requestAnimationFrame(loop);
+  }
+  var onScreen = true, pageVisible = !document.hidden;
+  function sync() {
+    var want = onScreen && pageVisible;
+    if (want === running) return;
+    running = want;
+    if (running) window.requestAnimationFrame(loop);
   }
 
   /* ---- input wiring ------------------------------------------------------ */
@@ -289,5 +302,19 @@
 
   window.addEventListener("resize", draw, { passive: true });
   if (root.querySelector('.type-chip')) applyType(currentType); else rebuild();
-  loop();
+
+  if (window.IntersectionObserver) {
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { onScreen = en.isIntersecting; });
+      sync();
+    }, { threshold: 0.05 }).observe(canvas);
+  }
+  /* Two independent facts, one decision. An IntersectionObserver callback
+     arrives asynchronously, so a plain start()/stop() pair could let a late
+     "still on screen" undo a "tab was hidden". */
+  document.addEventListener("visibilitychange", function () {
+    pageVisible = !document.hidden;
+    sync();
+  });
+  sync();
 })();
