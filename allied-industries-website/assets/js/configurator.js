@@ -51,7 +51,12 @@
   };
   var currentType = "semi-tubular";
 
-  var mesh = null, rotY = 0.6, rotX = -0.42, spinning = !reduced;
+  /* Low enough to put the lustre on the head wall, high enough that the
+     head still shows a sliver of its top face. The hero and the landing
+     teaser sit at -0.10, but their parts are squat: here the shank can be
+     4.5mm, which lifts the head well above the mesh centre, and under
+     perspective -0.10 ends up looking at the head from below. */
+  var mesh = null, rotY = 0.62, rotX = -0.22, spinning = !reduced;
   var dragging = false, lastX = 0, lastY = 0;
 
   function readSpec() {

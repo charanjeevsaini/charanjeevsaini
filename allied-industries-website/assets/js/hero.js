@@ -25,15 +25,15 @@
 
   var W = 0, H = 0, TX = 0, TY = 0, TS = 0;   // size + convergence target
   var paths = [], ripples = [], mass = reduced ? 1 : 0;
-  var spin = 0.6, tiltTarget = -0.40, tilt = -0.40, spinBias = 0, running = false;
+  var spin = 0.6, tiltTarget = -0.10, tilt = -0.10, spinBias = 0, running = false;
   var shown = reduced ? 1 : 0;
   var BUILD_MS = 1500;           // whole part, start to finish
   var buildT0 = 0;
 
   var mesh = new window.Rivet3D.Mesh(
     window.Rivet3D.buildProfile({
-      headDia: 5.2, headThk: 1.15, shankDia: 2.1, shankLen: 3.4,
-      headStyle: "flat", facingThk: 0.62, bodyMat: "copper", facingMat: "silver"
+      headDia: 5.2, headThk: 1.15, shankDia: 2.85, shankLen: 2.2,
+      headStyle: "flat", facingThk: 0.20, bodyMat: "copper", facingMat: "silver"
     }),
     coarse ? 44 : 88
   );
@@ -170,7 +170,7 @@
     glow.addColorStop(0, "rgba(201,144,107,0.20)");
     glow.addColorStop(1, "rgba(201,144,107,0)");
     ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
-    mesh.render(ctx, { cx: TX, cy: TY, scale: TS, rotX: -0.40, rotY: 0.62, reveal: 1, alpha: 1 });
+    mesh.render(ctx, { cx: TX, cy: TY, scale: TS, rotX: -0.10, rotY: 0.62, reveal: 1, alpha: 1 });
   }
 
   function start() { if (!running && !reduced) { running = true; last = performance.now(); window.requestAnimationFrame(frame); } }
@@ -204,7 +204,7 @@
     if (coarse || reduced) return;
     var r = stage.getBoundingClientRect();
     spinBias = ((e.clientX - r.left) / r.width - 0.5) * 0.5;
-    tiltTarget = -0.40 + ((e.clientY - r.top) / r.height - 0.5) * 0.30;
+    tiltTarget = -0.10 + ((e.clientY - r.top) / r.height - 0.5) * 0.30;
   });
 
   function endDrag(e) {
@@ -223,7 +223,7 @@
 
   stage.addEventListener("pointerleave", function () {
     if (dragging) return;
-    spinBias = 0; tiltTarget = -0.40;
+    spinBias = 0; tiltTarget = -0.10;
   });
 
   new ResizeObserver(function () { resize(); if (reduced) renderStatic(); }).observe(band);

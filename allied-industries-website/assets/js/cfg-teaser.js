@@ -21,12 +21,12 @@
      facing, so the illustration carries more of what the tool can do than a
      plain rivet would. */
   var mesh = new window.Rivet3D.Mesh(window.Rivet3D.buildProfile({
-    headDia: 5.0, headThk: 1.1, shankDia: 2.0, shankLen: 3.4,
+    headDia: 5.0, headThk: 1.1, shankDia: 2.75, shankLen: 2.1,
     headStyle: "flat", tubular: false, bodyMat: "copper",
-    facingThk: 0.55, facingMat: "silver"
+    facingThk: 0.20, facingMat: "silver"
   }), 88);
 
-  var rotY = 0.6, rotX = -0.42;
+  var rotY = 0.62, rotX = -0.10;
   var dragging = false, lastX = 0, lastY = 0, resumeAt = 0;
 
   function draw() {
