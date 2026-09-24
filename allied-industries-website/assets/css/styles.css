@@ -189,8 +189,8 @@ a { color: inherit; text-decoration: none; }
 
 main > section { padding-block: clamp(var(--space-6), 5.5vw, var(--space-8)); }
 /* Strips carry their own vertical rhythm; don't add the section band as well */
-main > section.stat-strip,
-main > section.trust-strip { padding-block: 0; }
+main > section.stat-strip { padding-block: 0; }
+main > section.trust-strip { padding-block: var(--space-5) var(--space-6); }
 
 .section-head { max-width: 62ch; margin-bottom: var(--space-5); }
 .section-head h2 { margin-bottom: var(--space-3); }
@@ -707,7 +707,6 @@ body { padding-top: var(--header-h); }
 /* --------------------------------------------------- trust / logo marquee -- */
 .trust-strip {
   padding-block: var(--space-6);
-  border-bottom: 1px solid var(--line);
   overflow: hidden;
 }
 .strip-label {
@@ -2581,78 +2580,74 @@ table.spec-table tbody tr:hover { background: var(--copper-wash); }
 .contact3d-wrap .contact3d-canvas { border-radius: var(--radius-md); }
 
 /* ==========================================================================
-   COPPER FINISH — a polished copper bar, lit from above
-   The richness comes from the same things that make the hero rivet read as
-   metal: a bright soft-box reflection along the top edge, a deep copper
-   body, and warm light bouncing back along the bottom. All the highlights
-   run horizontally, above and below the label, never through it — the band
-   the text sits on stays between #a25c37 and #8f4c2b (5.1–6.5 : 1 on white).
+   COPPER FINISH — deep copper, machined edge
+   Restraint over shine: one deep copper with only a whisper of shading, a
+   hairline highlight where the top edge would catch the light, and a darker
+   outer edge. No gloss bands, no drifting sheen. The face stays
+   between #9b5735 and #874829, 5.4–6.8 : 1 against white.
    ========================================================================== */
 :root {
   --copper-metal:
-    radial-gradient(120% 90% at 22% -20%, rgba(255, 226, 200, 0.55) 0%, rgba(255, 226, 200, 0) 55%),
-    linear-gradient(180deg,
-      #f0bf9c 0%, #dc9a70 9%, #c07548 20%, #a25c37 34%,
-      #93502e 52%, #8f4c2b 66%, #9a5532 80%, #c07a4f 93%, #dca07a 100%);
+    linear-gradient(180deg, #9b5735 0%, #914f30 55%, #874829 100%);
   --copper-metal-hover:
-    radial-gradient(120% 90% at 30% -20%, rgba(255, 232, 210, 0.70) 0%, rgba(255, 232, 210, 0) 58%),
-    linear-gradient(180deg,
-      #f6cbab 0%, #e3a47a 9%, #c97f51 20%, #a9623b 34%,
-      #9a5532 52%, #954f2d 66%, #a25c37 80%, #cb8558 93%, #e6ad86 100%);
+    linear-gradient(180deg, #a86240 0%, #9c5836 55%, #914f30 100%);
   --copper-metal-sm: var(--copper-metal);
   --copper-metal-round:
-    radial-gradient(circle at 36% 26%, #fbe0cb 0%, #e3a47a 12%, #b56b41 34%, #93502e 60%, #7e4225 82%, #b8734a 100%);
-  --copper-metal-edge: #7a4023;
+    radial-gradient(circle at 50% 28%, #a86240 0%, #914f30 55%, #7f4326 100%);
+  --copper-metal-edge: #6f391f;
   --copper-metal-shadow:
-    inset 0 1px 0 rgba(255, 238, 222, 0.75),
-    inset 0 0 0 1px rgba(255, 214, 186, 0.10),
-    inset 0 -1px 0 rgba(255, 200, 160, 0.35),
-    0 1px 2px rgba(42, 20, 10, 0.22),
-    0 8px 20px -10px rgba(122, 64, 35, 0.75);
+    inset 0 1px 0 rgba(255, 224, 202, 0.24),
+    inset 0 -1px 0 rgba(40, 16, 6, 0.18),
+    0 1px 1px rgba(42, 20, 10, 0.14),
+    0 10px 22px -14px rgba(96, 48, 24, 0.7);
 }
+
+/* Buttons settle into a quieter register site-wide: no drifting sheen, no
+   hover sweep, no letter-spacing bounce. */
+.btn::before, .btn::after { display: none; }
+.btn:hover { letter-spacing: 0.02em; }
 
 .btn-primary,
 .btn-primary:hover,
 .btn-primary:active {
   --btn-bd: var(--copper-metal-edge);
   --btn-fg: #fff;
-  background-color: #93502e;
+  background-color: #914f30;
   background-image: var(--copper-metal);
   background-size: 100% 100%;
-  text-shadow: 0 1px 1px rgba(60, 24, 8, 0.45);
+  text-shadow: none;
   box-shadow: var(--copper-metal-shadow);
 }
 .btn-primary:hover {
   background-image: var(--copper-metal-hover);
-  box-shadow: var(--copper-metal-shadow), 0 10px 24px -10px rgba(120, 58, 30, 0.7);
+  box-shadow: var(--copper-metal-shadow), 0 12px 26px -14px rgba(96, 48, 24, 0.8);
 }
 .btn-primary:active {
   box-shadow: inset 0 2px 6px rgba(20, 6, 0, 0.5), inset 0 -1px 0 rgba(255, 222, 198, 0.25);
 }
-/* Keep the drifting sheen faint on copper so it never washes out the label */
-.btn-primary::before { opacity: 0.22; }
+
 
 .float-btn.call,
 .skip-link,
 .tech-tab[aria-selected="true"],
 .cfg-step-num {
-  background-color: #93502e;
+  background-color: #914f30;
   background-image: var(--copper-metal);
   background-size: 100% 100%;
   color: #fff;
   border-color: var(--copper-metal-edge);
   box-shadow: var(--copper-metal-shadow);
-  text-shadow: 0 1px 1px rgba(70, 30, 12, 0.35);
+  text-shadow: none;
 }
 .float-btn.call { background-image: var(--copper-metal-round); }
 .float-btn.call:hover { background-image: var(--copper-metal-round); filter: brightness(1.12); }
 .cfg-step-num { background-image: var(--copper-metal-sm); }
 .tech-tab[aria-selected="true"]:hover { background-image: var(--copper-metal-hover); color: #fff; }
 input[type="range"]::-webkit-slider-thumb {
-  background: radial-gradient(circle at 36% 30%, #e2b193 0%, #b8744d 35%, #93532f 100%);
+  background: radial-gradient(circle at 50% 30%, #b87250 0%, #914f30 60%, #7f4326 100%);
 }
 input[type="range"]::-moz-range-thumb {
-  background: radial-gradient(circle at 36% 30%, #e2b193 0%, #b8744d 35%, #93532f 100%);
+  background: radial-gradient(circle at 50% 30%, #b87250 0%, #914f30 60%, #7f4326 100%);
 }
 
 /* ==========================================================================
@@ -2697,7 +2692,7 @@ input[type="range"]::-moz-range-thumb {
   aspect-ratio: 1 / 1;
   margin: 0 calc(-1 * var(--space-1)) var(--space-2);
   border-radius: var(--radius-md);
-  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 100%), var(--surface-2);
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 100%), rgba(239, 234, 227, 0.45);
   overflow: hidden;
 }
 .range-media img {
@@ -2818,11 +2813,11 @@ input[type="range"]::-moz-range-thumb {
 .lab-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .lab-btn[aria-pressed="true"] {
   color: #fff;
-  background-color: #93502e;
+  background-color: #914f30;
   background-image: var(--copper-metal);
   border-color: var(--copper-metal-edge);
   box-shadow: var(--copper-metal-shadow);
-  text-shadow: 0 1px 1px rgba(70, 30, 12, 0.35);
+  text-shadow: none;
 }
 .lab-hint {
   position: absolute; left: var(--space-4); bottom: var(--space-3); z-index: 2; margin: 0;
@@ -2909,9 +2904,9 @@ input[type="range"]::-moz-range-thumb {
 .lab-seg button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 .lab-seg button[aria-pressed="true"] {
   color: #fff;
-  background-color: #93502e;
+  background-color: #914f30;
   background-image: var(--copper-metal-sm);
-  text-shadow: 0 1px 1px rgba(70, 30, 12, 0.35);
+  text-shadow: none;
 }
 
 .lab-spec {
@@ -3062,7 +3057,7 @@ input[type="range"]::-moz-range-thumb {
   font: 700 0.9rem var(--font-mono); color: #fff;
   background: var(--copper-metal-round);
   box-shadow: var(--copper-metal-shadow);
-  text-shadow: 0 1px 1px rgba(60, 24, 8, 0.45);
+  text-shadow: none;
 }
 .cfg-promo-steps b { display: block; font-size: var(--step-0); }
 .cfg-promo-steps small { display: block; font-size: var(--step--1); color: var(--text-dim); margin-top: 2px; }
@@ -3102,3 +3097,86 @@ input[type="range"]::-moz-range-thumb {
   .cfg-promo-dims .d-base { bottom: 4%; right: 3%; }
   .cfg-promo-dims .d-shank { bottom: 4%; left: 3%; }
 }
+
+/* ==========================================================================
+   HOME — product lines band (the main section: dark, large, photographic)
+   ========================================================================== */
+.lines-band {
+  position: relative;
+  padding-block: var(--space-9);
+  background:
+    radial-gradient(60% 70% at 85% 0%, rgba(201, 144, 107, 0.16), rgba(201, 144, 107, 0) 70%),
+    radial-gradient(50% 60% at 0% 100%, rgba(201, 144, 107, 0.10), rgba(201, 144, 107, 0) 70%),
+    var(--band);
+  color: var(--band-text);
+  overflow: hidden;
+}
+.lines-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--space-4) var(--space-7);
+  align-items: end;
+  margin-bottom: var(--space-7);
+}
+.lines-head .eyebrow { color: var(--band-copper); }
+.lines-head h2 { color: var(--band-text); margin-top: var(--space-3); font-size: var(--step-4); line-height: 1.05; max-width: 20ch; }
+.lines-head .lede { color: var(--band-dim); margin: 0; }
+
+.lines-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
+.line-card {
+  position: relative;
+  display: flex; flex-direction: column;
+  padding: var(--space-3);
+  background: linear-gradient(180deg, #3A2E26 0%, #30261F 100%);
+  border: 1px solid var(--band-line);
+  border-radius: var(--radius-lg);
+  color: var(--band-text);
+  text-decoration: none;
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.6);
+  transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out);
+}
+.line-card:hover { border-color: rgba(201, 144, 107, 0.45); box-shadow: 0 40px 70px -30px rgba(0, 0, 0, 0.75); }
+.line-card:focus-visible { outline: 2px solid var(--band-copper); outline-offset: 4px; }
+.line-media {
+  aspect-ratio: 16 / 10;
+  border-radius: calc(var(--radius-lg) - 6px);
+  overflow: hidden;
+  background: #fff;
+}
+.line-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 900ms var(--ease-out); }
+.line-card:hover .line-media img { transform: scale(1.05); }
+.line-body { display: flex; flex-direction: column; flex: 1; padding: var(--space-5) var(--space-3) var(--space-3); }
+.line-kicker {
+  font-family: var(--font-mono); font-size: var(--step--2); letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--band-copper);
+}
+.line-body h3 { margin: var(--space-2) 0 var(--space-2); font-size: var(--step-3); color: var(--band-text); line-height: 1.1; }
+.line-body p { margin: 0 0 var(--space-4); color: var(--band-dim); font-size: var(--step-0); line-height: 1.6; }
+.line-tags { list-style: none; margin: 0 0 var(--space-5); padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.line-tags li {
+  padding: 5px 11px;
+  font-size: var(--step--2); color: var(--band-text);
+  border: 1px solid var(--band-line); border-radius: 999px;
+  background: rgba(242, 237, 230, 0.04);
+}
+.line-cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  margin-top: auto;
+  font-weight: 600; font-size: var(--step--1); letter-spacing: 0.02em;
+  color: #E7B592;
+}
+.line-cta svg { width: 18px; height: 18px; transition: transform var(--dur-base) var(--ease-out); }
+.line-card:hover .line-cta svg { transform: translateX(5px); }
+.line-card .glow-wash { --glow-sat: 60%; }
+
+@media (max-width: 860px) {
+  .lines-head { grid-template-columns: 1fr; margin-bottom: var(--space-5); }
+  .lines-grid { grid-template-columns: 1fr; }
+  .lines-band { padding-block: var(--space-8); }
+}
+
+/* Range cards take the pointer spotlight; keep their number pinned */
+.range-card.glow > .range-num { position: absolute; }
+.range-card.glow { --glow-size: 320; }
+.range-card.glow > .glow-wash { background-image: radial-gradient(calc(var(--glow-size) * 1px) calc(var(--glow-size) * 1px) at calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px), hsl(var(--glow-hue) var(--glow-sat) 48% / 0.22), transparent 70%); }
+.range-card.glow > .range-media, .range-card.glow > .range-body, .range-card.glow > .range-go { position: relative; z-index: 1; }
