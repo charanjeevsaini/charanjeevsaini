@@ -235,29 +235,47 @@
     </div>
   </section>
 
-  <!-- CONFIGURATOR TEASER — last section, links into the full tool -->
-  <section class="cfg-tease-section">
+  <!-- CONFIGURATOR — what it is for, shown on a real part from it -->
+  <section class="cfg-promo-section">
     <div class="container">
-      <div class="cfg-tease" id="cfgTeaser" data-reveal>
-        <div class="cfg-tease-stage">
-          <canvas id="teaseCanvas" aria-hidden="true"></canvas>
-          <p class="cfg-tease-hint">Drag to turn</p>
+      <div class="cfg-promo" data-reveal>
+        <div class="cfg-promo-stage" id="promoStage">
+          <img class="cfg-promo-fallback" src="assets/images/range/bimetal.webp" alt="Bimetal contact rivet from the configurator" width="480" height="480">
+          <span class="cfg-promo-badge">Bimetal Contact Rivet · live preview</span>
+          <ul class="cfg-promo-dims" aria-label="The part's specification">
+            <li class="d-head"><b>Head</b> Ø 6.00 × 1.60 mm</li>
+            <li class="d-face"><b>Facing</b> AgNi 10 · 0.30 mm</li>
+            <li class="d-base"><b>Base</b> ETP copper</li>
+            <li class="d-shank"><b>Shank</b> Ø 3.00 × 3.00 mm</li>
+          </ul>
         </div>
 
-        <div class="cfg-tease-copy">
-          <span class="eyebrow">Build it before you brief it</span>
-          <h2>Configure a rivet to your own dimensions</h2>
-          <p class="lede">Our configurator draws your part as you specify it, then hands you the finished spec to send across. Nothing to install, nothing to draw.</p>
+        <div class="cfg-promo-copy">
+          <span class="eyebrow">Rivet configurator</span>
+          <h2>See your rivet in 3D before we make it.</h2>
+          <p class="lede">Build the part to your drawing, then send the spec to us for a quote.</p>
+          <ol class="cfg-promo-steps">
+            <li><span class="n">1</span><div><b>Pick a construction</b><small>Ten types, from solid contacts to weldable nubs</small></div></li>
+            <li><span class="n">2</span><div><b>Set it to your drawing</b><small>Every dimension, contact alloy and base metal</small></div></li>
+            <li><span class="n">3</span><div><b>Send us the spec</b><small>It arrives as a quote request, ready to price</small></div></li>
+          </ol>
+          <a class="btn btn-primary" id="teaseOpen" href="products.html#configurator">Open the configurator</a>
+        </div>
 
-          <ul class="cfg-tease-list">
-            <li><span>Construction</span> Ten types, from Solid Contact to Projection Weldable</li>
-            <li><span>Dimensions</span> Every head, shank, facing and edge dimension</li>
-            <li><span>Section view</span> Cut the part in half to see each layer</li>
-            <li><span>Materials</span> ETP copper, brass, nickel, CuNi or steel</li>
-            <li><span>Contact facing</span> Ag 99.9, AgNi, AgCdO, AgSnO₂ or hard gold, in four finishes</li>
+        <div class="cfg-promo-range">
+          <p>Start from any of our ten constructions</p>
+          <ul>
+            <li><a href="products.html#configurator-solid"><img src="assets/images/range/solid.webp" alt="" loading="lazy" width="96" height="96"><span>Solid</span></a></li>
+            <li><a href="products.html#configurator-bimetal"><img src="assets/images/range/bimetal.webp" alt="" loading="lazy" width="96" height="96"><span>Bimetal</span></a></li>
+            <li><a href="products.html#configurator-radius"><img src="assets/images/range/radius.webp" alt="" loading="lazy" width="96" height="96"><span>Radius head</span></a></li>
+            <li><a href="products.html#configurator-trimetal"><img src="assets/images/range/trimetal.webp" alt="" loading="lazy" width="96" height="96"><span>Trimetal</span></a></li>
+            <li><a href="products.html#configurator-semitubular"><img src="assets/images/range/semitubular.webp" alt="" loading="lazy" width="96" height="96"><span>Semi-tubular</span></a></li>
+            <li><a href="products.html#configurator-trimmed"><img src="assets/images/range/trimmed.webp" alt="" loading="lazy" width="96" height="96"><span>Trimmed</span></a></li>
+            <li><a href="products.html#configurator-straight"><img src="assets/images/range/straight.webp" alt="" loading="lazy" width="96" height="96"><span>Straight head</span></a></li>
+            <li><a href="products.html#configurator-doublehead"><img src="assets/images/range/doublehead.webp" alt="" loading="lazy" width="96" height="96"><span>Double head</span></a></li>
+            <li><a href="products.html#configurator-doubleshank"><img src="assets/images/range/doubleshank.webp" alt="" loading="lazy" width="96" height="96"><span>Double shank</span></a></li>
+            <li><a href="products.html#configurator-projection"><img src="assets/images/range/projection.webp" alt="" loading="lazy" width="96" height="96"><span>Weldable</span></a></li>
           </ul>
-
-          <a class="btn btn-primary" id="teaseOpen" href="products.html#configurator">Open the full configurator</a>
         </div>
       </div>
     </div>
@@ -342,7 +360,7 @@
 <script type="module" src="assets/js/contact3d.js"></script>
 <script src="assets/js/rivet3d.js" defer></script>
 <script src="assets/js/hero.js" defer></script>
-<script src="assets/js/cfg-teaser.js" defer></script>
+<script type="module" src="assets/js/home-configurator.js"></script>
 </body>
 </html>
 

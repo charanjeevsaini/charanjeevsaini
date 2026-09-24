@@ -244,5 +244,6 @@ function init() {
   if (m) { const i = TYPES.findIndex(t => t.id === m[1]); if (i >= 0) current = i; }
 
   show(current);
+  if (m) requestAnimationFrame(() => document.getElementById("configurator").scrollIntoView({ block: "start" }));
   if (lab) { lab.applyFinish(); lab.applyDisplay(); }
 }

@@ -2581,27 +2581,34 @@ table.spec-table tbody tr:hover { background: var(--copper-wash); }
 .contact3d-wrap .contact3d-canvas { border-radius: var(--radius-md); }
 
 /* ==========================================================================
-   COPPER FINISH — satin copper, taken from the hero rivet's lit face
-   A soft top-to-bottom shade (light catching the upper edge, falling off
-   below) rather than hard reflections: nothing crosses the label, and the
-   band the text sits on holds 5:1 against white.
+   COPPER FINISH — a polished copper bar, lit from above
+   The richness comes from the same things that make the hero rivet read as
+   metal: a bright soft-box reflection along the top edge, a deep copper
+   body, and warm light bouncing back along the bottom. All the highlights
+   run horizontally, above and below the label, never through it — the band
+   the text sits on stays between #a25c37 and #8f4c2b (5.1–6.5 : 1 on white).
    ========================================================================== */
 :root {
   --copper-metal:
-    linear-gradient(180deg, rgba(255, 228, 208, 0.32) 0%, rgba(255, 228, 208, 0) 30%),
-    linear-gradient(180deg, #bb7852 0%, #a3613b 40%, #9d5c38 62%, #8b4f31 100%);
+    radial-gradient(120% 90% at 22% -20%, rgba(255, 226, 200, 0.55) 0%, rgba(255, 226, 200, 0) 55%),
+    linear-gradient(180deg,
+      #f0bf9c 0%, #dc9a70 9%, #c07548 20%, #a25c37 34%,
+      #93502e 52%, #8f4c2b 66%, #9a5532 80%, #c07a4f 93%, #dca07a 100%);
   --copper-metal-hover:
-    linear-gradient(180deg, rgba(255, 232, 214, 0.40) 0%, rgba(255, 232, 214, 0) 34%),
-    linear-gradient(180deg, #c3815a 0%, #a8663f 40%, #a2603a 62%, #8f5233 100%);
+    radial-gradient(120% 90% at 30% -20%, rgba(255, 232, 210, 0.70) 0%, rgba(255, 232, 210, 0) 58%),
+    linear-gradient(180deg,
+      #f6cbab 0%, #e3a47a 9%, #c97f51 20%, #a9623b 34%,
+      #9a5532 52%, #954f2d 66%, #a25c37 80%, #cb8558 93%, #e6ad86 100%);
   --copper-metal-sm: var(--copper-metal);
   --copper-metal-round:
-    radial-gradient(circle at 36% 30%, #d9a283 0%, #b8744d 30%, #9d5c38 62%, #87492c 100%);
-  --copper-metal-edge: #8a4e30;
+    radial-gradient(circle at 36% 26%, #fbe0cb 0%, #e3a47a 12%, #b56b41 34%, #93502e 60%, #7e4225 82%, #b8734a 100%);
+  --copper-metal-edge: #7a4023;
   --copper-metal-shadow:
-    inset 0 1px 0 rgba(255, 232, 214, 0.55),
-    inset 0 -1px 0 rgba(90, 42, 20, 0.30),
-    0 1px 2px rgba(42, 20, 10, 0.18),
-    0 6px 16px -8px rgba(138, 78, 48, 0.55);
+    inset 0 1px 0 rgba(255, 238, 222, 0.75),
+    inset 0 0 0 1px rgba(255, 214, 186, 0.10),
+    inset 0 -1px 0 rgba(255, 200, 160, 0.35),
+    0 1px 2px rgba(42, 20, 10, 0.22),
+    0 8px 20px -10px rgba(122, 64, 35, 0.75);
 }
 
 .btn-primary,
@@ -2609,10 +2616,10 @@ table.spec-table tbody tr:hover { background: var(--copper-wash); }
 .btn-primary:active {
   --btn-bd: var(--copper-metal-edge);
   --btn-fg: #fff;
-  background-color: #9d5c38;
+  background-color: #93502e;
   background-image: var(--copper-metal);
   background-size: 100% 100%;
-  text-shadow: 0 1px 1px rgba(70, 30, 12, 0.35);
+  text-shadow: 0 1px 1px rgba(60, 24, 8, 0.45);
   box-shadow: var(--copper-metal-shadow);
 }
 .btn-primary:hover {
@@ -2629,7 +2636,7 @@ table.spec-table tbody tr:hover { background: var(--copper-wash); }
 .skip-link,
 .tech-tab[aria-selected="true"],
 .cfg-step-num {
-  background-color: #9d5c38;
+  background-color: #93502e;
   background-image: var(--copper-metal);
   background-size: 100% 100%;
   color: #fff;
@@ -2811,7 +2818,7 @@ input[type="range"]::-moz-range-thumb {
 .lab-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .lab-btn[aria-pressed="true"] {
   color: #fff;
-  background-color: #9d5c38;
+  background-color: #93502e;
   background-image: var(--copper-metal);
   border-color: var(--copper-metal-edge);
   box-shadow: var(--copper-metal-shadow);
@@ -2902,7 +2909,7 @@ input[type="range"]::-moz-range-thumb {
 .lab-seg button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 .lab-seg button[aria-pressed="true"] {
   color: #fff;
-  background-color: #9d5c38;
+  background-color: #93502e;
   background-image: var(--copper-metal-sm);
   text-shadow: 0 1px 1px rgba(70, 30, 12, 0.35);
 }
@@ -2949,17 +2956,149 @@ input[type="range"]::-moz-range-thumb {
   .lab-hint { display: none; }
 }
 
-.guide-figure { margin: 0 0 var(--space-5); }
-.guide-figure a { display: block; max-width: 900px; margin-inline: auto; cursor: zoom-in; }
-.guide-figure img {
-  display: block; width: 100%; height: auto;
-  background: #fff;
-  border-radius: var(--radius-lg); border: 1px solid var(--line);
-  box-shadow: var(--shadow-sm);
+/* ---- Guide > Sizes ------------------------------------------------------- */
+.size-meta {
+  display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-4);
 }
-.guide-figure a:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: var(--radius-lg); }
-.guide-figure figcaption { text-align: center; }
-.guide-figure figcaption {
-  margin-top: var(--space-2);
-  font-family: var(--font-mono); font-size: var(--step--2); color: var(--text-faint);
+.size-meta span, .size-tol li {
+  padding: 7px 12px;
+  font-size: var(--step--1); color: var(--text-dim);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+}
+.size-meta b, .size-tol b {
+  margin-right: 6px;
+  font-family: var(--font-mono); font-weight: 400; font-size: 0.7rem;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--copper-ink);
+}
+.size-table th, .size-table td { text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.size-table tbody th { font-weight: 600; }
+.size-table thead tr:first-child th[colspan] { border-bottom: 1px solid var(--line); }
+.size-table thead tr:last-child th { font-size: 0.66rem; }
+/* The "common" columns are the ones most orders use: give them a wash */
+.size-table tbody td:nth-of-type(2), .size-table tbody td:nth-of-type(6),
+.size-table thead tr:last-child th:nth-child(2), .size-table thead tr:last-child th:nth-child(5) {
+  background: var(--copper-wash);
+}
+.size-table tbody td:nth-of-type(2), .size-table tbody td:nth-of-type(6) { color: var(--text); font-weight: 600; }
+.size-tol { margin-top: var(--space-4); }
+.size-tol ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.size-tol li { color: var(--text); }
+.size-note { margin: var(--space-3) 0 0; font-size: var(--step--1); color: var(--text-dim); }
+
+/* ==========================================================================
+   HOME — configurator section
+   ========================================================================== */
+.cfg-promo-section { padding-block: var(--space-8); }
+.cfg-promo {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  grid-template-areas: "stage copy" "range range";
+  gap: var(--space-6) var(--space-7);
+  align-items: center;
+  padding: var(--space-6);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+.cfg-promo > * { min-width: 0; }
+.cfg-promo-stage {
+  grid-area: stage;
+  position: relative;
+  aspect-ratio: 1 / 0.86;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(55% 55% at 50% 52%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 72%),
+    linear-gradient(var(--hairline) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, var(--hairline) 1px, transparent 1px) 0 0 / 28px 28px,
+    #F1EDE6;
+  overflow: hidden;
+}
+.cfg-promo-fallback { position: absolute; inset: 8% 12%; width: 76%; height: 84%; object-fit: contain; }
+.cfg-promo-stage.is-live .cfg-promo-fallback { display: none; }
+.cfg-promo-badge {
+  position: absolute; top: var(--space-3); left: var(--space-3); z-index: 2;
+  padding: 5px 10px;
+  font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--copper-ink);
+  background: var(--surface-glass);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+/* Callouts: the part's actual default spec, pinned like a drawing's notes */
+.cfg-promo-dims { list-style: none; margin: 0; padding: 0; }
+.cfg-promo-dims li {
+  position: absolute; z-index: 2;
+  display: flex; flex-direction: column; gap: 1px;
+  padding: 7px 11px;
+  font-family: var(--font-mono); font-size: 0.74rem; color: var(--text);
+  background: var(--surface-glass);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  border: 1px solid var(--line-bright);
+  border-left: 3px solid #a25c37;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  pointer-events: none;
+}
+.cfg-promo-dims b {
+  font-family: var(--font-body); font-weight: 600; font-size: 0.66rem;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint);
+}
+.cfg-promo-dims .d-head  { top: 5%; right: 4%; }
+.cfg-promo-dims .d-face  { top: 17%; left: 4%; }
+.cfg-promo-dims .d-base  { bottom: 5%; right: 4%; }
+.cfg-promo-dims .d-shank { bottom: 5%; left: 4%; }
+
+.cfg-promo-copy { grid-area: copy; }
+.cfg-promo-copy h2 { margin: var(--space-2) 0 var(--space-3); }
+.cfg-promo-copy .lede { margin: 0 0 var(--space-5); }
+.cfg-promo-steps { list-style: none; margin: 0 0 var(--space-5); padding: 0; display: grid; gap: var(--space-3); }
+.cfg-promo-steps li { display: grid; grid-template-columns: 34px 1fr; gap: var(--space-3); align-items: start; }
+.cfg-promo-steps .n {
+  display: inline-grid; place-items: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  font: 700 0.9rem var(--font-mono); color: #fff;
+  background: var(--copper-metal-round);
+  box-shadow: var(--copper-metal-shadow);
+  text-shadow: 0 1px 1px rgba(60, 24, 8, 0.45);
+}
+.cfg-promo-steps b { display: block; font-size: var(--step-0); }
+.cfg-promo-steps small { display: block; font-size: var(--step--1); color: var(--text-dim); margin-top: 2px; }
+
+.cfg-promo-range { grid-area: range; border-top: 1px solid var(--line); padding-top: var(--space-4); }
+.cfg-promo-range p {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono); font-size: var(--step--2); letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint);
+}
+.cfg-promo-range ul {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: var(--space-2);
+}
+.cfg-promo-range a {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 6px 4px 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  color: var(--text-dim); text-decoration: none; text-align: center;
+  font-size: 0.74rem; line-height: 1.2;
+  transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.cfg-promo-range img { width: 100%; max-width: 88px; aspect-ratio: 1; object-fit: contain; }
+.cfg-promo-range a:hover { background: var(--surface-2); border-color: var(--line); color: var(--text); transform: translateY(-2px); }
+.cfg-promo-range a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+@media (max-width: 960px) {
+  .cfg-promo { grid-template-columns: 1fr; grid-template-areas: "copy" "stage" "range"; padding: var(--space-4); gap: var(--space-5); }
+  .cfg-promo-range ul { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 92px; overflow-x: auto; padding-bottom: 6px; }
+}
+@media (max-width: 520px) {
+  .cfg-promo-stage { aspect-ratio: 1 / 1.05; }
+  .cfg-promo-badge { display: none; }
+  .cfg-promo-dims li { font-size: 0.64rem; padding: 5px 8px; }
+  .cfg-promo-dims .d-head { top: 4%; right: 3%; }
+  .cfg-promo-dims .d-face { top: 4%; left: 3%; }
+  .cfg-promo-dims .d-base { bottom: 4%; right: 3%; }
+  .cfg-promo-dims .d-shank { bottom: 4%; left: 3%; }
 }

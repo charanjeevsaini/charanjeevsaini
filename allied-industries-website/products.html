@@ -233,7 +233,7 @@
         <p class="lede">Choose a construction, then open Tweaks to set every dimension, the contact alloy and the base metal. Section view cuts the part in half so you can see the layers.</p>
       </div>
 
-      <div class="lab" id="lab" data-reveal>
+      <div class="lab" id="lab" data-tweaks="true" data-reveal>
         <div class="lab-list" id="labList" role="radiogroup" aria-label="Rivet construction"></div>
         <div class="lab-main">
           <div class="lab-stage" id="labStage" tabindex="0" role="img" aria-describedby="labSrNote" aria-label="3D preview of the configured rivet. Arrow keys rotate, plus and minus zoom.">
@@ -244,7 +244,7 @@
               <button type="button" class="lab-btn" id="labSpin" aria-pressed="true">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="5" width="3.5" height="14" rx="1"/><rect x="13.5" y="5" width="3.5" height="14" rx="1"/></svg>
                 <span>Pause rotation</span></button>
-              <button type="button" class="lab-btn" id="labTw" aria-pressed="false" aria-expanded="false" aria-controls="labTweaks">
+              <button type="button" class="lab-btn" id="labTw" aria-pressed="true" aria-expanded="true" aria-controls="labTweaks">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
                 <span>Tweaks</span></button>
             </div>
@@ -252,7 +252,7 @@
             <p class="lab-fallback" id="labFallback" hidden>The 3D preview needs WebGL, which this browser has turned off. You can still set every dimension in Tweaks and send the specification.</p>
           </div>
 
-          <div class="lab-tweaks" id="labTweaks" data-open="false" aria-label="Tweaks">
+          <div class="lab-tweaks" id="labTweaks" data-open="true" aria-label="Tweaks">
             <div id="labDims"></div>
           </div>
 
@@ -331,7 +331,7 @@
       <div class="section-head" data-reveal>
         <span class="eyebrow">Guide</span>
         <h2>Finishes, materials and contact alloys</h2>
-        <p class="lede">What each choice in the configurator buys you and what it costs you, so you can narrow a specification before you send a drawing.</p>
+        <p class="lede">What each plating, base material and contact alloy buys you and what it costs you, so you can narrow a specification before you send a drawing.</p>
       </div>
       <div class="tech-tabs" role="tablist" aria-label="Guide categories" data-tabs data-reveal>
         <button type="button" class="tech-tab" role="tab" id="finishes-tab" aria-controls="finishes-panel" aria-selected="true" tabindex="0">Finishes</button>
@@ -341,20 +341,6 @@
       </div>
 
       <div class="tech-panel" id="finishes-panel" role="tabpanel" aria-labelledby="finishes-tab">
-        <p class="guide-sub" data-reveal>Surface finish</p>
-        <div class="table-wrap" data-reveal>
-          <table class="spec-table">
-            <caption class="visually-hidden">Surface finishes compared</caption>
-            <thead><tr><th scope="col">Finish</th><th scope="col">What it looks like</th><th scope="col">What it buys you</th><th scope="col">Typical use</th></tr></thead>
-            <tbody>
-            <tr><th scope="row">Polished</th><td>Mirror-bright, clear reflections</td><td>Lowest surface roughness; the best start for low contact resistance</td><td>Signal contacts, visible hardware</td></tr>
-            <tr><th scope="row">Turned</th><td>Fine concentric tool marks</td><td>A true, square face straight off the machine at no extra step</td><td>Contact faces held to flatness, general parts</td></tr>
-            <tr><th scope="row">Tumbled</th><td>Soft satin with a fine grain</td><td>Deburred edges and a uniform surface across a whole batch</td><td>High-volume rivets, cold-headed parts</td></tr>
-            <tr><th scope="row">Satin</th><td>Even matte sheen</td><td>Hides handling marks; takes plating evenly</td><td>Plated parts, consumer-facing assemblies</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="guide-sub" data-reveal>Plating</p>
         <div class="table-wrap" data-reveal>
           <table class="spec-table">
             <caption class="visually-hidden">Plating compared</caption>
@@ -403,25 +389,61 @@
       </div>
 
       <div class="tech-panel" id="sizes-panel" role="tabpanel" aria-labelledby="sizes-tab" hidden>
-        <figure class="guide-figure" data-reveal>
-          <a href="assets/images/products/banner-mixed-wide.webp" target="_blank" rel="noopener" aria-label="Open the size and tolerance chart at full size">
-            <img src="assets/images/products/banner-mixed-wide.webp" alt="Allied Industries size and tolerance chart for its range of rivets" loading="lazy" width="1024" height="791">
-          </a>
-          <figcaption>Wide assortment of Allied Industries rivets — standard sizes and tolerances. Click to open at full size.</figcaption>
-        </figure>
+        <div class="size-meta" data-reveal>
+          <span><b>Taper</b> 5° – 25° minimum, every size</span>
+          <span><b>Profile</b> F / R / SPH — flat, radius or spherical head</span>
+          <span><b>Layer material</b> AgCdO · AgNi · AgSnO · AgCu · Ag999 and others</span>
+        </div>
         <div class="table-wrap" data-reveal>
-          <table class="spec-table">
-            <caption class="visually-hidden">Typical dimensional ranges</caption>
-            <thead><tr><th scope="col">Dimension</th><th scope="col">Configurator range</th><th scope="col">Notes</th></tr></thead>
+          <table class="spec-table size-table">
+            <caption class="visually-hidden">Standard sizes by head diameter, all dimensions in millimetres</caption>
+            <thead>
+              <tr>
+                <th scope="col" rowspan="2">Head Ø</th>
+                <th scope="colgroup" colspan="3">Head thickness</th>
+                <th scope="col" rowspan="2">Shank Ø</th>
+                <th scope="colgroup" colspan="3">Shank length</th>
+                <th scope="colgroup" colspan="2">Contact layer</th>
+              </tr>
+              <tr>
+                <th scope="col">Min</th><th scope="col">Common</th><th scope="col">Max</th>
+                <th scope="col">Min</th><th scope="col">Common</th><th scope="col">Max</th>
+                <th scope="col">Min</th><th scope="col">Max</th>
+              </tr>
+            </thead>
             <tbody>
-            <tr><th scope="row">Head diameter</th><td>1.5 – 12 mm</td><td>Sets the bearing and contact area; larger heads spread load over softer sheet</td></tr>
-            <tr><th scope="row">Head thickness</th><td>0.3 – 6 mm</td><td>Thin heads suit flush assemblies; tall straight heads carry deeper facings</td></tr>
-            <tr><th scope="row">Shank diameter</th><td>0.6 – 6 mm</td><td>Held in proportion to head size so the head does not wrinkle when forged</td></tr>
-            <tr><th scope="row">Shank length</th><td>0.5 – 12 mm</td><td>Grip length plus enough material to form the upset tail</td></tr>
-            <tr><th scope="row">Contact facing</th><td>0.1 – 1.2 mm</td><td>Commonly 0.2 – 0.4 mm; thicker where arc erosion sets contact life</td></tr>
-            <tr><th scope="row">Head-to-shank ratio</th><td>1.5 : 1 – 3 : 1</td><td>Beyond roughly 3:1 the head needs a two-blow or progressive tool</td></tr>
+            <tr><th scope="row">2.50</th><td>0.50</td><td>0.80</td><td>2.00</td><td>1.20 / 1.50 / 2.00</td><td>0.70</td><td>1.50</td><td>6.50</td><td>0.20</td><td>0.50</td></tr>
+            <tr><th scope="row">3.00</th><td>0.50</td><td>0.80</td><td>2.00</td><td>1.20 / 1.50 / 2.00</td><td>0.70</td><td>1.50</td><td>6.50</td><td>0.20</td><td>0.50</td></tr>
+            <tr><th scope="row">3.50</th><td>0.60</td><td>0.80</td><td>2.00</td><td>1.50 / 2.00 / 2.50</td><td>0.70</td><td>1.50</td><td>6.50</td><td>0.20</td><td>0.50</td></tr>
+            <tr><th scope="row">4.00</th><td>0.60</td><td>1.00</td><td>3.00</td><td>1.50 / 2.00 / 2.50</td><td>0.70</td><td>2.00</td><td>6.50</td><td>0.20</td><td>0.60</td></tr>
+            <tr><th scope="row">4.50</th><td>0.60</td><td>1.20</td><td>2.50</td><td>1.50 / 2.00 / 2.50</td><td>0.70</td><td>2.00</td><td>6.50</td><td>0.20</td><td>0.60</td></tr>
+            <tr><th scope="row">5.00</th><td>0.60</td><td>1.50</td><td>2.50</td><td>2.00 / 2.50 / 3.00</td><td>0.70</td><td>2.00</td><td>6.50</td><td>0.20</td><td>0.60</td></tr>
+            <tr><th scope="row">5.50</th><td>0.60</td><td>1.50</td><td>2.50</td><td>2.00 / 2.50 / 3.00</td><td>0.80</td><td>2.00</td><td>6.50</td><td>0.20</td><td>0.60</td></tr>
+            <tr><th scope="row">6.00</th><td>0.80</td><td>1.50</td><td>2.50</td><td>2.50 / 3.00 / 3.50</td><td>0.80</td><td>2.00</td><td>7.00</td><td>0.20</td><td>0.60</td></tr>
+            <tr><th scope="row">6.50</th><td>0.80</td><td>1.50</td><td>2.50</td><td>2.50 / 3.00 / 3.50 / 4.00</td><td>0.80</td><td>2.00</td><td>7.00</td><td>0.20</td><td>0.75</td></tr>
+            <tr><th scope="row">7.00</th><td>0.80</td><td>1.50</td><td>2.50</td><td>2.50 / 3.00 / 3.50 / 4.00</td><td>1.00</td><td>2.00</td><td>7.00</td><td>0.20</td><td>0.75</td></tr>
+            <tr><th scope="row">8.00</th><td>1.00</td><td>1.50</td><td>2.50</td><td>3.00 / 3.50 / 4.00 / 4.50</td><td>1.00</td><td>2.00</td><td>7.00</td><td>0.20</td><td>0.75</td></tr>
+            <tr><th scope="row">9.00</th><td>1.00</td><td>1.50</td><td>2.50</td><td>3.00 / 3.50 / 4.00 / 4.50</td><td>1.00</td><td>2.00</td><td>7.00</td><td>0.20</td><td>0.75</td></tr>
+            <tr><th scope="row">10.00</th><td>1.00</td><td>1.50</td><td>2.50</td><td>3.00 / 3.50 / 4.00 / 4.50</td><td>1.00</td><td>2.00</td><td>7.00</td><td>0.25</td><td>1.00</td></tr>
+            <tr><th scope="row">11.00</th><td>1.20</td><td>1.50</td><td>2.50</td><td>4.00 / 4.50 / 5.00</td><td>1.00</td><td>2.00</td><td>7.00</td><td>0.30</td><td>1.00</td></tr>
+            <tr><th scope="row">12.00</th><td>1.20</td><td>1.50</td><td>2.50</td><td>4.00 / 4.50 / 5.00</td><td>1.00</td><td>2.00</td><td>7.00</td><td>0.30</td><td>1.00</td></tr>
+            <tr><th scope="row">13.00</th><td>1.20</td><td>1.50</td><td>2.50</td><td>4.00 / 4.50 / 5.00</td><td>1.00</td><td>2.00</td><td>7.00</td><td>0.30</td><td>1.00</td></tr>
+            <tr><th scope="row">14.00</th><td>1.20</td><td>1.50</td><td>2.50</td><td>4.00 / 4.50 / 5.00</td><td>1.00</td><td>2.00</td><td>7.00</td><td>0.30</td><td>1.00</td></tr>
+            <tr><th scope="row">15.00</th><td>1.20</td><td>1.50</td><td>2.50</td><td>4.00 / 4.50 / 5.00</td><td>1.00</td><td>2.00</td><td>7.00</td><td>0.30</td><td>1.00</td></tr>
+            <tr><th scope="row">16.00</th><td>1.20</td><td>1.50</td><td>2.50</td><td>4.00 / 4.50 / 5.00</td><td>1.00</td><td>2.00</td><td>7.00</td><td>0.30</td><td>1.00</td></tr>
             </tbody>
           </table>
+        </div>
+        <div class="size-tol" data-reveal>
+          <p class="guide-sub">Tolerances (mm)</p>
+          <ul>
+            <li><b>Head Ø</b> ± 0.10</li>
+            <li><b>Head thickness</b> ± 0.05</li>
+            <li><b>Shank Ø</b> − 0.10</li>
+            <li><b>Shank length</b> ± 0.10</li>
+            <li><b>Layer</b> ± 0.06</li>
+          </ul>
+          <p class="size-note">All dimensions in mm. Parts can be made outside these limits, with tolerances to suit — tell us what your drawing needs.</p>
         </div>
       </div>
       <div class="notice" data-reveal style="margin-top:var(--space-5);">
