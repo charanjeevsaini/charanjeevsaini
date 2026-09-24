@@ -54,9 +54,14 @@
        top and bottom edges. Sizes are proportional so they hold at any
        dimension the configurator is set to, and clamped so a small part does
        not chamfer itself away. */
-    var ch = Math.min(0.10 * shankD, 0.18, shankL * 0.18);   // shank end chamfer
-    var hc = Math.min(0.10 * headT, 0.16, (hr - sr) * 0.30); // head edge chamfer
-    var fl = Math.min(0.22 * (hr - sr), 0.34, shankL * 0.20); // under-head fillet
+    /* Clamped at zero as well as above: the head terms scale with (hr - sr),
+       which goes NEGATIVE once the shank is set wider than the head. The
+       configurator warns about that combination rather than forbidding it, so
+       the profile still has to come out well formed — unclamped, the chamfers
+       inverted and the profile doubled back on itself. */
+    var ch = Math.max(0, Math.min(0.10 * shankD, 0.18, shankL * 0.18));   // shank end chamfer
+    var hc = Math.max(0, Math.min(0.10 * headT, 0.16, (hr - sr) * 0.30)); // head edge chamfer
+    var fl = Math.max(0, Math.min(0.22 * (hr - sr), 0.34, shankL * 0.20)); // under-head fillet
 
     if (tubular) {
       // Bore wall first, so the open end reads as a tube
