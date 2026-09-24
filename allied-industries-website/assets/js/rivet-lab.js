@@ -392,7 +392,11 @@ export function createLab(host, tw, opts) {
   renderer.setPixelRatio(opts.pixelRatio || Math.min(window.devicePixelRatio || 1, 2));
   renderer.setClearColor(0x000000, 0);
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFShadowMap;
+  /* Variance shadow maps: the soft edge comes from a blur baked into the
+     map, so it is identical from every camera angle. The PCF soft filter
+     samples through per-pixel screen-space noise instead, which stays put
+     while the shadow moves across it — the shimmer seen on the turntable. */
+  renderer.shadowMap.type = THREE.VSMShadowMap;
   renderer.shadowMap.autoUpdate = false;
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.localClippingEnabled = true;
@@ -417,7 +421,8 @@ export function createLab(host, tw, opts) {
   scene.add(new THREE.HemisphereLight(0xffffff, 0xd8d2c4, 1.0));
   const key = new THREE.DirectionalLight(0xffffff, 2.2);
   key.castShadow = true;
-  key.shadow.mapSize.set(2048, 2048);
+  key.shadow.mapSize.set(1024, 1024);
+  key.shadow.blurSamples = 16;
   scene.add(key, key.target);
   const fill = new THREE.DirectionalLight(0xfff4e6, 0.5);
   fill.position.set(-5, 3, -4);
@@ -532,7 +537,7 @@ export function createLab(host, tw, opts) {
     const kd = radius * 20, el = 55 * D2R, a = tw.azimuth * D2R;
     key.position.set(center.x + kd * Math.cos(el) * Math.sin(a), center.y + kd * Math.sin(el), center.z + kd * Math.cos(el) * Math.cos(a));
     key.target.position.copy(center); key.target.updateMatrixWorld();
-    key.shadow.bias = -0.0004; key.shadow.normalBias = radius * 0.01;
+    key.shadow.bias = -0.0002; key.shadow.normalBias = 0;
     refreshShadow();
   }
   function refreshShadow() { key.shadow.needsUpdate = true; renderer.shadowMap.needsUpdate = true; dirty = true; }
@@ -546,7 +551,7 @@ export function createLab(host, tw, opts) {
   }
   function applyDisplay() {
     key.castShadow = tw.shadow !== "off";
-    key.shadow.radius = tw.shadow === "soft" ? tw.soft : 1.5;
+    key.shadow.radius = tw.shadow === "soft" ? tw.soft : 2;
     ground.material.opacity = tw.opacity;
     ground.visible = tw.shadow !== "off";
     if (controls) controls.autoRotateSpeed = tw.speed;

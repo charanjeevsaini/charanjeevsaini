@@ -2,16 +2,16 @@
    Products configurator — the ten constructions in 3D, with every tweak
    ----------------------------------------------------------------------------
    UI for rivet-lab.js. Mirrors the reference model's controls — a type list,
-   Section view, Pause rotation, and a Tweaks panel holding every dimension,
-   the materials, surface finish, shadow, light angle and rotation speed —
+   Section view, Pause rotation, and a Tweaks panel holding every dimension
+   and the materials (finish and lighting stay at the studio settings) —
    and adds what the website needs on top: the spec as text, a quote email
    built from it, and the custom-spec form seeded from it.
 
-   Tweaks persist per visitor in localStorage (best effort; the page works
+   Dimensions and materials persist per visitor in localStorage (best effort; the page works
    without it). The spec list is the accessible record of the part; the
    canvas is a picture of the same state.
    ========================================================================== */
-import { TYPES, MATS, FACING, BASE, FINISHES, DEFAULT_TWEAKS, fmt, createLab, webglAvailable } from "./rivet-lab.js";
+import { TYPES, MATS, FACING, BASE, DEFAULT_TWEAKS, fmt, createLab, webglAvailable } from "./rivet-lab.js";
 
 const root = document.getElementById("lab");
 if (root) init();
@@ -26,11 +26,13 @@ function init() {
   /* ---- state ------------------------------------------------------------- */
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(STORE) || "{}") || {}; } catch (e) { saved = {}; }
-  const TW = Object.assign({}, DEFAULT_TWEAKS, saved.tw || {});
+  // Finish, shadow and lighting are fixed at the reference model's studio
+  // settings; visitors choose the part, not the photography.
+  const TW = Object.assign({}, DEFAULT_TWEAKS);
   const DIMS = saved.dims || {}, MATSEL = saved.mats || {};
   let current = Math.max(0, TYPES.findIndex(t => t.id === saved.type));
   const save = () => {
-    try { localStorage.setItem(STORE, JSON.stringify({ tw: TW, dims: DIMS, mats: MATSEL, type: TYPES[current].id })); } catch (e) {}
+    try { localStorage.setItem(STORE, JSON.stringify({ dims: DIMS, mats: MATSEL, type: TYPES[current].id })); } catch (e) {}
   };
   const dimsOf = (t) => Object.assign(Object.fromEntries(t.params.map(q => [q.k, q.def])), DIMS[t.id] || {});
   const matsOf = (t) => Object.assign(Object.fromEntries(t.mats.map(q => [q[0], q[3]])), MATSEL[t.id] || {});
@@ -74,8 +76,7 @@ function init() {
   function rows(t, p, ms) {
     return [["Construction", t.name]]
       .concat(t.params.map(q => [q.label, q.k === "count" ? String(p[q.k]) + " pcs" : fmt(p[q.k]) + " mm"]))
-      .concat(t.mats.map(q => [q[1], ms[q[0]]]))
-      .concat([["Surface finish", FINISHES[TW.finish] || "Turned"]]);
+      .concat(t.mats.map(q => [q[1], ms[q[0]]]));
   }
   function renderSpec(t, p, ms) {
     const used = [...new Set(Object.values(ms))];
@@ -89,13 +90,12 @@ function init() {
         <dl>
           <dt>Build</dt><dd>${t.build}</dd>
           <dt>Material</dt><dd>${t.mats.map(q => q[1] + ": " + ms[q[0]]).join(" · ")}</dd>
-          <dt>Finish</dt><dd>${FINISHES[TW.finish] || "Turned"}</dd>
           <dt>Dimensions</dt><dd>${t.summary(p)} mm</dd>
           <dt>Used in</dt><dd>${t.use}</dd>
         </dl>
         <div class="lab-legend">${used.map(k => `<span><i style="background:${MATS[k].hex}"></i>${k}</span>`).join("")}</div>
       </div>`;
-    $("labSrNote").textContent = `${t.name}: ${t.summary(p)} mm, ${t.mats.map(q => q[1] + " " + ms[q[0]]).join(", ")}, ${FINISHES[TW.finish]} finish.`;
+    $("labSrNote").textContent = `${t.name}: ${t.summary(p)} mm, ${t.mats.map(q => q[1] + " " + ms[q[0]]).join(", ")}.`;
   }
 
   function build(keepView) {
@@ -185,43 +185,6 @@ function init() {
     else if (e.key === "-") { e.preventDefault(); lab.zoomBy(1.1); }
   });
 
-  /* ---- finish + display tweaks -------------------------------------------- */
-  const el = (id) => $(id);
-  const [tx, txV, rg, rgV, rf, rfV, ex, exV] = ["tx", "txV", "rg", "rgV", "rf", "rfV", "ex", "exV"].map(el);
-  const [op, opV, az, azV, sp, spV, sf, sfV] = ["op", "opV", "az", "azV", "sp", "spV", "sf", "sfV"].map(el);
-  function paintFinish() {
-    document.querySelectorAll("#fnMode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === TW.finish));
-    tx.value = TW.texture; txV.textContent = Math.round(TW.texture * 100) + "%";
-    rg.value = TW.roughMul; rgV.textContent = TW.roughMul.toFixed(2) + "×";
-    rf.value = TW.reflect; rfV.textContent = TW.reflect.toFixed(2);
-    ex.value = TW.exposure; exV.textContent = TW.exposure.toFixed(2);
-  }
-  function paintDisplay() {
-    document.querySelectorAll("#shMode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === TW.shadow));
-    sf.value = TW.soft; sfV.textContent = TW.soft; sf.disabled = TW.shadow !== "soft";
-    op.value = TW.opacity; opV.textContent = Math.round(TW.opacity * 100) + "%";
-    az.value = TW.azimuth; azV.textContent = TW.azimuth + "°";
-    sp.value = TW.speed; spV.textContent = TW.speed.toFixed(1) + "×";
-  }
-  function applyFinish() {
-    if (lab) lab.applyFinish();
-    paintFinish(); save();
-    const t = TYPES[current]; renderSpec(t, dimsOf(t), matsOf(t));
-  }
-  function applyDisplay() { if (lab) lab.applyDisplay(); paintDisplay(); save(); }
-
-  $("fnMode").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { TW.finish = b.dataset.v; applyFinish(); } });
-  tx.addEventListener("input", () => { TW.texture = +tx.value; applyFinish(); });
-  rg.addEventListener("input", () => { TW.roughMul = +rg.value; applyFinish(); });
-  rf.addEventListener("input", () => { TW.reflect = +rf.value; applyFinish(); });
-  ex.addEventListener("input", () => { TW.exposure = +ex.value; applyFinish(); });
-  $("shMode").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { TW.shadow = b.dataset.v; applyDisplay(); } });
-  op.addEventListener("input", () => { TW.opacity = +op.value; applyDisplay(); });
-  az.addEventListener("input", () => { TW.azimuth = +az.value; applyDisplay(); });
-  sp.addEventListener("input", () => { TW.speed = +sp.value; applyDisplay(); });
-  sf.addEventListener("input", () => { TW.soft = +sf.value; applyDisplay(); });
-  $("labResetLook").addEventListener("click", () => { Object.assign(TW, DEFAULT_TWEAKS); applyFinish(); applyDisplay(); });
-
   /* ---- quote email and the custom-spec form -------------------------------- */
   $("cfgQuote").addEventListener("click", () => {
     const t = TYPES[current], p = dimsOf(t), ms = matsOf(t);
@@ -252,7 +215,7 @@ function init() {
       };
       Object.keys(seed).forEach(k => { const f = customForm.querySelector("#" + k); if (f && !f.value) f.value = seed[k]; });
       const notes = customForm.querySelector("#csNotes");
-      if (notes && !notes.value) notes.value = "Starting point: " + t.name + " — " + t.summary(p) + " mm, " + (FINISHES[TW.finish] || "") + " finish.\n";
+      if (notes && !notes.value) notes.value = "Starting point: " + t.name + " — " + t.summary(p) + " mm.\n";
       customForm.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
       customForm.querySelector("#csName").focus({ preventScroll: true });
     });
@@ -280,7 +243,6 @@ function init() {
   const m = /^#configurator-(\w+)$/.exec(location.hash);
   if (m) { const i = TYPES.findIndex(t => t.id === m[1]); if (i >= 0) current = i; }
 
-  paintFinish(); paintDisplay();
   show(current);
   if (lab) { lab.applyFinish(); lab.applyDisplay(); }
 }

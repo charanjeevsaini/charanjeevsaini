@@ -2387,8 +2387,8 @@ table.spec-table tbody tr:hover { background: var(--copper-wash); }
    looking like a different control from its neighbour. They now stay
    identical; aria-current is still set, so a screen reader keeps the
    wayfinding cue without a colour change implying a selection. */
-.type-switch .btn { --btn-bg: var(--surface); --btn-fg: var(--text); --btn-bd: var(--line-bright); }
-.type-switch .btn:hover { --btn-bd: var(--copper); --btn-fg: var(--copper-ink); background: var(--copper-wash); }
+.type-switch .btn-outline { --btn-bg: var(--surface); --btn-fg: var(--text); --btn-bd: var(--line-bright); }
+.type-switch .btn-outline:hover { --btn-bd: var(--copper); --btn-fg: var(--copper-ink); background: var(--copper-wash); }
 
 /* Construction picker: a dropdown for speed, chips for scanning. Both drive
    the same state, so either route works. */
@@ -2581,42 +2581,27 @@ table.spec-table tbody tr:hover { background: var(--copper-wash); }
 .contact3d-wrap .contact3d-canvas { border-radius: var(--radius-md); }
 
 /* ==========================================================================
-   COPPER FINISH — the hero rivet's polished copper, on every filled control
-   Sampled from the rendered hero part: a deep polished body (#5a2a19) with
-   the narrow, bright streaks a turned copper cylinder throws back from a
-   studio soft-box. The streaks are placed like the ones on the part's stem,
-   and a soft top-to-bottom shade gives the face its roundness.
+   COPPER FINISH — satin copper, taken from the hero rivet's lit face
+   A soft top-to-bottom shade (light catching the upper edge, falling off
+   below) rather than hard reflections: nothing crosses the label, and the
+   band the text sits on holds 5:1 against white.
    ========================================================================== */
 :root {
-  /* Streaks are placed in pixels so they stay as thin as the ones on the
-     part's stem however wide the button is. */
   --copper-metal:
-    linear-gradient(180deg, rgba(255, 214, 186, 0.20) 0%, rgba(255, 214, 186, 0) 40%, rgba(20, 6, 0, 0) 60%, rgba(20, 6, 0, 0.26) 100%),
-    linear-gradient(90deg,
-      #3c1b0e 0, #5e2c1a 8px, #8e5035 15px, #d69d78 20px, #efc9ac 22px, #c98b66 25px,
-      #6b3420 32px, #5a2a19 46px, #612e1b 50%, #5a2a19 calc(100% - 64px),
-      #6f3823 calc(100% - 50px), #b47351 calc(100% - 43px), #e3b392 calc(100% - 40px),
-      #b87655 calc(100% - 37px), #633020 calc(100% - 29px), #4a2213 calc(100% - 9px), #3c1b0e 100%);
+    linear-gradient(180deg, rgba(255, 228, 208, 0.32) 0%, rgba(255, 228, 208, 0) 30%),
+    linear-gradient(180deg, #bb7852 0%, #a3613b 40%, #9d5c38 62%, #8b4f31 100%);
   --copper-metal-hover:
-    linear-gradient(180deg, rgba(255, 220, 196, 0.28) 0%, rgba(255, 214, 186, 0) 42%, rgba(20, 6, 0, 0) 60%, rgba(20, 6, 0, 0.22) 100%),
-    linear-gradient(90deg,
-      #45200f 0, #68321d 8px, #9c5a3c 15px, #e2ab86 20px, #f6d8c1 22px, #d69a74 25px,
-      #773b24 32px, #66301c 46px, #6e341f 50%, #66301c calc(100% - 64px),
-      #7b3f28 calc(100% - 50px), #c2805c calc(100% - 43px), #f0c6a6 calc(100% - 40px),
-      #c4835f calc(100% - 37px), #6e3622 calc(100% - 29px), #52271a calc(100% - 9px), #44200f 100%);
-  /* Small controls (segments, step numbers): one soft streak, in percent */
-  --copper-metal-sm:
-    linear-gradient(180deg, rgba(255, 214, 186, 0.22) 0%, rgba(255, 214, 186, 0) 45%, rgba(20, 6, 0, 0.24) 100%),
-    linear-gradient(90deg, #45200f 0%, #6b3420 14%, #c98b66 24%, #e3b392 27%, #8e5035 34%, #5a2a19 50%, #5a2a19 80%, #45200f 100%);
-  /* Round buttons: a rivet head seen from above */
+    linear-gradient(180deg, rgba(255, 232, 214, 0.40) 0%, rgba(255, 232, 214, 0) 34%),
+    linear-gradient(180deg, #c3815a 0%, #a8663f 40%, #a2603a 62%, #8f5233 100%);
+  --copper-metal-sm: var(--copper-metal);
   --copper-metal-round:
-    radial-gradient(circle at 34% 28%, #f3d3bb 0%, #d69d78 9%, #8e5035 26%, #5a2a19 48%, #4a2213 72%, #6f3823 88%, #3c1b0e 100%);
-  --copper-metal-edge: #3f1d0f;
+    radial-gradient(circle at 36% 30%, #d9a283 0%, #b8744d 30%, #9d5c38 62%, #87492c 100%);
+  --copper-metal-edge: #8a4e30;
   --copper-metal-shadow:
-    inset 0 1px 0 rgba(255, 222, 198, 0.45),
-    inset 0 -1px 0 rgba(30, 10, 2, 0.45),
-    0 1px 2px rgba(42, 20, 10, 0.25),
-    0 4px 14px -6px rgba(90, 42, 25, 0.55);
+    inset 0 1px 0 rgba(255, 232, 214, 0.55),
+    inset 0 -1px 0 rgba(90, 42, 20, 0.30),
+    0 1px 2px rgba(42, 20, 10, 0.18),
+    0 6px 16px -8px rgba(138, 78, 48, 0.55);
 }
 
 .btn-primary,
@@ -2624,10 +2609,10 @@ table.spec-table tbody tr:hover { background: var(--copper-wash); }
 .btn-primary:active {
   --btn-bd: var(--copper-metal-edge);
   --btn-fg: #fff;
-  background-color: #5a2a19;
+  background-color: #9d5c38;
   background-image: var(--copper-metal);
   background-size: 100% 100%;
-  text-shadow: 0 1px 1px rgba(30, 10, 2, 0.55);
+  text-shadow: 0 1px 1px rgba(70, 30, 12, 0.35);
   box-shadow: var(--copper-metal-shadow);
 }
 .btn-primary:hover {
@@ -2637,30 +2622,30 @@ table.spec-table tbody tr:hover { background: var(--copper-wash); }
 .btn-primary:active {
   box-shadow: inset 0 2px 6px rgba(20, 6, 0, 0.5), inset 0 -1px 0 rgba(255, 222, 198, 0.25);
 }
-/* The drifting sheen reads as a reflection sliding over polished metal */
-.btn-primary::before { opacity: 0.8; }
+/* Keep the drifting sheen faint on copper so it never washes out the label */
+.btn-primary::before { opacity: 0.22; }
 
 .float-btn.call,
 .skip-link,
 .tech-tab[aria-selected="true"],
 .cfg-step-num {
-  background-color: #5a2a19;
+  background-color: #9d5c38;
   background-image: var(--copper-metal);
   background-size: 100% 100%;
   color: #fff;
   border-color: var(--copper-metal-edge);
   box-shadow: var(--copper-metal-shadow);
-  text-shadow: 0 1px 1px rgba(30, 10, 2, 0.5);
+  text-shadow: 0 1px 1px rgba(70, 30, 12, 0.35);
 }
 .float-btn.call { background-image: var(--copper-metal-round); }
 .float-btn.call:hover { background-image: var(--copper-metal-round); filter: brightness(1.12); }
 .cfg-step-num { background-image: var(--copper-metal-sm); }
 .tech-tab[aria-selected="true"]:hover { background-image: var(--copper-metal-hover); color: #fff; }
 input[type="range"]::-webkit-slider-thumb {
-  background: radial-gradient(circle at 35% 30%, #f0cdb2 0%, #c98b66 22%, #6f3823 55%, #45200f 100%);
+  background: radial-gradient(circle at 36% 30%, #e2b193 0%, #b8744d 35%, #93532f 100%);
 }
 input[type="range"]::-moz-range-thumb {
-  background: radial-gradient(circle at 35% 30%, #f0cdb2 0%, #c98b66 22%, #6f3823 55%, #45200f 100%);
+  background: radial-gradient(circle at 36% 30%, #e2b193 0%, #b8744d 35%, #93532f 100%);
 }
 
 /* ==========================================================================
@@ -2826,11 +2811,11 @@ input[type="range"]::-moz-range-thumb {
 .lab-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .lab-btn[aria-pressed="true"] {
   color: #fff;
-  background-color: #5a2a19;
+  background-color: #9d5c38;
   background-image: var(--copper-metal);
   border-color: var(--copper-metal-edge);
   box-shadow: var(--copper-metal-shadow);
-  text-shadow: 0 1px 1px rgba(30, 10, 2, 0.5);
+  text-shadow: 0 1px 1px rgba(70, 30, 12, 0.35);
 }
 .lab-hint {
   position: absolute; left: var(--space-4); bottom: var(--space-3); z-index: 2; margin: 0;
@@ -2917,9 +2902,9 @@ input[type="range"]::-moz-range-thumb {
 .lab-seg button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 .lab-seg button[aria-pressed="true"] {
   color: #fff;
-  background-color: #5a2a19;
+  background-color: #9d5c38;
   background-image: var(--copper-metal-sm);
-  text-shadow: 0 1px 1px rgba(30, 10, 2, 0.5);
+  text-shadow: 0 1px 1px rgba(70, 30, 12, 0.35);
 }
 
 .lab-spec {
@@ -2962,4 +2947,19 @@ input[type="range"]::-moz-range-thumb {
   .lab-btn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .lab-btn { padding: 0 11px; }
   .lab-hint { display: none; }
+}
+
+.guide-figure { margin: 0 0 var(--space-5); }
+.guide-figure a { display: block; max-width: 900px; margin-inline: auto; cursor: zoom-in; }
+.guide-figure img {
+  display: block; width: 100%; height: auto;
+  background: #fff;
+  border-radius: var(--radius-lg); border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+.guide-figure a:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: var(--radius-lg); }
+.guide-figure figcaption { text-align: center; }
+.guide-figure figcaption {
+  margin-top: var(--space-2);
+  font-family: var(--font-mono); font-size: var(--step--2); color: var(--text-faint);
 }

@@ -98,7 +98,7 @@
       <div class="section-head" data-reveal>
         <span class="eyebrow">The range at a glance</span>
         <h2>Every construction we make</h2>
-        <p class="lede">Pick any part to open it in the configurator, where you can set its dimensions, alloys and finish.</p>
+        <p class="lede">Pick any part to open it in the configurator, where you can set its dimensions and alloys.</p>
       </div>
       <ol class="range-grid" data-reveal-group>
         <li data-reveal>
@@ -230,7 +230,7 @@
       <div class="section-head" data-reveal>
         <span class="eyebrow">Create your rivet</span>
         <h2>Configure a rivet to your own dimensions</h2>
-        <p class="lede">Choose a construction, then open Tweaks to set every dimension, the contact alloy, base metal and surface finish. Section view cuts the part in half so you can see the layers.</p>
+        <p class="lede">Choose a construction, then open Tweaks to set every dimension, the contact alloy and the base metal. Section view cuts the part in half so you can see the layers.</p>
       </div>
 
       <div class="lab" id="lab" data-reveal>
@@ -254,21 +254,6 @@
 
           <div class="lab-tweaks" id="labTweaks" data-open="false" aria-label="Tweaks">
             <div id="labDims"></div>
-            <h3 class="lab-h">Surface finish</h3>
-            <div class="lab-field"><span class="lab-row"><span>Finish</span></span>
-              <span class="lab-seg lab-seg-4" id="fnMode" role="group" aria-label="Finish"><button type="button" data-v="polished">Polished</button><button type="button" data-v="turned">Turned</button><button type="button" data-v="tumbled">Tumbled</button><button type="button" data-v="plated">Satin</button></span></div>
-            <label class="lab-field"><span class="lab-row"><span>Texture depth</span><span id="txV"></span></span><input id="tx" type="range" min="0" max="2" step="0.05"></label>
-            <label class="lab-field"><span class="lab-row"><span>Roughness</span><span id="rgV"></span></span><input id="rg" type="range" min="0.3" max="2.5" step="0.05"></label>
-            <label class="lab-field"><span class="lab-row"><span>Reflections</span><span id="rfV"></span></span><input id="rf" type="range" min="0.3" max="2.5" step="0.05"></label>
-            <label class="lab-field"><span class="lab-row"><span>Exposure</span><span id="exV"></span></span><input id="ex" type="range" min="0.5" max="1.8" step="0.05"></label>
-            <h3 class="lab-h">Display</h3>
-            <div class="lab-field"><span class="lab-row"><span>Shadow</span></span>
-              <span class="lab-seg" id="shMode" role="group" aria-label="Shadow"><button type="button" data-v="soft">Soft</button><button type="button" data-v="sharp">Sharp</button><button type="button" data-v="off">Off</button></span></div>
-            <label class="lab-field"><span class="lab-row"><span>Shadow softness</span><span id="sfV"></span></span><input id="sf" type="range" min="1" max="25" step="1"></label>
-            <label class="lab-field"><span class="lab-row"><span>Shadow strength</span><span id="opV"></span></span><input id="op" type="range" min="0.05" max="0.45" step="0.01"></label>
-            <label class="lab-field"><span class="lab-row"><span>Light angle</span><span id="azV"></span></span><input id="az" type="range" min="0" max="360" step="1"></label>
-            <label class="lab-field"><span class="lab-row"><span>Rotation speed</span><span id="spV"></span></span><input id="sp" type="range" min="0.3" max="4" step="0.1"></label>
-            <button type="button" class="lab-link" id="labResetLook">Reset finish &amp; display</button>
           </div>
 
           <div class="lab-spec" id="labSpec" aria-live="polite"></div>
@@ -418,6 +403,12 @@
       </div>
 
       <div class="tech-panel" id="sizes-panel" role="tabpanel" aria-labelledby="sizes-tab" hidden>
+        <figure class="guide-figure" data-reveal>
+          <a href="assets/images/products/banner-mixed-wide.webp" target="_blank" rel="noopener" aria-label="Open the size and tolerance chart at full size">
+            <img src="assets/images/products/banner-mixed-wide.webp" alt="Allied Industries size and tolerance chart for its range of rivets" loading="lazy" width="1024" height="791">
+          </a>
+          <figcaption>Wide assortment of Allied Industries rivets — standard sizes and tolerances. Click to open at full size.</figcaption>
+        </figure>
         <div class="table-wrap" data-reveal>
           <table class="spec-table">
             <caption class="visually-hidden">Typical dimensional ranges</caption>
