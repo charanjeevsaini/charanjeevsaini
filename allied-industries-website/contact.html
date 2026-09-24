@@ -3,41 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#EFEAE3">
+<meta name="color-scheme" content="light">
+<script>document.documentElement.className+=" js";</script>
 <title>Contact Us — Allied Industries</title>
 <meta name="description" content="Contact Allied Industries — A-13, Phase-2, Mayapuri Industrial Area, New Delhi. Call, WhatsApp, or email for a quote on metal rivets and electrical contact rivets.">
 <link rel="icon" href="assets/images/site/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/images/site/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/images/site/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap"></noscript>
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
+<div class="scroll-progress" aria-hidden="true"></div>
 
 <header class="site-header">
   <nav class="container nav-row" aria-label="Primary">
     <a class="brand" href="index.html">
-      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-        <circle cx="20" cy="20" r="18" fill="#202225"/>
-        <circle cx="20" cy="20" r="14.5" fill="none" stroke="#7C8994" stroke-width="2.1"/>
-        <circle cx="20" cy="20" r="8" fill="#AD5A2C"/>
-        <circle cx="16.7" cy="16.2" r="2.2" fill="rgba(255,255,255,0.55)"/>
+      <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+        <defs><mask id="bm-slit"><rect width="100" height="100" fill="#fff"/><rect x="14" y="47.6" width="72" height="4.8" fill="#000"/></mask></defs>
+        <rect width="100" height="100" rx="26" fill="#1A1C20"/>
+        <circle cx="50" cy="26" r="8.6" fill="#C8763F"/>
+        <g mask="url(#bm-slit)" fill="#F2F0EB"><circle cx="31.5" cy="50" r="10.8"/><circle cx="68.5" cy="50" r="10.8"/></g>
+        <circle cx="27" cy="75" r="8.6" fill="#C8763F"/><circle cx="50" cy="75" r="8.6" fill="#C8763F"/><circle cx="73" cy="75" r="8.6" fill="#C8763F"/>
       </svg>
-      <span>
-        <span class="brand-name-full">Allied Industries</span>
-        <span class="brand-name-short">Allied</span>
-        <small>Est. 1998 · New Delhi</small>
+      <span class="brand-word">
+        <span class="brand-name">ALLIED</span>
+        <span class="brand-sub">Industries</span>
       </span>
     </a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="about.html">About</a></li>
-      <li class="has-dropdown">
-        <a href="products/metal-rivets.html">Products</a>
-        <ul class="dropdown">
-          <li><a href="products/metal-rivets.html">Metal Rivets</a></li>
-          <li><a href="products/contact-rivets.html">Contact Rivets</a></li>
-        </ul>
-      </li>
+      <li><a href="products.html">Products</a></li>
       <li><a href="quality.html">Quality</a></li>
       <li><a href="gallery.html">Gallery</a></li>
       <li><a href="careers.html">Careers</a></li>
@@ -62,9 +64,7 @@
   <ul>
     <li><a href="index.html">Home</a></li>
     <li><a href="about.html">About</a></li>
-    <li><a href="products/metal-rivets.html">Products</a></li>
-    <li class="mobile-sub"><a href="products/metal-rivets.html">— Metal Rivets</a></li>
-    <li class="mobile-sub"><a href="products/contact-rivets.html">— Contact Rivets</a></li>
+    <li><a href="products.html">Products</a></li>
     <li><a href="quality.html">Quality</a></li>
     <li><a href="gallery.html">Gallery</a></li>
     <li><a href="careers.html">Careers</a></li>
@@ -81,79 +81,166 @@
   <section class="page-hero">
     <div class="container">
       <p class="breadcrumb"><a href="index.html">Home</a> / Contact</p>
-      <span class="eyebrow">Contact Us</span>
-      <h1 class="h1" style="margin-top:var(--space-3);max-width:22ch;">Tell us what you need built.</h1>
-      <p class="lede" style="color:rgba(250,249,246,0.78);margin-top:var(--space-3);">Product query, feedback, or a drawing to quote — our team responds directly, usually the same business day.</p>
+      <span class="eyebrow">Contact</span>
+      <h1 style="margin-top:var(--space-3);max-width:18ch;">Tell us what you need built.</h1>
+      <p class="lede" style="margin-top:var(--space-3);">A product query, a drawing to quote, or a tolerance you need confirmed — our team answers directly, usually the same business day.</p>
     </div>
   </section>
 
-  <section>
-    <div class="container two-col">
+  <section style="padding-top:var(--space-6);">
+    <div class="container">
+      <h2 class="visually-hidden">Ways to reach us</h2>
+      <div class="contact-actions" data-reveal-group="70">
+        <a class="contact-action glow tilt" data-tilt="5" href="tel:+911141845231">
+          <div class="glow-wash" aria-hidden="true"></div>
+          <span class="contact-action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M22 16.9v2a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 3.2 2 2 0 0 1 4.1 1h2a2 2 0 0 1 2 1.7c.1.8.3 1.6.6 2.4a2 2 0 0 1-.4 2.1L7.1 8.4a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.4c.8.3 1.6.5 2.4.6a2 2 0 0 1 1.7 2z"/></svg></span>
+          <span class="contact-action-body">
+            <span class="contact-action-label">Call the office</span>
+            <span class="contact-action-value">+91 11 4184 5231</span>
+            <span class="contact-action-note">Also +91 11 4067 8689</span>
+          </span>
+          <svg class="contact-action-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="contact-action glow tilt" data-tilt="5" href="https://wa.me/919811697031?text=Hi%2C%20I%27d%20like%20a%20quote%20for%20rivets%2Fcontacts." target="_blank" rel="noopener">
+          <div class="glow-wash" aria-hidden="true"></div>
+          <span class="contact-action-icon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.33 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2zm0 18.2h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.23 8.23 0 1 1 6.99 3.86zm4.52-6.17c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.78.97-.14.17-.29.19-.53.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.86.84-.86 2.05s.88 2.38 1 2.54c.12.17 1.73 2.64 4.19 3.7.59.25 1.04.4 1.4.51.59.19 1.12.16 1.55.1.47-.07 1.47-.6 1.68-1.18.2-.58.2-1.08.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg></span>
+          <span class="contact-action-body">
+            <span class="contact-action-label">WhatsApp</span>
+            <span class="contact-action-value">+91 98116 97031</span>
+            <span class="contact-action-note">Fastest for a quick question</span>
+          </span>
+          <svg class="contact-action-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="contact-action glow tilt" data-tilt="5" href="mailto:info@alliedindustries.in">
+          <div class="glow-wash" aria-hidden="true"></div>
+          <span class="contact-action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 7l9 6 9-6M3 7v10h18V7M3 7l9-4 9 4"/></svg></span>
+          <span class="contact-action-body">
+            <span class="contact-action-label">Email</span>
+            <span class="contact-action-value is-long">info@alliedindustries.in</span>
+            <span class="contact-action-note">Also allied1968@yahoo.com</span>
+          </span>
+          <svg class="contact-action-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
 
-      <div data-reveal>
-        <div class="card-grid cols-2" style="margin-bottom: var(--space-5);">
-          <a class="feature-card" href="tel:+911141845231" style="text-decoration:none;">
-            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v2a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 3.2 2 2 0 0 1 4.1 1h2a2 2 0 0 1 2 1.7c.1.8.3 1.6.6 2.4a2 2 0 0 1-.4 2.1L7.1 8.4a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.4c.8.3 1.6.5 2.4.6a2 2 0 0 1 1.7 2z"/></svg></span>
-            <h3>Call the office</h3>
-            <p>+91 11 4184 5231<br>+91 11 4067 8689</p>
-          </a>
-          <a class="feature-card" href="https://wa.me/919811697031?text=Hi%2C%20I%27d%20like%20a%20quote." target="_blank" rel="noopener" style="text-decoration:none;">
-            <span class="icon" style="background:#E7F4EA;color:#3FA85A;"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.33 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2zm0 18.2h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.23 8.23 0 1 1 6.99 3.86zm4.52-6.17c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.78.97-.14.17-.29.19-.53.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.86.84-.86 2.05s.88 2.38 1 2.54c.12.17 1.73 2.64 4.19 3.7.59.25 1.04.4 1.4.51.59.19 1.12.16 1.55.1.47-.07 1.47-.6 1.68-1.18.2-.58.2-1.08.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg></span>
-            <h3>WhatsApp</h3>
-            <p>Mr. Dinesh — +91 98116 97031</p>
-          </a>
-        </div>
+  <section style="padding-top:var(--space-6);">
+    <div class="container contact-layout">
 
-        <div class="prose">
-          <h3 style="margin-top:0;">Direct contacts</h3>
-          <ul>
-            <li><strong>Mr. Dinesh</strong> — <a href="tel:+919811697031">+91 98116 97031</a></li>
-            <li><strong>Mr. Rajiv</strong> — <a href="tel:+919871775681">+91 98717 75681</a></li>
-            <li><strong>Email</strong> — <a href="mailto:info@alliedindustries.in">info@alliedindustries.in</a></li>
-            <li><strong>Alternate email</strong> — <a href="mailto:allied1968@yahoo.com">allied1968@yahoo.com</a></li>
-          </ul>
-          <h3>Address</h3>
-          <p>A-13, Phase-2, Mayapuri Industrial Area,<br>New Delhi – 110 064, India</p>
-          <div class="table-wrap" style="margin-top:var(--space-4);">
-            <iframe
-              title="Allied Industries location — Mayapuri Industrial Area, New Delhi"
-              src="https://www.google.com/maps?q=A-13%2C+Phase-2%2C+Mayapuri+Industrial+Area%2C+New+Delhi+110064&output=embed"
-              width="100%" height="280" style="border:0;display:block;" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-            </iframe>
-          </div>
-        </div>
+      <div class="contact-form-card glow" data-reveal>
+        <div class="glow-wash" aria-hidden="true"></div>
+        <span class="eyebrow">Send a message</span>
+        <h2 style="margin-bottom:var(--space-2);">Start with the specification</h2>
+        <p class="lede" style="font-size:var(--step-0);margin-bottom:var(--space-5);">Alloy, dimensions and quantity are usually enough for us to come back with feasibility and pricing.</p>
+        <form id="contactForm" data-validate
+                    data-mailto="info@alliedindustries.in"
+                    data-subject="Website enquiry — Allied Industries">
+                <h3 style="margin-top:0;">Send a message</h3>
+                <div class="error-summary" id="contactErrors" tabindex="-1" role="alert">
+                  <h3>Please fix the following before sending</h3>
+                  <ul></ul>
+                </div>
+                <div class="field-row">
+                  <div class="field">
+                    <label for="name">Your name <span class="req" aria-hidden="true">*</span></label>
+                    <input type="text" id="name" name="name" data-label="Your name" autocomplete="name" required aria-describedby="name-err">
+                    <p class="error" id="name-err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span class="error-text"></span></p>
+                  </div>
+                  <div class="field">
+                    <label for="email">Your email <span class="req" aria-hidden="true">*</span></label>
+                    <input type="email" id="email" name="email" data-label="Your email" autocomplete="email" required aria-describedby="email-err email-hint">
+                    <p class="hint" id="email-hint">We reply to this address.</p>
+                    <p class="error" id="email-err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span class="error-text"></span></p>
+                  </div>
+                </div>
+                <div class="field-row">
+                  <div class="field">
+                    <label for="phone">Contact number</label>
+                    <input type="tel" id="phone" name="phone" data-label="Contact number" autocomplete="tel" aria-describedby="phone-err phone-hint">
+                    <p class="hint" id="phone-hint">Optional — fastest way to reach you.</p>
+                    <p class="error" id="phone-err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span class="error-text"></span></p>
+                  </div>
+                  <div class="field">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" data-label="Subject" placeholder="e.g. Quote for Bimetal Contact Rivets" aria-describedby="subject-err">
+                    <p class="error" id="subject-err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span class="error-text"></span></p>
+                  </div>
+                </div>
+                  <div class="field">
+                    <label for="message">Your requirement <span class="req" aria-hidden="true">*</span></label>
+                    <textarea id="message" name="message" data-label="Your requirement" rows="5" minlength="15" required aria-describedby="message-err message-hint" placeholder="Product, alloy, head and shank dimensions, quantity, target date…"></textarea>
+                    <p class="hint" id="message-hint">Alloy, dimensions and quantity let us quote without a follow-up call.</p>
+                    <p class="error" id="message-err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span class="error-text"></span></p>
+                  </div>
+                <p class="form-note">Submitting opens your email app with this message ready to send to <strong>info@alliedindustries.in</strong> — attach a drawing there if you have one.</p>
+                <button type="submit" class="btn btn-primary" style="margin-top:var(--space-3);">Continue to Email</button>
+                <p class="form-status" role="status" aria-live="polite">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                  <span>Your email app should now be open with the message ready. If nothing happened, write to info@alliedindustries.in directly.</span>
+                </p>
+              </form>
       </div>
 
-      <form class="prose" id="contactForm" data-reveal style="transition-delay:100ms;">
-        <h3 style="margin-top:0;">Send a message</h3>
-        <div class="field-row two">
-          <div class="field">
-            <label for="name">Your name</label>
-            <input type="text" id="name" name="name" autocomplete="name" required>
-          </div>
-          <div class="field">
-            <label for="email">Your email</label>
-            <input type="email" id="email" name="email" autocomplete="email" required>
-          </div>
-        </div>
-        <div class="field-row two">
-          <div class="field">
-            <label for="phone">Contact number <span class="hint">(optional)</span></label>
-            <input type="tel" id="phone" name="phone" autocomplete="tel">
-          </div>
-          <div class="field">
-            <label for="subject">Subject</label>
-            <input type="text" id="subject" name="subject" placeholder="e.g. Quote for Bimetal Contact Rivets">
-          </div>
-        </div>
-        <div class="field">
-          <label for="message">Your requirement</label>
-          <textarea id="message" name="message" rows="5" placeholder="Product, alloy, dimensions, quantity..." required></textarea>
-        </div>
-        <p class="form-note">Submitting opens your email app with this message ready to send to <strong>info@alliedindustries.in</strong> — attach a drawing there if you have one.</p>
-        <button type="submit" class="btn btn-primary" style="margin-top:var(--space-3);">Continue to Email</button>
-      </form>
+      <aside class="contact-side" data-reveal style="transition-delay:90ms;">
 
+        <div class="side-card">
+          <span class="eyebrow">Speak to someone directly</span>
+          <div class="person-list">
+          <a class="person" href="tel:+919811697031">
+            <span class="person-avatar" aria-hidden="true">D</span>
+            <span>
+              <span class="person-name">Mr. Dinesh</span>
+              <span class="person-role">Sales &amp; technical queries</span>
+              <span class="person-phone">+91 98116 97031</span>
+            </span>
+          </a>
+          <a class="person" href="tel:+919871775681">
+            <span class="person-avatar" aria-hidden="true">R</span>
+            <span>
+              <span class="person-name">Mr. Rajiv</span>
+              <span class="person-role">Orders &amp; despatch</span>
+              <span class="person-phone">+91 98717 75681</span>
+            </span>
+          </a>
+          </div>
+        </div>
+
+        <div class="side-card">
+          <span class="eyebrow">Visit the works</span>
+          <address class="site-address">
+            A-13, Phase-2, Mayapuri Industrial Area,<br>
+            New Delhi &ndash; 110&nbsp;064, India
+          </address>
+          <div class="map-frame">
+            <iframe
+              title="Allied Industries location — Mayapuri Industrial Area, New Delhi"
+              src="https://www.google.com/maps?q=A-13%2C+Phase-2%2C+Mayapuri+Industrial+Area%2C+New+Delhi+110064&amp;output=embed"
+              width="100%" height="260" style="border:0;display:block;" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+          </div>
+          <a class="btn btn-outline btn-sm" style="margin-top:var(--space-4);" href="https://www.google.com/maps?q=A-13%2C+Phase-2%2C+Mayapuri+Industrial+Area%2C+New+Delhi+110064" target="_blank" rel="noopener">Open in Maps</a>
+        </div>
+
+        <div class="side-card side-card-quiet">
+          <span class="eyebrow">Certified</span>
+          <p style="margin:0;color:var(--text-dim);font-size:var(--step--1);">Manufacturing runs under a documented ISO&nbsp;9001:2015 and IATF&nbsp;16949:2016 quality management system. <a href="quality.html">See the certificates</a>.</p>
+        </div>
+
+      </aside>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="container cta-band-inner">
+      <div data-reveal>
+        <h2>Prefer to configure it yourself?</h2>
+        <p>Build the part in the browser and send the specification straight through.</p>
+      </div>
+      <div class="btn-group" data-reveal style="transition-delay:100ms;">
+        <a class="btn btn-primary" href="products.html#configurator">Open the configurator</a>
+        <a class="btn btn-ghost-invert" href="products.html">Browse Products</a>
+      </div>
     </div>
   </section>
 
@@ -162,13 +249,18 @@
 <footer class="site-footer">
   <div class="container footer-grid">
     <div class="footer-brand">
-      <a class="brand" href="index.html" style="color: var(--on-graphite);">
-        <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-          <circle cx="20" cy="20" r="18" fill="#F1EFEA"/>
-          <circle cx="20" cy="20" r="14.5" fill="none" stroke="#7C8994" stroke-width="2.1"/>
-          <circle cx="20" cy="20" r="8" fill="#AD5A2C"/>
-        </svg>
-        <span>Allied Industries</span>
+      <a class="brand" href="index.html">
+        <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+        <defs><mask id="bm-slit"><rect width="100" height="100" fill="#fff"/><rect x="14" y="47.6" width="72" height="4.8" fill="#000"/></mask></defs>
+        <rect width="100" height="100" rx="26" fill="#1A1C20"/>
+        <circle cx="50" cy="26" r="8.6" fill="#C8763F"/>
+        <g mask="url(#bm-slit)" fill="#F2F0EB"><circle cx="31.5" cy="50" r="10.8"/><circle cx="68.5" cy="50" r="10.8"/></g>
+        <circle cx="27" cy="75" r="8.6" fill="#C8763F"/><circle cx="50" cy="75" r="8.6" fill="#C8763F"/><circle cx="73" cy="75" r="8.6" fill="#C8763F"/>
+      </svg>
+        <span class="brand-word">
+        <span class="brand-name">ALLIED</span>
+        <span class="brand-sub">Industries</span>
+      </span>
       </a>
       <p>Manufacturer, supplier &amp; exporter of precision metal rivets and electrical contact rivets. New Delhi, India — since 1998.</p>
       <div class="footer-certs">
@@ -177,16 +269,16 @@
       </div>
     </div>
     <div class="footer-col">
-      <h4>Products</h4>
+      <h3>Products</h3>
       <ul>
-        <li><a href="products/metal-rivets.html">Metal Rivets</a></li>
-        <li><a href="products/contact-rivets.html">Contact Rivets</a></li>
+        <li><a href="products.html#metal-rivets">Metal Rivets</a></li>
+        <li><a href="products.html#contact-rivets">Contact Rivets</a></li>
         <li><a href="quality.html">Quality Certification</a></li>
         <li><a href="gallery.html">Gallery</a></li>
       </ul>
     </div>
     <div class="footer-col">
-      <h4>Company</h4>
+      <h3>Company</h3>
       <ul>
         <li><a href="about.html">About Us</a></li>
         <li><a href="careers.html">Careers</a></li>
@@ -194,7 +286,7 @@
       </ul>
     </div>
     <div class="footer-col">
-      <h4>Get in touch</h4>
+      <h3>Get in touch</h3>
       <ul>
         <li class="footer-contact-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10.5c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0z"/><circle cx="12" cy="10.5" r="2.7"/></svg>
@@ -217,28 +309,7 @@
   </div>
 </footer>
 
+<script src="assets/js/ambient.js" defer></script>
 <script src="assets/js/main.js"></script>
-<script>
-  var contactForm = document.getElementById('contactForm');
-  if (contactForm) {
-    contactForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var name = document.getElementById('name').value.trim();
-      var email = document.getElementById('email').value.trim();
-      var phone = document.getElementById('phone').value.trim();
-      var subject = document.getElementById('subject').value.trim() || 'Website enquiry';
-      var message = document.getElementById('message').value.trim();
-      var bodyLines = [
-        'Name: ' + name,
-        'Email: ' + email,
-        'Phone: ' + (phone || '-'),
-        '',
-        message
-      ];
-      var mailto = 'mailto:info@alliedindustries.in?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(bodyLines.join('\n'));
-      window.location.href = mailto;
-    });
-  }
-</script>
 </body>
 </html>

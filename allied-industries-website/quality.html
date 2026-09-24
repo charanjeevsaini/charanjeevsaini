@@ -3,41 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#EFEAE3">
+<meta name="color-scheme" content="light">
+<script>document.documentElement.className+=" js";</script>
 <title>Quality Certification — ISO 9001 &amp; IATF 16949 | Allied Industries</title>
 <meta name="description" content="Allied Industries manufactures under a quality austria / IQNet accredited ISO 9001:2015 and IATF 16949:2016 quality management system for precision electrical contacts and rivets.">
 <link rel="icon" href="assets/images/site/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/images/site/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/images/site/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap"></noscript>
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
+<div class="scroll-progress" aria-hidden="true"></div>
 
 <header class="site-header">
   <nav class="container nav-row" aria-label="Primary">
     <a class="brand" href="index.html">
-      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-        <circle cx="20" cy="20" r="18" fill="#202225"/>
-        <circle cx="20" cy="20" r="14.5" fill="none" stroke="#7C8994" stroke-width="2.1"/>
-        <circle cx="20" cy="20" r="8" fill="#AD5A2C"/>
-        <circle cx="16.7" cy="16.2" r="2.2" fill="rgba(255,255,255,0.55)"/>
+      <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+        <defs><mask id="bm-slit"><rect width="100" height="100" fill="#fff"/><rect x="14" y="47.6" width="72" height="4.8" fill="#000"/></mask></defs>
+        <rect width="100" height="100" rx="26" fill="#1A1C20"/>
+        <circle cx="50" cy="26" r="8.6" fill="#C8763F"/>
+        <g mask="url(#bm-slit)" fill="#F2F0EB"><circle cx="31.5" cy="50" r="10.8"/><circle cx="68.5" cy="50" r="10.8"/></g>
+        <circle cx="27" cy="75" r="8.6" fill="#C8763F"/><circle cx="50" cy="75" r="8.6" fill="#C8763F"/><circle cx="73" cy="75" r="8.6" fill="#C8763F"/>
       </svg>
-      <span>
-        <span class="brand-name-full">Allied Industries</span>
-        <span class="brand-name-short">Allied</span>
-        <small>Est. 1998 · New Delhi</small>
+      <span class="brand-word">
+        <span class="brand-name">ALLIED</span>
+        <span class="brand-sub">Industries</span>
       </span>
     </a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="about.html">About</a></li>
-      <li class="has-dropdown">
-        <a href="products/metal-rivets.html">Products</a>
-        <ul class="dropdown">
-          <li><a href="products/metal-rivets.html">Metal Rivets</a></li>
-          <li><a href="products/contact-rivets.html">Contact Rivets</a></li>
-        </ul>
-      </li>
+      <li><a href="products.html">Products</a></li>
       <li><a href="quality.html" aria-current="page">Quality</a></li>
       <li><a href="gallery.html">Gallery</a></li>
       <li><a href="careers.html">Careers</a></li>
@@ -62,9 +64,7 @@
   <ul>
     <li><a href="index.html">Home</a></li>
     <li><a href="about.html">About</a></li>
-    <li><a href="products/metal-rivets.html">Products</a></li>
-    <li class="mobile-sub"><a href="products/metal-rivets.html">— Metal Rivets</a></li>
-    <li class="mobile-sub"><a href="products/contact-rivets.html">— Contact Rivets</a></li>
+    <li><a href="products.html">Products</a></li>
     <li><a href="quality.html">Quality</a></li>
     <li><a href="gallery.html">Gallery</a></li>
     <li><a href="careers.html">Careers</a></li>
@@ -83,33 +83,37 @@
       <p class="breadcrumb"><a href="index.html">Home</a> / Quality</p>
       <span class="eyebrow">Quality Certification</span>
       <h1 class="h1" style="margin-top:var(--space-3);max-width:24ch;">A documented quality management system, audited by Quality Austria.</h1>
-      <p class="lede" style="color:rgba(250,249,246,0.78);margin-top:var(--space-3);">Manufacture of Precision Electrical Contacts &amp; Rivets — certified to ISO 9001:2015 and IATF 16949:2016, recognized under the IQNet international certification network.</p>
+      <p class="lede" style="margin-top:var(--space-3);">Manufacture of Precision Electrical Contacts &amp; Rivets — certified to ISO 9001:2015 and IATF 16949:2016, recognized under the IQNet international certification network.</p>
     </div>
   </section>
 
   <section>
     <div class="container">
+      <h2 class="visually-hidden">Our certifications</h2>
       <div class="notice" data-reveal>
         Certificates below were issued by Quality Austria (Vienna) and are shown as scanned for reference. Audit cycles are periodic — contact us for the current audit status or a fresh copy of either certificate ahead of a supplier qualification review.
       </div>
 
       <div class="card-grid cols-3" style="margin-top:var(--space-6);" data-reveal-group>
-        <div class="cert-card" data-reveal>
+        <div class="cert-card glow tilt" data-tilt="5" data-reveal>
+          <div class="glow-wash" aria-hidden="true"></div>
           <img src="assets/images/certificates/iso-9001-2015.webp" alt="Quality Austria ISO 9001:2015 certificate issued to Allied Industries" loading="lazy" width="1000" height="690">
           <div>
             <h3>ISO 9001:2015</h3>
             <p class="cert-meta">Registration No. 22253/0</p>
           </div>
         </div>
-        <div class="cert-card" data-reveal>
-          <img src="assets/images/certificates/iatf-16949-2016.webp" alt="Quality Austria IATF 16949:2016 certificate issued to Allied Industries" loading="lazy" width="1000" height="698">
+        <div class="cert-card glow tilt" data-tilt="5" data-reveal>
+          <div class="glow-wash" aria-hidden="true"></div>
+          <img src="assets/images/certificates/iatf-16949-2016.webp" alt="Quality Austria IATF 16949:2016 certificate issued to Allied Industries" loading="lazy" width="1000" height="690">
           <div>
             <h3>IATF 16949:2016</h3>
             <p class="cert-meta">Registration No. 09063/0 · IATF-Reg. No. 0445481</p>
           </div>
         </div>
-        <div class="cert-card" data-reveal>
-          <img src="assets/images/certificates/iqnet.webp" alt="IQNet international certification network certificate issued to Allied Industries" loading="lazy" width="725" height="1024">
+        <div class="cert-card glow tilt" data-tilt="5" data-reveal>
+          <div class="glow-wash" aria-hidden="true"></div>
+          <img src="assets/images/certificates/iqnet.webp" alt="IQNet certificate issued to Allied Industries" loading="lazy" width="1000" height="690">
           <div>
             <h3>IQNet Recognition</h3>
             <p class="cert-meta">EAC: 22.1 · Reg. No. AT-22253/0</p>
@@ -119,24 +123,27 @@
     </div>
   </section>
 
-  <section style="background:var(--paper-sunken);">
+  <section class="section-sunken">
     <div class="container">
       <div class="section-head" data-reveal>
         <span class="eyebrow">What this means on the shop floor</span>
         <h2>Quality checked before it becomes your problem</h2>
       </div>
       <div class="card-grid cols-3" data-reveal-group>
-        <div class="feature-card" data-reveal>
+        <div class="feature-card glow tilt" data-tilt="6" data-reveal>
+          <div class="glow-wash" aria-hidden="true"></div>
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></span>
           <h3>Incoming material checks</h3>
           <p>Raw wire and alloy stock is sourced from certified vendors and inspected by our quality controllers before it reaches production.</p>
         </div>
-        <div class="feature-card" data-reveal>
+        <div class="feature-card glow tilt" data-tilt="6" data-reveal>
+          <div class="glow-wash" aria-hidden="true"></div>
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V6a2 2 0 0 1 2-2h11l3 3v12.5"/><path d="M8 21V11h6v10"/></svg></span>
           <h3>In-process dimensional testing</h3>
           <p>Head diameter, shank length and layer thickness are checked against drawing tolerances throughout the production run, not only at the end.</p>
         </div>
-        <div class="feature-card" data-reveal>
+        <div class="feature-card glow tilt" data-tilt="6" data-reveal>
+          <div class="glow-wash" aria-hidden="true"></div>
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v13H7l-4 4z"/></svg></span>
           <h3>Documented traceability</h3>
           <p>Our IATF 16949-aligned process keeps records suited to automotive supplier audits — useful when you need to trace a batch back to source.</p>
@@ -162,13 +169,18 @@
 <footer class="site-footer">
   <div class="container footer-grid">
     <div class="footer-brand">
-      <a class="brand" href="index.html" style="color: var(--on-graphite);">
-        <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-          <circle cx="20" cy="20" r="18" fill="#F1EFEA"/>
-          <circle cx="20" cy="20" r="14.5" fill="none" stroke="#7C8994" stroke-width="2.1"/>
-          <circle cx="20" cy="20" r="8" fill="#AD5A2C"/>
-        </svg>
-        <span>Allied Industries</span>
+      <a class="brand" href="index.html">
+        <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+        <defs><mask id="bm-slit"><rect width="100" height="100" fill="#fff"/><rect x="14" y="47.6" width="72" height="4.8" fill="#000"/></mask></defs>
+        <rect width="100" height="100" rx="26" fill="#1A1C20"/>
+        <circle cx="50" cy="26" r="8.6" fill="#C8763F"/>
+        <g mask="url(#bm-slit)" fill="#F2F0EB"><circle cx="31.5" cy="50" r="10.8"/><circle cx="68.5" cy="50" r="10.8"/></g>
+        <circle cx="27" cy="75" r="8.6" fill="#C8763F"/><circle cx="50" cy="75" r="8.6" fill="#C8763F"/><circle cx="73" cy="75" r="8.6" fill="#C8763F"/>
+      </svg>
+        <span class="brand-word">
+        <span class="brand-name">ALLIED</span>
+        <span class="brand-sub">Industries</span>
+      </span>
       </a>
       <p>Manufacturer, supplier &amp; exporter of precision metal rivets and electrical contact rivets. New Delhi, India — since 1998.</p>
       <div class="footer-certs">
@@ -177,16 +189,16 @@
       </div>
     </div>
     <div class="footer-col">
-      <h4>Products</h4>
+      <h3>Products</h3>
       <ul>
-        <li><a href="products/metal-rivets.html">Metal Rivets</a></li>
-        <li><a href="products/contact-rivets.html">Contact Rivets</a></li>
+        <li><a href="products.html#metal-rivets">Metal Rivets</a></li>
+        <li><a href="products.html#contact-rivets">Contact Rivets</a></li>
         <li><a href="quality.html">Quality Certification</a></li>
         <li><a href="gallery.html">Gallery</a></li>
       </ul>
     </div>
     <div class="footer-col">
-      <h4>Company</h4>
+      <h3>Company</h3>
       <ul>
         <li><a href="about.html">About Us</a></li>
         <li><a href="careers.html">Careers</a></li>
@@ -194,7 +206,7 @@
       </ul>
     </div>
     <div class="footer-col">
-      <h4>Get in touch</h4>
+      <h3>Get in touch</h3>
       <ul>
         <li class="footer-contact-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10.5c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0z"/><circle cx="12" cy="10.5" r="2.7"/></svg>
@@ -226,6 +238,7 @@
   </a>
 </div>
 
+<script src="assets/js/ambient.js" defer></script>
 <script src="assets/js/main.js"></script>
 </body>
 </html>
