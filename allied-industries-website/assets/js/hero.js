@@ -1,8 +1,8 @@
 /* ============================================================================
    Hero — a gateway flow that becomes a rivet.
    ----------------------------------------------------------------------------
-   The canvas spans the WHOLE hero band, not just the art column, so the flow
-   runs behind the headline as well as the part and the two read as one layer.
+   The canvas spans the whole hero band; the flow is a symmetric vortex that
+   spirals in around the part, reaching equally far on either side.
    The convergence point is wherever #heroStage lands, so it stays correct at
    every breakpoint without hard-coded positions.
    ========================================================================== */
@@ -23,7 +23,7 @@
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var coarse  = window.matchMedia("(pointer: coarse)").matches;
 
-  var W = 0, H = 0, TX = 0, TY = 0, TS = 0;   // size + convergence target
+  var W = 0, H = 0, TX = 0, TY = 0, TS = 0, RX = 1, RY = 1;   // size + convergence target
   var paths = [], ripples = [], mass = reduced ? 1 : 0;
   var spin = 0.6, tiltTarget = -0.10, tilt = -0.10, spinBias = 0, running = false;
   var shown = reduced ? 1 : 0;
@@ -46,7 +46,7 @@
   function attachGL() {
     if (gl || !window.Contact3D) return;
     try {
-      gl = window.Contact3D.createView(stage, { fill: 0.70, shadow: 0.55 });
+      gl = window.Contact3D.createView(stage, { fill: 0.84, shadow: 0.55 });
       gl.setModel(window.Contact3D.buildRivetContact());
       gl.canvas.style.opacity = "0";
       if (reduced && W) renderStatic();
@@ -79,12 +79,18 @@
     TY = sr.top  - br.top  + sr.height / 2;
     TS = Math.min(sr.width, sr.height) * 0.52 / mesh.extent;
 
-    var n = reduced ? 0 : (coarse ? 24 : 44);
+    /* The flow is a symmetric vortex around the part: streams start on an
+       ellipse centred on it and spiral in. Its reach is set by the nearer
+       side of the band (the right edge on desktop), so both sides extend
+       equally instead of the left side running the full width of the page. */
+    RX = Math.max(W - TX, W * 0.24) * 1.12;
+    RY = Math.max(H * 0.56, RX * 0.78);
+    var n = reduced ? 0 : (coarse ? 26 : 48);
     paths = [];
     for (var i = 0; i < n; i++) {
       paths.push({
-        left: i % 2 === 0,
-        y: (i / n) * H * 1.5 - H * 0.25,
+        a: (i / n) * Math.PI * 2 + (Math.random() - 0.5) * 0.12,
+        reach: 1.0 + Math.random() * 0.28,
         t: Math.random(),
         speed: 0.0020 + Math.random() * 0.0026,
         size: Math.random() < 0.25 ? 2.8 : 1.8
@@ -100,12 +106,15 @@
     };
   }
 
+  var SWIRL = 0.55;                        // radians each stream turns on its way in
+  function around(a, k) {
+    return { x: TX + Math.cos(a) * RX * k, y: TY + Math.sin(a) * RY * k };
+  }
   function pts(p) {
-    var x0 = p.left ? -W * 0.05 : W * 1.05;
     return [
-      { x: x0, y: p.y },
-      { x: p.left ? TX * 0.40 : W - (W - TX) * 0.40, y: p.y },
-      { x: p.left ? TX * 0.82 : W - (W - TX) * 0.82, y: TY },
+      around(p.a, p.reach),
+      around(p.a + SWIRL * 0.35, p.reach * 0.62),
+      around(p.a + SWIRL * 0.8, p.reach * 0.26),
       { x: TX, y: TY }
     ];
   }
@@ -113,7 +122,7 @@
   function drawFlow(dt) {
     ctx.clearRect(0, 0, W, H);
 
-    var glow = ctx.createRadialGradient(TX, TY, 0, TX, TY, Math.min(W, H) * 0.55);
+    var glow = ctx.createRadialGradient(TX, TY, 0, TX, TY, Math.min(RX, RY) * 0.95);
     glow.addColorStop(0, "rgba(201,144,107," + (0.20 * mass).toFixed(3) + ")");
     glow.addColorStop(1, "rgba(201,144,107,0)");
     ctx.fillStyle = glow;
@@ -140,7 +149,7 @@
       p.t += p.speed * dt;
       if (p.t >= 1) {
         p.t = 0;
-        p.y += (Math.random() - 0.5) * 14;
+        p.a += (Math.random() - 0.5) * 0.05;
       }
 
       var pos = bez(p.t, q[0], q[1], q[2], q[3]);
@@ -187,7 +196,7 @@
 
   function renderStatic() {
     ctx.clearRect(0, 0, W, H);
-    var glow = ctx.createRadialGradient(TX, TY, 0, TX, TY, Math.min(W, H) * 0.55);
+    var glow = ctx.createRadialGradient(TX, TY, 0, TX, TY, Math.min(RX, RY) * 0.95);
     glow.addColorStop(0, "rgba(201,144,107,0.20)");
     glow.addColorStop(1, "rgba(201,144,107,0)");
     ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);

@@ -1,349 +1,286 @@
 /* ============================================================================
-   Create your rivet — live 3D configurator
+   Products configurator — the ten constructions in 3D, with every tweak
    ----------------------------------------------------------------------------
-   Drives rivet3d.js from the form controls and re-renders on every change.
-   The canvas is decorative; the spec list beside it is the accessible record
-   of the same state, and it is what gets sent when a quote is requested.
+   UI for rivet-lab.js. Mirrors the reference model's controls — a type list,
+   Section view, Pause rotation, and a Tweaks panel holding every dimension,
+   the materials, surface finish, shadow, light angle and rotation speed —
+   and adds what the website needs on top: the spec as text, a quote email
+   built from it, and the custom-spec form seeded from it.
+
+   Tweaks persist per visitor in localStorage (best effort; the page works
+   without it). The spec list is the accessible record of the part; the
+   canvas is a picture of the same state.
    ========================================================================== */
-(function () {
-  "use strict";
+import { TYPES, MATS, FACING, BASE, FINISHES, DEFAULT_TWEAKS, fmt, createLab, webglAvailable } from "./rivet-lab.js";
 
-  var root = document.getElementById("configurator");
-  if (!root || !window.Rivet3D) return;
+const root = document.getElementById("lab");
+if (root) init();
 
-  var canvas = root.querySelector("#cfgCanvas");
-  var ctx = canvas.getContext("2d");
-  var specList = root.querySelector("#cfgSpec");
-  var quoteBtn = root.querySelector("#cfgQuote");
-  var srNote = root.querySelector("#cfgSrNote");
-  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function init() {
+  const $ = (id) => document.getElementById(id);
+  const list = $("labList"), stageEl = $("labStage"), dimsBox = $("labDims"), spec = $("labSpec");
+  const twPanel = $("labTweaks"), twBtn = $("labTw"), secBtn = $("labSection"), spinBtn = $("labSpin");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const STORE = "allied-configurator";
 
-  var FACINGS = {
-    none:  { label: "None (plain head)", mat: "silver" },
-    AgCdO: { label: "AgCdO", mat: "silver" },
-    AgNi:  { label: "AgNi",  mat: "silver" },
-    AgSnO: { label: "AgSnO", mat: "silver" },
-    Ag999: { label: "Ag999 (fine silver)", mat: "silver" }
+  /* ---- state ------------------------------------------------------------- */
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(STORE) || "{}") || {}; } catch (e) { saved = {}; }
+  const TW = Object.assign({}, DEFAULT_TWEAKS, saved.tw || {});
+  const DIMS = saved.dims || {}, MATSEL = saved.mats || {};
+  let current = Math.max(0, TYPES.findIndex(t => t.id === saved.type));
+  const save = () => {
+    try { localStorage.setItem(STORE, JSON.stringify({ tw: TW, dims: DIMS, mats: MATSEL, type: TYPES[current].id })); } catch (e) {}
   };
-  var BODIES = {
-    copper: "ETP Copper", brass: "Brass", steel: "Mild steel",
-    alum: "Aluminium", nickel: "Nickel"
-  };
-  var HEADS = { flat: "Flat head", dome: "Dome / button head", countersunk: "Countersunk" };
+  const dimsOf = (t) => Object.assign(Object.fromEntries(t.params.map(q => [q.k, q.def])), DIMS[t.id] || {});
+  const matsOf = (t) => Object.assign(Object.fromEntries(t.mats.map(q => [q[0], q[3]])), MATSEL[t.id] || {});
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
-  function val(name) { return root.querySelector('[name="' + name + '"]'); }
-  function num(name) { return parseFloat(val(name).value); }
-
-
-  /* Step 1: the construction sets sensible defaults and decides which of the
-     dimension fields actually apply to that part. */
-  var TYPES = {
-    "semi-tubular":     { label: "Semi Tubular Rivet",     d: { headDia: 5.0, headThk: 0.9, shankDia: 2.2, shankLen: 4.5, headStyle: "flat",        construction: "tubular", bodyMat: "copper", facing: "none" }, hide: ["facing", "facingThk"] },
-    "trimmed":          { label: "Trimmed Rivet",          d: { headDia: 5.4, headThk: 1.0, shankDia: 2.0, shankLen: 4.0, headStyle: "flat",        construction: "solid",   bodyMat: "copper", facing: "none" }, hide: ["facing", "facingThk"] },
-    "straight-head":    { label: "Straight Head Rivet",    d: { headDia: 4.8, headThk: 0.8, shankDia: 2.2, shankLen: 4.0, headStyle: "flat",        construction: "solid",   bodyMat: "copper", facing: "none" }, hide: ["facing", "facingThk"] },
-    "double-head-shank":{ label: "Double Head & Shank Rivet", d: { headDia: 5.2, headThk: 1.2, shankDia: 2.4, shankLen: 6.0, headStyle: "flat",     construction: "solid",   bodyMat: "brass",  facing: "none" }, hide: ["facing", "facingThk"] },
-    "formed":           { label: "Formed Rivet",           d: { headDia: 5.0, headThk: 1.0, shankDia: 2.0, shankLen: 4.5, headStyle: "dome",        construction: "solid",   bodyMat: "copper", facing: "none" }, hide: ["facing", "facingThk"] },
-    "copper":           { label: "Copper Rivet",           d: { headDia: 5.0, headThk: 1.1, shankDia: 2.2, shankLen: 4.0, headStyle: "dome",        construction: "solid",   bodyMat: "copper", facing: "none" }, hide: ["facing", "facingThk"] },
-    "trimetal-contact": { label: "Trimetal Contact Rivet", d: { headDia: 5.2, headThk: 1.15, shankDia: 2.1, shankLen: 3.2, headStyle: "flat",       construction: "solid",   bodyMat: "copper", facing: "AgNi",  facingThk: 0.6 }, hide: [] },
-    "weldable-button":  { label: "Weldable Button Contact Rivet", d: { headDia: 4.6, headThk: 0.9, shankDia: 1.6, shankLen: 1.0, headStyle: "dome", construction: "solid",   bodyMat: "copper", facing: "AgNi",  facingThk: 0.5 }, hide: [] },
-    "bimetal-contact":  { label: "Bimetal Contact Rivet",  d: { headDia: 5.0, headThk: 0.95, shankDia: 1.8, shankLen: 0.9, headStyle: "flat",       construction: "solid",   bodyMat: "copper", facing: "AgCdO", facingThk: 0.5 }, hide: [] },
-    "disc-contact":     { label: "Disc Contact Rivet",     d: { headDia: 6.0, headThk: 1.0, shankDia: 1.2, shankLen: 0.9, headStyle: "flat",        construction: "solid",   bodyMat: "copper", facing: "AgNi",  facingThk: 0.5 }, hide: [] }
-  };
-  /* Opens on the bimetal contact: its defaults are the button contact from
-     the 3D model scaled to a 5 mm head, so the first part a visitor sees is
-     that model, and every change after it is theirs. */
-  var currentType = "bimetal-contact";
-
-  /* Low enough to put the lustre on the head wall, high enough that the
-     head still shows a sliver of its top face. The hero and the landing
-     teaser sit at -0.10, but their parts are squat: here the shank can be
-     4.5mm, which lifts the head well above the mesh centre, and under
-     perspective -0.10 ends up looking at the head from below. */
-  var mesh = null, rotY = 0.62, rotX = -0.22, spinning = !reduced;
-  var dragging = false, lastX = 0, lastY = 0;
-
-  function readSpec() {
-    var facing = val("facing").value;
-    return {
-      type: currentType,
-      headDia: num("headDia"), headThk: num("headThk"),
-      shankDia: num("shankDia"), shankLen: num("shankLen"),
-      headStyle: val("headStyle").value,
-      tubular: val("construction").value === "tubular",
-      bodyMat: val("bodyMat").value,
-      facing: facing,
-      facingThk: facing === "none" ? 0 : num("facingThk")
-    };
+  /* ---- 3D stage ----------------------------------------------------------- */
+  let lab = null;
+  if (webglAvailable()) {
+    try { lab = createLab(stageEl, TW); } catch (e) { lab = null; }
+  }
+  if (!lab) {
+    $("labFallback").hidden = false;
+    root.classList.add("lab-no-gl");
+  } else {
+    lab.setAutoRotate(!reduced);
+    lab.controls.addEventListener("start", () => setSpin(false));
   }
 
-  /* The photoreal renderer (contact3d.js) builds each spec as a part in the
-     style of the model's button contact and draws it into a WebGL canvas
-     laid over this one. This canvas keeps the glow, the pointer and the
-     keyboard; the 2D mesh is only the fallback when WebGL is unavailable. */
-  var gl = null;
-  function attachGL() {
-    if (gl || !window.Contact3D) return;
-    try {
-      var wrap = document.createElement("div");
-      wrap.className = "contact3d-wrap";
-      canvas.parentNode.insertBefore(wrap, canvas);
-      wrap.appendChild(canvas);
-      gl = window.Contact3D.createView(wrap, { fill: 0.74 });
-      rebuild();
-    } catch (err) { gl = null; }
+  /* ---- type list ---------------------------------------------------------- */
+  TYPES.forEach((t, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "lab-type";
+    b.setAttribute("role", "radio");
+    b.dataset.i = i;
+    b.innerHTML = `<span class="lab-num">${String(i + 1).padStart(2, "0")}</span><span class="lab-nm">${t.name}</span><span class="lab-sub">${t.sub}</span>`;
+    list.appendChild(b);
+  });
+  const typeBtns = Array.from(list.querySelectorAll(".lab-type"));
+  list.addEventListener("click", e => { const b = e.target.closest(".lab-type"); if (b) show(+b.dataset.i); });
+  // Radio-group semantics: arrows move and select within the list only
+  list.addEventListener("keydown", e => {
+    const d = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    show(current + d);
+    typeBtns[current].focus();
+  });
+
+  /* ---- spec, summary, quote ---------------------------------------------- */
+  function rows(t, p, ms) {
+    return [["Construction", t.name]]
+      .concat(t.params.map(q => [q.label, q.k === "count" ? String(p[q.k]) + " pcs" : fmt(p[q.k]) + " mm"]))
+      .concat(t.mats.map(q => [q[1], ms[q[0]]]))
+      .concat([["Surface finish", FINISHES[TW.finish] || "Turned"]]);
+  }
+  function renderSpec(t, p, ms) {
+    const used = [...new Set(Object.values(ms))];
+    spec.innerHTML = `
+      <div class="lab-spec-head">
+        <span class="eyebrow">Type ${String(current + 1).padStart(2, "0")} / ${TYPES.length}</span>
+        <h3>${t.name}</h3>
+        <p>${t.desc}</p>
+      </div>
+      <div class="lab-spec-facts">
+        <dl>
+          <dt>Build</dt><dd>${t.build}</dd>
+          <dt>Material</dt><dd>${t.mats.map(q => q[1] + ": " + ms[q[0]]).join(" · ")}</dd>
+          <dt>Finish</dt><dd>${FINISHES[TW.finish] || "Turned"}</dd>
+          <dt>Dimensions</dt><dd>${t.summary(p)} mm</dd>
+          <dt>Used in</dt><dd>${t.use}</dd>
+        </dl>
+        <div class="lab-legend">${used.map(k => `<span><i style="background:${MATS[k].hex}"></i>${k}</span>`).join("")}</div>
+      </div>`;
+    $("labSrNote").textContent = `${t.name}: ${t.summary(p)} mm, ${t.mats.map(q => q[1] + " " + ms[q[0]]).join(", ")}, ${FINISHES[TW.finish]} finish.`;
   }
 
-  function rebuild() {
-    var s = readSpec();
-    if (gl) gl.setModel(window.Contact3D.buildRivet(s));
-    mesh = new window.Rivet3D.Mesh(window.Rivet3D.buildProfile({
-      headDia: s.headDia, headThk: s.headThk,
-      shankDia: s.shankDia, shankLen: s.shankLen,
-      headStyle: s.headStyle, tubular: s.tubular,
-      bodyMat: s.bodyMat, facingThk: s.facingThk,
-      facingMat: FACINGS[s.facing].mat
-    }), 88);
-
-    // Shank can never exceed the head, or it is not a rivet
-    var warn = root.querySelector("#cfgWarn");
-    var bad = s.shankDia >= s.headDia;
-    warn.hidden = !bad;
-
-    writeSpec(s);
-    draw();
+  function build(keepView) {
+    const t = TYPES[current], p = dimsOf(t), ms = matsOf(t);
+    if (lab) lab.setPart(t, p, ms, keepView);
+    renderSpec(t, p, ms);
   }
 
-  function rows(s) {
-    return [
-      ["Construction type", (TYPES[s.type] || {}).label || "—"],
-      ["Head diameter", s.headDia.toFixed(2) + " mm"],
-      ["Head thickness", s.headThk.toFixed(2) + " mm"],
-      ["Shank diameter", s.shankDia.toFixed(2) + " mm"],
-      ["Shank length", s.shankLen.toFixed(2) + " mm"],
-      ["Head style", HEADS[s.headStyle]],
-      ["Construction", s.tubular ? "Semi-tubular" : "Solid"],
-      ["Base material", BODIES[s.bodyMat]],
-      ["Contact facing", FACINGS[s.facing].label],
-      ["Facing thickness", s.facing === "none" ? "—" : s.facingThk.toFixed(2) + " mm"]
-    ];
+  function renderPanel() {
+    const t = TYPES[current], p = dimsOf(t), ms = matsOf(t);
+    dimsBox.innerHTML =
+      `<h3 class="lab-h lab-h-first"><span>Dimensions · ${t.name}</span><button type="button" class="lab-link" data-reset>Reset</button></h3>` +
+      t.params.map(q => {
+        const id = "dim-" + q.k, unit = q.k === "count" ? "pcs" : "mm";
+        return `<div class="lab-dim">
+          <label for="${id}">${q.label}</label>
+          <span class="lab-num-in"><input type="number" data-k="${q.k}" min="${q.min}" max="${q.max}" step="${q.step}" value="${fmt(p[q.k])}" aria-label="${q.label} (${unit})"><em>${unit}</em></span>
+          <input type="range" id="${id}" data-k="${q.k}" min="${q.min}" max="${q.max}" step="${q.step}" value="${p[q.k]}">
+        </div>`;
+      }).join("") +
+      `<h3 class="lab-h">Materials</h3>` +
+      t.mats.map(([k, label, opts]) => `<label class="lab-field"><span class="lab-row"><span>${label}</span></span>
+        <span class="lab-mrow"><i style="background:${MATS[ms[k]].hex}"></i><select data-m="${k}">${opts.map(o => `<option${o === ms[k] ? " selected" : ""}>${o}</option>`).join("")}</select></span></label>`).join("");
   }
 
-  function writeSpec(s) {
-    specList.innerHTML = "";
-    rows(s).forEach(function (r) {
-      var dt = document.createElement("dt"); dt.textContent = r[0];
-      var dd = document.createElement("dd"); dd.textContent = r[1];
-      specList.appendChild(dt); specList.appendChild(dd);
+  dimsBox.addEventListener("input", e => {
+    const k = e.target.dataset.k; if (!k) return;
+    const t = TYPES[current], q = t.params.find(x => x.k === k);
+    let v = parseFloat(e.target.value); if (!isFinite(v)) return;
+    v = clamp(v, q.min, q.max);
+    (DIMS[t.id] = DIMS[t.id] || {})[k] = v;
+    dimsBox.querySelectorAll(`[data-k="${k}"]`).forEach(el => { if (el !== e.target) el.value = el.type === "number" ? fmt(v) : v; });
+    save(); build(true);
+  });
+  dimsBox.addEventListener("change", e => {
+    const k = e.target.dataset.m; if (!k) return;
+    const t = TYPES[current];
+    (MATSEL[t.id] = MATSEL[t.id] || {})[k] = e.target.value;
+    e.target.previousElementSibling.style.background = MATS[e.target.value].hex;
+    save(); build(true);
+  });
+  dimsBox.addEventListener("click", e => {
+    if (!e.target.closest("[data-reset]")) return;
+    const t = TYPES[current]; delete DIMS[t.id]; delete MATSEL[t.id];
+    save(); renderPanel(); build(true);
+  });
+
+  function show(i) {
+    current = (i + TYPES.length) % TYPES.length;
+    typeBtns.forEach((b, j) => {
+      b.setAttribute("aria-checked", j === current ? "true" : "false");
+      b.tabIndex = j === current ? 0 : -1;
     });
-    // The canvas is aria-hidden, so describe the current part in text
-    srNote.textContent = "Preview showing a " + HEADS[s.headStyle].toLowerCase() +
-      (s.tubular ? " semi-tubular" : " solid") + " rivet, " +
-      s.headDia + " mm head by " + s.shankLen + " mm shank, in " +
-      BODIES[s.bodyMat] + (s.facing === "none" ? "" : " with a " + FACINGS[s.facing].label + " contact facing") + ".";
+    renderPanel(); build(false); save();
   }
 
-  function draw() {
-    var r = canvas.getBoundingClientRect();
-    var dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-    if (canvas.width !== Math.round(r.width * dpr)) {
-      canvas.width = Math.round(r.width * dpr);
-      canvas.height = Math.round(r.height * dpr);
-    }
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, r.width, r.height);
-    if (!mesh) return;
-
-    var cx = r.width / 2, cy = r.height / 2;
-    var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.min(r.width, r.height) * 0.55);
-    g.addColorStop(0, "rgba(166,127,103,0.20)");
-    g.addColorStop(1, "rgba(166,127,103,0)");
-    ctx.fillStyle = g; ctx.fillRect(0, 0, r.width, r.height);
-
-    if (gl) { gl.render({ rotX: rotX, rotY: rotY }); return; }
-    mesh.render(ctx, {
-      cx: cx, cy: cy,
-      scale: Math.min(r.width, r.height) * 0.66 / mesh.extent,
-      rotX: rotX, rotY: rotY, reveal: 1, alpha: 1
-    });
+  /* ---- toolbar ------------------------------------------------------------ */
+  secBtn.addEventListener("click", () => {
+    const on = secBtn.getAttribute("aria-pressed") !== "true";
+    secBtn.setAttribute("aria-pressed", on);
+    if (lab) lab.setSection(on);
+  });
+  function setSpin(on) {
+    if (lab) lab.setAutoRotate(on);
+    spinBtn.setAttribute("aria-pressed", on);
+    spinBtn.querySelector("span").textContent = on ? "Pause rotation" : "Resume rotation";
+    spinBtn.querySelector("svg").innerHTML = on
+      ? '<rect x="7" y="5" width="3.5" height="14" rx="1"/><rect x="13.5" y="5" width="3.5" height="14" rx="1"/>'
+      : '<path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.2-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/>';
   }
+  spinBtn.addEventListener("click", () => setSpin(spinBtn.getAttribute("aria-pressed") !== "true"));
+  setSpin(!!lab && !reduced);
+  twBtn.addEventListener("click", () => {
+    const o = twPanel.dataset.open !== "true";
+    twPanel.dataset.open = o;
+    twBtn.setAttribute("aria-pressed", o);
+    twBtn.setAttribute("aria-expanded", o);
+    root.dataset.tweaks = o;
+  });
 
-  /* `spinning` is the visitor's pause control. `running` is whether the
-     canvas is worth drawing at all — scrolled past, or the tab in the
-     background. Without it this loop rendered a software 3D scene every
-     frame for the whole life of the page, on screen or not. */
-  var running = false;
-  function loop() {
-    if (!running) return;
-    if (spinning && !dragging) { rotY += 0.005; draw(); }
-    window.requestAnimationFrame(loop);
+  // Keyboard orbit on the focused stage
+  stageEl.addEventListener("keydown", e => {
+    if (!lab || e.target !== stageEl) return;
+    const s = 0.12, map = { ArrowLeft: [-s, 0], ArrowRight: [s, 0], ArrowUp: [0, -s], ArrowDown: [0, s] };
+    if (map[e.key]) { e.preventDefault(); setSpin(false); lab.orbitBy(map[e.key][0], map[e.key][1]); }
+    else if (e.key === "+" || e.key === "=") { e.preventDefault(); lab.zoomBy(0.9); }
+    else if (e.key === "-") { e.preventDefault(); lab.zoomBy(1.1); }
+  });
+
+  /* ---- finish + display tweaks -------------------------------------------- */
+  const el = (id) => $(id);
+  const [tx, txV, rg, rgV, rf, rfV, ex, exV] = ["tx", "txV", "rg", "rgV", "rf", "rfV", "ex", "exV"].map(el);
+  const [op, opV, az, azV, sp, spV, sf, sfV] = ["op", "opV", "az", "azV", "sp", "spV", "sf", "sfV"].map(el);
+  function paintFinish() {
+    document.querySelectorAll("#fnMode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === TW.finish));
+    tx.value = TW.texture; txV.textContent = Math.round(TW.texture * 100) + "%";
+    rg.value = TW.roughMul; rgV.textContent = TW.roughMul.toFixed(2) + "×";
+    rf.value = TW.reflect; rfV.textContent = TW.reflect.toFixed(2);
+    ex.value = TW.exposure; exV.textContent = TW.exposure.toFixed(2);
   }
-  var onScreen = true, pageVisible = !document.hidden;
-  function sync() {
-    var want = onScreen && pageVisible;
-    if (want === running) return;
-    running = want;
-    if (running) window.requestAnimationFrame(loop);
+  function paintDisplay() {
+    document.querySelectorAll("#shMode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === TW.shadow));
+    sf.value = TW.soft; sfV.textContent = TW.soft; sf.disabled = TW.shadow !== "soft";
+    op.value = TW.opacity; opV.textContent = Math.round(TW.opacity * 100) + "%";
+    az.value = TW.azimuth; azV.textContent = TW.azimuth + "°";
+    sp.value = TW.speed; spV.textContent = TW.speed.toFixed(1) + "×";
   }
-
-  /* ---- input wiring ------------------------------------------------------ */
-  root.querySelectorAll(".cfg-fields input, .cfg-fields select").forEach(function (el) {
-    el.addEventListener("input", function () {
-      var out = root.querySelector('[data-out="' + el.name + '"]');
-      if (out) out.textContent = el.value + " mm";
-      if (el.name === "facing") {
-        root.querySelector("#facingThkField").hidden = el.value === "none";
-      }
-      rebuild();
-    });
-  });
-
-  /* ---- rotation: drag, and an equivalent keyboard path ------------------- */
-  canvas.addEventListener("pointerdown", function (e) {
-    dragging = true; lastX = e.clientX; lastY = e.clientY;
-    canvas.setPointerCapture(e.pointerId);
-  });
-  canvas.addEventListener("pointermove", function (e) {
-    if (!dragging) return;
-    rotY += (e.clientX - lastX) * 0.01;
-    rotX = Math.max(-1.3, Math.min(1.3, rotX + (e.clientY - lastY) * 0.008));
-    lastX = e.clientX; lastY = e.clientY;
-    draw();
-  });
-  ["pointerup", "pointercancel"].forEach(function (ev) {
-    canvas.addEventListener(ev, function () { dragging = false; });
-  });
-
-  // Arrow keys do everything dragging does (WCAG 2.5.7)
-  canvas.addEventListener("keydown", function (e) {
-    var step = 0.12, used = true;
-    if (e.key === "ArrowLeft") rotY -= step;
-    else if (e.key === "ArrowRight") rotY += step;
-    else if (e.key === "ArrowUp") rotX = Math.max(-1.3, rotX - step);
-    else if (e.key === "ArrowDown") rotX = Math.min(1.3, rotX + step);
-    else used = false;
-    if (used) { e.preventDefault(); draw(); }
-  });
-
-  var spinBtn = root.querySelector("#cfgSpin");
-  if (spinBtn) {
-    spinBtn.addEventListener("click", function () {
-      spinning = !spinning;
-      spinBtn.setAttribute("aria-pressed", spinning ? "true" : "false");
-      spinBtn.querySelector("span").textContent = spinning ? "Pause rotation" : "Resume rotation";
-    });
-    if (reduced) {
-      spinBtn.setAttribute("aria-pressed", "false");
-      spinBtn.querySelector("span").textContent = "Resume rotation";
-    }
+  function applyFinish() {
+    if (lab) lab.applyFinish();
+    paintFinish(); save();
+    const t = TYPES[current]; renderSpec(t, dimsOf(t), matsOf(t));
   }
+  function applyDisplay() { if (lab) lab.applyDisplay(); paintDisplay(); save(); }
 
-  /* ---- send the spec as a quote request ---------------------------------- */
-  quoteBtn.addEventListener("click", function () {
-    var s = readSpec();
-    var body = ["Please quote the following rivet specification:", ""]
-      .concat(rows(s).map(function (r) { return r[0] + ": " + r[1]; }))
+  $("fnMode").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { TW.finish = b.dataset.v; applyFinish(); } });
+  tx.addEventListener("input", () => { TW.texture = +tx.value; applyFinish(); });
+  rg.addEventListener("input", () => { TW.roughMul = +rg.value; applyFinish(); });
+  rf.addEventListener("input", () => { TW.reflect = +rf.value; applyFinish(); });
+  ex.addEventListener("input", () => { TW.exposure = +ex.value; applyFinish(); });
+  $("shMode").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { TW.shadow = b.dataset.v; applyDisplay(); } });
+  op.addEventListener("input", () => { TW.opacity = +op.value; applyDisplay(); });
+  az.addEventListener("input", () => { TW.azimuth = +az.value; applyDisplay(); });
+  sp.addEventListener("input", () => { TW.speed = +sp.value; applyDisplay(); });
+  sf.addEventListener("input", () => { TW.soft = +sf.value; applyDisplay(); });
+  $("labResetLook").addEventListener("click", () => { Object.assign(TW, DEFAULT_TWEAKS); applyFinish(); applyDisplay(); });
+
+  /* ---- quote email and the custom-spec form -------------------------------- */
+  $("cfgQuote").addEventListener("click", () => {
+    const t = TYPES[current], p = dimsOf(t), ms = matsOf(t);
+    const body = ["Please quote the following rivet specification:", ""]
+      .concat(rows(t, p, ms).map(r => r[0] + ": " + r[1]))
       .concat(["", "Quantity required: ", "Target delivery date: ", "", "(Generated with the configurator on alliedindustries.in)"]);
     window.location.href = "mailto:info@alliedindustries.in?subject=" +
-      encodeURIComponent("Quote request — custom rivet specification") +
-      "&body=" + encodeURIComponent(body.join("\n"));
+      encodeURIComponent("Quote request — " + t.name) + "&body=" + encodeURIComponent(body.join("\n"));
   });
 
-
-  /* Applying a construction sets its defaults and drops the fields that do
-     not apply to it, so the form only ever shows relevant inputs. */
-  function applyType(slug) {
-    var t = TYPES[slug];
-    if (!t) return;
-    currentType = slug;
-    Object.keys(t.d).forEach(function (k) {
-      var el = val(k);
-      if (!el) return;
-      el.value = t.d[k];
-      var out = root.querySelector('[data-out="' + k + '"]');
-      if (out) out.textContent = t.d[k] + " mm";
-    });
-    root.querySelectorAll(".cfg-field[data-field]").forEach(function (f) {
-      f.hidden = t.hide.indexOf(f.getAttribute("data-field")) !== -1;
-    });
-    var ftf = root.querySelector("#facingThkField");
-    if (ftf) ftf.hidden = t.hide.indexOf("facingThk") !== -1 || val("facing").value === "none";
-    root.querySelectorAll(".type-chip").forEach(function (c) {
-      c.setAttribute("aria-checked", c.getAttribute("data-type") === slug ? "true" : "false");
-    });
-    var ts = root.querySelector("#typeSelect");
-    if (ts && ts.value !== slug) ts.value = slug;
-    rebuild();
-  }
-
-  var typeSelect = root.querySelector("#typeSelect");
-  if (typeSelect) {
-    typeSelect.addEventListener("change", function () { applyType(typeSelect.value); });
-  }
-
-  root.querySelectorAll(".type-chip").forEach(function (chip, i, all) {
-    chip.addEventListener("click", function () { applyType(chip.getAttribute("data-type")); });
-    // Radio-group semantics: arrows move and select, as a radiogroup should
-    chip.addEventListener("keydown", function (e) {
-      var d = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1
-            : e.key === "ArrowLeft"  || e.key === "ArrowUp"   ? -1 : 0;
-      if (!d) return;
-      e.preventDefault();
-      var next = all[(i + d + all.length) % all.length];
-      next.focus();
-      applyType(next.getAttribute("data-type"));
-    });
-  });
-
-  /* The custom-spec form carries whatever is already configured, so the
-     visitor is not re-typing what they just set. */
-  var customBtn = root.querySelector("#cfgCustom");
-  var customForm = root.querySelector("#customSpec");
+  const customBtn = $("cfgCustom"), customForm = $("customSpec");
   if (customBtn && customForm) {
-    customBtn.addEventListener("click", function () {
-      var open = customForm.hidden;
+    customBtn.addEventListener("click", () => {
+      const open = customForm.hidden;
       customForm.hidden = !open;
       customBtn.setAttribute("aria-expanded", open ? "true" : "false");
-      if (open) {
-        var s = readSpec();
-        var seed = {
-          csHeadDia: s.headDia + " mm", csHeadThk: s.headThk + " mm",
-          csShankDia: s.shankDia + " mm", csShankLen: s.shankLen + " mm",
-          csMaterial: BODIES[s.bodyMat],
-          csFacing: s.facing === "none" ? "" : FACINGS[s.facing].label + (s.facingThk ? ", " + s.facingThk + " mm" : "")
-        };
-        Object.keys(seed).forEach(function (k) {
-          var el = customForm.querySelector("#" + k);
-          if (el && !el.value) el.value = seed[k];
-        });
-        customForm.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
-        customForm.querySelector("#csName").focus({ preventScroll: true });
-      }
+      if (!open) return;
+      const t = TYPES[current], p = dimsOf(t), ms = matsOf(t);
+      const pick = (...ks) => { for (const k of ks) if (p[k] != null) return fmt(p[k]) + " mm"; return ""; };
+      const facingKey = t.mats.find(q => q[2] === FACING);
+      const baseKey = t.mats.find(q => q[2] === BASE);
+      const facingT = pick("facing", "facingHead", "facing1");
+      const seed = {
+        csHeadDia: pick("headD", "head1D", "dia", "headL"), csHeadThk: pick("headH", "head1H", "thick"),
+        csShankDia: pick("shankD", "neckD"), csShankLen: pick("shankL", "neckL"),
+        csMaterial: baseKey ? ms[baseKey[0]] : "",
+        csFacing: facingKey ? ms[facingKey[0]] + (facingT ? ", " + facingT : "") : ""
+      };
+      Object.keys(seed).forEach(k => { const f = customForm.querySelector("#" + k); if (f && !f.value) f.value = seed[k]; });
+      const notes = customForm.querySelector("#csNotes");
+      if (notes && !notes.value) notes.value = "Starting point: " + t.name + " — " + t.summary(p) + " mm, " + (FINISHES[TW.finish] || "") + " finish.\n";
+      customForm.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+      customForm.querySelector("#csName").focus({ preventScroll: true });
     });
-    var closeBtn = root.querySelector("#cfgCustomClose");
-    if (closeBtn) closeBtn.addEventListener("click", function () {
+    const closeBtn = $("cfgCustomClose");
+    if (closeBtn) closeBtn.addEventListener("click", () => {
       customForm.hidden = true;
       customBtn.setAttribute("aria-expanded", "false");
       customBtn.focus();
     });
   }
 
-  window.addEventListener("resize", draw, { passive: true });
-  attachGL();
-  window.addEventListener("contact3d:ready", attachGL);
-  if (root.querySelector('.type-chip')) applyType(currentType); else rebuild();
-
-  if (window.IntersectionObserver) {
-    new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) { onScreen = en.isIntersecting; });
-      sync();
-    }, { threshold: 0.05 }).observe(canvas);
-  }
-  /* Two independent facts, one decision. An IntersectionObserver callback
-     arrives asynchronously, so a plain start()/stop() pair could let a late
-     "still on screen" undo a "tab was hidden". */
-  document.addEventListener("visibilitychange", function () {
-    pageVisible = !document.hidden;
-    sync();
+  /* ---- the range cards open their part here ------------------------------- */
+  document.querySelectorAll(".range-card[data-type]").forEach(a => {
+    a.addEventListener("click", e => {
+      const i = TYPES.findIndex(t => t.id === a.dataset.type);
+      if (i < 0) return;
+      e.preventDefault();
+      show(i);
+      document.getElementById("configurator").scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+      history.replaceState(null, "", "#configurator");
+    });
   });
-  sync();
-})();
+
+  // Deep link: products.html#configurator-bimetal opens that type
+  const m = /^#configurator-(\w+)$/.exec(location.hash);
+  if (m) { const i = TYPES.findIndex(t => t.id === m[1]); if (i >= 0) current = i; }
+
+  paintFinish(); paintDisplay();
+  show(current);
+  if (lab) { lab.applyFinish(); lab.applyDisplay(); }
+}
