@@ -309,13 +309,13 @@
             <optgroup label="Contact rivets">
               <option value="trimetal-contact">Trimetal Contact</option>
               <option value="weldable-button">Weldable Button</option>
-              <option value="bimetal-contact">Bimetal Contact</option>
+              <option value="bimetal-contact" selected>Bimetal Contact</option>
               <option value="disc-contact">Disc Contact</option>
             </optgroup>
           </select>
         </div>
         <div class="type-chips" role="radiogroup" aria-label="Rivet construction">
-            <button type="button" class="type-chip" role="radio" aria-checked="true" data-type="semi-tubular">Semi Tubular</button>
+            <button type="button" class="type-chip" role="radio" aria-checked="false" data-type="semi-tubular">Semi Tubular</button>
             <button type="button" class="type-chip" role="radio" aria-checked="false" data-type="trimmed">Trimmed</button>
             <button type="button" class="type-chip" role="radio" aria-checked="false" data-type="straight-head">Straight Head</button>
             <button type="button" class="type-chip" role="radio" aria-checked="false" data-type="double-head-shank">Double Head &amp; Shank</button>
@@ -323,7 +323,7 @@
             <button type="button" class="type-chip" role="radio" aria-checked="false" data-type="copper">Copper</button>
             <button type="button" class="type-chip" role="radio" aria-checked="false" data-type="trimetal-contact">Trimetal Contact</button>
             <button type="button" class="type-chip" role="radio" aria-checked="false" data-type="weldable-button">Weldable Button</button>
-            <button type="button" class="type-chip" role="radio" aria-checked="false" data-type="bimetal-contact">Bimetal Contact</button>
+            <button type="button" class="type-chip" role="radio" aria-checked="true" data-type="bimetal-contact">Bimetal Contact</button>
             <button type="button" class="type-chip" role="radio" aria-checked="false" data-type="disc-contact">Disc Contact</button>
         </div>
       </div>
@@ -585,6 +585,7 @@
 
 <script src="assets/js/ambient.js" defer></script>
 <script src="assets/js/main.js"></script>
+<script type="module" src="assets/js/contact3d.js"></script>
 <script src="assets/js/rivet3d.js" defer></script>
 <script src="assets/js/configurator.js" defer></script>
 </body>

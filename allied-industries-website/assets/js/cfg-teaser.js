@@ -26,6 +26,24 @@
     facingThk: 0.20, facingMat: "silver"
   }), 88);
 
+  /* The photoreal part: the bimetal button contact from the 3D model, drawn
+     by contact3d.js into a WebGL canvas laid over this one. This canvas
+     keeps the glow and takes the pointer; the 2D mesh above only draws if
+     WebGL never arrives. */
+  var gl = null;
+  function attachGL() {
+    if (gl || !window.Contact3D) return;
+    try {
+      var wrap = document.createElement("div");
+      wrap.className = "contact3d-wrap";
+      canvas.parentNode.insertBefore(wrap, canvas);
+      wrap.appendChild(canvas);
+      gl = window.Contact3D.createView(wrap, { fill: 0.70 });
+      gl.setModel(window.Contact3D.buildButtonContact());
+      draw();
+    } catch (err) { gl = null; }
+  }
+
   var rotY = 0.62, rotX = -0.10;
   var dragging = false, lastX = 0, lastY = 0, resumeAt = 0;
 
@@ -46,6 +64,7 @@
     g.addColorStop(1, "rgba(166,127,103,0)");
     ctx.fillStyle = g; ctx.fillRect(0, 0, r.width, r.height);
 
+    if (gl) { gl.render({ rotX: rotX, rotY: rotY }); return; }
     mesh.render(ctx, {
       cx: cx, cy: cy,
       scale: Math.min(r.width, r.height) * 0.62 / mesh.extent,
@@ -103,5 +122,7 @@
   sync();
 
   window.addEventListener("resize", draw);
+  attachGL();
+  window.addEventListener("contact3d:ready", attachGL);
   draw();
 })();

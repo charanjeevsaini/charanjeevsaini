@@ -46,10 +46,13 @@
     "copper":           { label: "Copper Rivet",           d: { headDia: 5.0, headThk: 1.1, shankDia: 2.2, shankLen: 4.0, headStyle: "dome",        construction: "solid",   bodyMat: "copper", facing: "none" }, hide: ["facing", "facingThk"] },
     "trimetal-contact": { label: "Trimetal Contact Rivet", d: { headDia: 5.2, headThk: 1.15, shankDia: 2.1, shankLen: 3.2, headStyle: "flat",       construction: "solid",   bodyMat: "copper", facing: "AgNi",  facingThk: 0.6 }, hide: [] },
     "weldable-button":  { label: "Weldable Button Contact Rivet", d: { headDia: 4.6, headThk: 0.9, shankDia: 1.6, shankLen: 1.0, headStyle: "dome", construction: "solid",   bodyMat: "copper", facing: "AgNi",  facingThk: 0.5 }, hide: [] },
-    "bimetal-contact":  { label: "Bimetal Contact Rivet",  d: { headDia: 5.0, headThk: 1.1, shankDia: 2.0, shankLen: 3.4, headStyle: "flat",        construction: "solid",   bodyMat: "copper", facing: "AgCdO", facingThk: 0.55 }, hide: [] },
+    "bimetal-contact":  { label: "Bimetal Contact Rivet",  d: { headDia: 5.0, headThk: 0.95, shankDia: 1.8, shankLen: 0.9, headStyle: "flat",       construction: "solid",   bodyMat: "copper", facing: "AgCdO", facingThk: 0.5 }, hide: [] },
     "disc-contact":     { label: "Disc Contact Rivet",     d: { headDia: 6.0, headThk: 1.0, shankDia: 1.2, shankLen: 0.9, headStyle: "flat",        construction: "solid",   bodyMat: "copper", facing: "AgNi",  facingThk: 0.5 }, hide: [] }
   };
-  var currentType = "semi-tubular";
+  /* Opens on the bimetal contact: its defaults are the button contact from
+     the 3D model scaled to a 5 mm head, so the first part a visitor sees is
+     that model, and every change after it is theirs. */
+  var currentType = "bimetal-contact";
 
   /* Low enough to put the lustre on the head wall, high enough that the
      head still shows a sliver of its top face. The hero and the landing
@@ -73,8 +76,26 @@
     };
   }
 
+  /* The photoreal renderer (contact3d.js) builds each spec as a part in the
+     style of the model's button contact and draws it into a WebGL canvas
+     laid over this one. This canvas keeps the glow, the pointer and the
+     keyboard; the 2D mesh is only the fallback when WebGL is unavailable. */
+  var gl = null;
+  function attachGL() {
+    if (gl || !window.Contact3D) return;
+    try {
+      var wrap = document.createElement("div");
+      wrap.className = "contact3d-wrap";
+      canvas.parentNode.insertBefore(wrap, canvas);
+      wrap.appendChild(canvas);
+      gl = window.Contact3D.createView(wrap, { fill: 0.74 });
+      rebuild();
+    } catch (err) { gl = null; }
+  }
+
   function rebuild() {
     var s = readSpec();
+    if (gl) gl.setModel(window.Contact3D.buildRivet(s));
     mesh = new window.Rivet3D.Mesh(window.Rivet3D.buildProfile({
       headDia: s.headDia, headThk: s.headThk,
       shankDia: s.shankDia, shankLen: s.shankLen,
@@ -138,6 +159,7 @@
     g.addColorStop(1, "rgba(166,127,103,0)");
     ctx.fillStyle = g; ctx.fillRect(0, 0, r.width, r.height);
 
+    if (gl) { gl.render({ rotX: rotX, rotY: rotY }); return; }
     mesh.render(ctx, {
       cx: cx, cy: cy,
       scale: Math.min(r.width, r.height) * 0.66 / mesh.extent,
@@ -306,6 +328,8 @@
   }
 
   window.addEventListener("resize", draw, { passive: true });
+  attachGL();
+  window.addEventListener("contact3d:ready", attachGL);
   if (root.querySelector('.type-chip')) applyType(currentType); else rebuild();
 
   if (window.IntersectionObserver) {

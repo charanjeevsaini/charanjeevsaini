@@ -2574,3 +2574,8 @@ table.spec-table tbody tr:hover { background: var(--copper-wash); }
   .shot { transition: none; transform: none; }
   .showcase-rail { scroll-behavior: auto; }
 }
+
+/* Photoreal part (contact3d.js): a WebGL canvas laid over the 2D canvas,
+   which stays underneath to draw the glow and take the pointer. */
+.contact3d-wrap { position: relative; }
+.contact3d-wrap .contact3d-canvas { border-radius: var(--radius-md); }

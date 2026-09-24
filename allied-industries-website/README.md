@@ -17,6 +17,13 @@ products/metal-rivets.html     Metal Rivets product line
 products/contact-rivets.html   Contact Rivets product line + tolerance chart
 assets/css/styles.css          Design tokens + all styles
 assets/js/main.js              Nav, scroll-reveal, stat counters
+assets/js/contact3d.js         Photoreal 3D parts (three.js / WebGL): the
+                                hero rivet contact and the configurator parts
+assets/js/rivet3d.js           2D canvas fallback renderer (no WebGL)
+assets/js/hero.js              Hero flow + drag / spin for the hero part
+assets/js/cfg-teaser.js        Home-page configurator teaser
+assets/js/configurator.js      Products-page configurator
+assets/vendor/three/           three.js r184 (MIT), self-hosted
 assets/images/                 Real product photography, client logos,
                                 certificate scans (extracted from the
                                 company's own material)

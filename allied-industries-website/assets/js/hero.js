@@ -38,6 +38,32 @@
     coarse ? 44 : 88
   );
 
+  /* The photoreal part. contact3d.js draws the copper rivet contact from the
+     3D model into its own WebGL canvas inside the stage; this script keeps
+     the flow, the drag and the spin, and hands it the angles. Until (or
+     unless) WebGL is available the 2D mesh above stands in. */
+  var gl = null;
+  function attachGL() {
+    if (gl || !window.Contact3D) return;
+    try {
+      gl = window.Contact3D.createView(stage, { fill: 0.70, shadow: 0.55 });
+      gl.setModel(window.Contact3D.buildRivetContact());
+      gl.canvas.style.opacity = "0";
+      if (reduced && W) renderStatic();
+    } catch (err) { gl = null; }
+  }
+  attachGL();
+  window.addEventListener("contact3d:ready", attachGL);
+
+  function drawPart(rotX, rotY, reveal, scale) {
+    if (gl) {
+      gl.canvas.style.opacity = reveal.toFixed(3);
+      gl.render({ rotX: rotX, rotY: rotY, zoom: TS ? scale / TS : 1 });
+      return;
+    }
+    mesh.render(ctx, { cx: TX, cy: TY, scale: scale, rotX: rotX, rotY: rotY, reveal: reveal, alpha: 1 });
+  }
+
   function resize() {
     var br = band.getBoundingClientRect();
     var sr = stage.getBoundingClientRect();
@@ -154,12 +180,7 @@
         tilt += (tiltTarget - tilt) * 0.06 * dt;
         if (now > resumeAt) spin += 0.0042 * dt;
       }
-      mesh.render(ctx, {
-        cx: TX, cy: TY,
-        scale: TS * (0.90 + 0.10 * shown),
-        rotX: tilt, rotY: spin + (dragging ? 0 : spinBias),
-        reveal: shown, alpha: 1
-      });
+      drawPart(tilt, spin + (dragging ? 0 : spinBias), shown, TS * (0.90 + 0.10 * shown));
     }
     window.requestAnimationFrame(frame);
   }
@@ -170,7 +191,7 @@
     glow.addColorStop(0, "rgba(201,144,107,0.20)");
     glow.addColorStop(1, "rgba(201,144,107,0)");
     ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
-    mesh.render(ctx, { cx: TX, cy: TY, scale: TS, rotX: -0.10, rotY: 0.62, reveal: 1, alpha: 1 });
+    drawPart(-0.10, 0.62, 1, TS);
   }
 
   function start() { if (!running && !reduced) { running = true; last = performance.now(); window.requestAnimationFrame(frame); } }
