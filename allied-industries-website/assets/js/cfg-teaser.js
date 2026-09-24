@@ -17,16 +17,13 @@
   var ctx = canvas.getContext("2d");
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* A bimetal contact rivet: it shows both a body material and a contact
-     facing, so the illustration carries more of what the tool can do than a
-     plain rivet would. */
-  var mesh = new window.Rivet3D.Mesh(window.Rivet3D.buildProfile({
-    headDia: 5.0, headThk: 1.1, shankDia: 2.75, shankLen: 2.1,
-    headStyle: "flat", tubular: false, bodyMat: "copper",
-    facingThk: 0.20, facingMat: "silver"
-  }), 88);
+  /* The copper rivet contact from the electrical-contact design study. The
+     hero turns that study's other part, the bimetal button; this one carries
+     the flange chamfers, the fillet into the stem and the countersunk tip,
+     which is the detail the spec list beside it is describing. */
+  var mesh = new window.Rivet3D.Mesh(window.Rivet3D.models.contactRivet(), 72);
 
-  var rotY = 0.62, rotX = -0.10;
+  var rotY = 0.62, rotX = -0.24;
   var dragging = false, lastX = 0, lastY = 0, resumeAt = 0;
 
   function draw() {

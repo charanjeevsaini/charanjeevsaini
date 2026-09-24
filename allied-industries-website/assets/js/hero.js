@@ -30,12 +30,13 @@
   var BUILD_MS = 1500;           // whole part, start to finish
   var buildT0 = 0;
 
+  /* The bimetal button contact from the electrical-contact design study,
+     revolved from that model's own profile rather than an approximation of
+     it: silver facing bonded onto a copper base, with the turned rim and the
+     matte contact face the study distinguishes. */
   var mesh = new window.Rivet3D.Mesh(
-    window.Rivet3D.buildProfile({
-      headDia: 5.2, headThk: 1.15, shankDia: 2.85, shankLen: 2.2,
-      headStyle: "flat", facingThk: 0.20, bodyMat: "copper", facingMat: "silver"
-    }),
-    coarse ? 44 : 88
+    window.Rivet3D.models.bimetalButton(),
+    coarse ? 48 : 96
   );
 
   function resize() {

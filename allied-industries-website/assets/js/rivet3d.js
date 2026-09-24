@@ -14,6 +14,10 @@
   var materials = {
     copper: { r: 216, g: 150, b: 116, spec: 0.42, shine: 20 },
     silver: { r: 212, g: 216, b: 220, spec: 0.50, shine: 30 },
+    /* The contact face is the worked surface — the design model gives it a
+       much higher roughness than the turned rim around it, so it reads matte
+       against a brighter edge. */
+    silverFace: { r: 205, g: 208, b: 210, spec: 0.20, shine: 10 },
     brass:  { r: 214, g: 184, b: 118, spec: 0.42, shine: 20 },
     steel:  { r: 176, g: 182, b: 188, spec: 0.40, shine: 24 },
     nickel: { r: 194, g: 198, b: 196, spec: 0.44, shine: 26 },
@@ -44,6 +48,16 @@
 
     function add(r, yy, mat) { p.push({ r: r, y: yy, mat: mat }); }
 
+    /* Detailing taken from the electrical-contact design study: a cold-headed
+       part has no truly sharp arrises. Its profile chamfers the shank end,
+       fillets the shank into the underside of the head, and chamfers the head
+       top and bottom edges. Sizes are proportional so they hold at any
+       dimension the configurator is set to, and clamped so a small part does
+       not chamfer itself away. */
+    var ch = Math.min(0.10 * shankD, 0.18, shankL * 0.18);   // shank end chamfer
+    var hc = Math.min(0.10 * headT, 0.16, (hr - sr) * 0.30); // head edge chamfer
+    var fl = Math.min(0.22 * (hr - sr), 0.34, shankL * 0.20); // under-head fillet
+
     if (tubular) {
       // Bore wall first, so the open end reads as a tube
       add(sr * 0.52, 0, bodyMat);
@@ -51,19 +65,28 @@
       add(sr, shankL * 0.55, bodyMat);
     } else {
       add(0, 0, bodyMat);
-      add(sr, 0, bodyMat);
+      add(sr - ch, 0, bodyMat);
+      add(sr, ch, bodyMat);            // chamfered shank end
     }
 
-    add(sr, shankL, bodyMat);          // shank wall
-    y = shankL;
+    add(sr, shankL - fl, bodyMat);     // shank wall
 
     if (head === "countersunk") {
-      add(hr, y + headT, bodyMat);     // cone flares up to the head diameter
-      y += headT;
+      add(hr, shankL + headT, bodyMat);  // cone flares up to the head diameter
+      y = shankL + headT;
     } else {
-      add(hr, y, bodyMat);             // head underside
-      add(hr, y + headT, bodyMat);     // head outer wall
-      y += headT;
+      // Fillet out of the shank into the head underside, then chamfer the
+      // head's lower and upper edges.
+      if (fl > 0.01) {
+        add(sr + fl * 0.55, shankL - fl * 0.25, bodyMat);
+        add(sr + fl, shankL, bodyMat);
+      }
+      add(hr - hc, shankL, bodyMat);           // head underside
+      add(hr, shankL + hc, bodyMat);           // bottom edge chamfer
+      add(hr, shankL + headT - hc, bodyMat);   // head wall
+      add(hr - hc, shankL + headT, bodyMat);   // top edge chamfer
+      y = shankL + headT;
+      hr = hr - hc;                            // facing/top sit inside the chamfer
     }
 
     // Contact facing sits on top of the head as its own material band
@@ -91,6 +114,62 @@
 
     return p;
   }
+
+  /* --------------------------------------------------------------------------
+     Models ported from the "Electrical contact 3D model" design study.
+
+     That study is a Three.js scene, and its parts are LatheGeometry — a 2D
+     profile revolved about Y, which is exactly what buildProfile feeds Mesh
+     here. So the profiles carry over point for point, in millimetres, and the
+     shapes on the page are the shapes in the model rather than a likeness of
+     them. What does not carry over is Three's PBR shading; these use the
+     site's own renderer.
+     -------------------------------------------------------------------------- */
+  var models = {
+    /* Copper rivet contact: chamfered flange, fillet into the stem, chamfered
+       tip. `countersink` is the study's faceted tip depth in mm (0 for flat);
+       as a profile it is simply the tip face falling back to the axis. */
+    contactRivet: function (o) {
+      o = o || {};
+      var sink = o.countersink != null ? o.countersink : 1.2;
+      var m = o.bodyMat || "copper";
+      var p = [
+        [0, 0], [5.1, 0], [5.4, 0.25], [5.4, 1.25], [5.15, 1.55],   // flange
+        [3.2, 1.75], [2.75, 1.95], [2.6, 2.3],                       // fillet into stem
+        [2.6, 8.6], [2.45, 8.85], [2.3, 8.9]                         // stem + tip chamfer
+      ].map(function (v) { return { r: v[0], y: v[1], mat: m }; });
+      // Concave tip: the face runs from the chamfer back down to the axis.
+      p.push({ r: 0, y: sink > 0 ? 8.9 - sink : 8.9, mat: m });
+      return p;
+    },
+
+    /* Bimetal button contact: silver facing bonded onto a copper base. The
+       study builds the facing as three separate meshes (rim, face, underside);
+       revolved as one profile they are three bands of the same surface, which
+       is what the real part is. */
+    bimetalButton: function (o) {
+      o = o || {};
+      var base = o.bodyMat || "copper";
+      var rim  = o.facingMat || "silver";
+      var face = o.faceMat || "silverFace";
+      return [
+        { r: 0,    y: 0,     mat: base },
+        { r: 1.6,  y: 0,     mat: base },
+        { r: 1.75, y: 0.15,  mat: base },
+        { r: 1.75, y: 1.6,   mat: base },
+        { r: 4.2,  y: 1.6,   mat: base },
+        { r: 4.6,  y: 1.8,   mat: base },
+        { r: 4.75, y: 2.1,   mat: base },
+        { r: 4.75, y: 3.4,   mat: base },
+        { r: 4.52, y: 3.42,  mat: rim  },   // copper lip around the facing
+        { r: 4.62, y: 3.55,  mat: rim  },
+        { r: 4.6,  y: 4.1,   mat: rim  },
+        { r: 4.45, y: 4.3,   mat: rim  },
+        { r: 4.3,  y: 4.35,  mat: face },
+        { r: 0,    y: 4.35,  mat: face }
+      ];
+    }
+  };
 
   /* --------------------------------------------------------------------------
      Mesh — revolve a profile and render it.
@@ -131,7 +210,13 @@
     // Blend a point's normal with its neighbour only across a tangent-continuous
     // join (the dome). A hard join -- a flat head top meeting the head wall --
     // must stay a crease, or the flat face shades as though it were curved.
-    var CREASE = 0.77;                                // ~40 degrees
+    /* A chamfer is a machined edge, not a curve. At the old ~40 degrees a
+       26-degree chamfer blended into the wall beside it, which rounded off
+       the edge and — worse — left the flat wall with two different end
+       normals, so it shaded as though it were curved and lost its grading
+       around the axis. At ~15 degrees chamfers stay crisp and only genuinely
+       continuous runs, like the dome's 5-degree steps, still blend. */
+    var CREASE = 0.966;                               // ~15 degrees
     function blend(eA, eB) {
       if (!eA) return eB;
       if (!eB) return eA;
@@ -170,23 +255,15 @@
         continue;
       }
 
-      /* Which way does the shading actually change across this band?
+      /* Canvas gradients are linear, so each quad can grade along one axis
+         only. Both axes carry shading: around the axis the normal sweeps a
+         segment's worth, and along the profile it changes wherever the run
+         is curved or blended into a chamfer. Whichever is graded, the other
+         fills flat — and a flat fill around the axis is what drew the
+         vertical stripes down the shank.
 
-         On a straight run — the shank, the head wall, every cylinder — the
-         profile normal is the same at both ends, so a gradient along the
-         profile has nothing to grade and each facet fills flat. Around the
-         axis, though, the normal swings by a full segment's worth. Shading
-         the profile direction there is what drew the vertical lines down
-         the shank: 88 flat stripes.
-
-         On a curved run — the dome — the profile normal does change, and
-         that is the direction worth grading.
-
-         Canvas gradients are linear, so it is one axis per quad. Pick per
-         band, which also keeps this at two shade calls per quad. */
-      var straight = Math.abs(bnA[i][0] - bnB[i][0]) < 1e-4 &&
-                     Math.abs(bnA[i][1] - bnB[i][1]) < 1e-4;
-
+         So carry both pairs of normals and let the renderer pick per quad,
+         by which pair actually differs in colour. */
       for (j = 0; j < seg; j++) {
         var nr = bn[i][0], ny = bn[i][1];
         var aR = bnA[i], bR = bnB[i];
@@ -203,15 +280,12 @@
           y: (a0.y + b0.y) / 2 - cy,
           band: i
         };
-        if (straight) {
-          // Grade around the axis: the normal at this segment's two edges.
-          q.nA = [nr * cos[j], ny, nr * sin[j]];
-          q.nB = [nr * cos[j + 1], ny, nr * sin[j + 1]];
-          q.across = true;                       // edges 0-1 to edges 3-2
-        } else {
-          q.nA = [aR[0] * Math.cos(mj), aR[1], aR[0] * Math.sin(mj)];
-          q.nB = [bR[0] * Math.cos(mj), bR[1], bR[0] * Math.sin(mj)];
-        }
+        // Along the profile: this band's two end normals, at this segment.
+        q.nA = [aR[0] * Math.cos(mj), aR[1], aR[0] * Math.sin(mj)];
+        q.nB = [bR[0] * Math.cos(mj), bR[1], bR[0] * Math.sin(mj)];
+        // Around the axis: the band's normal at this segment's two edges.
+        q.nL = [nr * cos[j], ny, nr * sin[j]];
+        q.nR = [nr * cos[j + 1], ny, nr * sin[j + 1]];
         quads.push(q);
       }
     }
@@ -301,6 +375,7 @@
       ];
     }
     var quads = this.quads, out = [], i, k;
+    var bandAxis = {};      // gradient axis per profile band, settled once a frame
 
     /* The assembly used to cull whole profile bands, so the part arrived in
        about ten visible chunks. Instead sweep a soft frontier up through the
@@ -359,14 +434,39 @@
           nx1 - HK[0] * 0.55, ny2 - HK[1] * 0.55, nz2 - HK[2] * 0.55, q.m);
       }
       if (q.nA && q.nB && pts.length === 4) {
-        var ra = rotN(q.nA), rb = rotN(q.nB);
-        rec.cA = shadeNormal(ra[0], ra[1], ra[2], q.m);
-        rec.cB = shadeNormal(rb[0], rb[1], rb[2], q.m);
-        if (q.across) {
-          // Around the axis: midpoint of edge 0-1 to midpoint of edge 3-2.
+        /* Grade along whichever axis actually varies, judged by colour rather
+           than by geometry: a chamfer that blends into the wall leaves the
+           profile normals differing slightly, which looks like a reason to
+           grade that way while the real variation is still around the axis.
+
+           The answer is a property of the band, not of the segment — a
+           cylinder varies around the axis all the way round, a dome ring
+           varies along the profile all the way round — so it is settled once
+           per band per frame. Deciding it per quad meant four shade calls on
+           every one of ~900 quads and cost 12ms a frame; this is two. */
+        var axis = bandAxis[q.band];
+        if (axis === undefined) {
+          var ra0 = rotN(q.nA), rb0 = rotN(q.nB);
+          var ca0 = shadeNormal(ra0[0], ra0[1], ra0[2], q.m);
+          var cb0 = shadeNormal(rb0[0], rb0[1], rb0[2], q.m);
+          var rl0 = rotN(q.nL), rr0 = rotN(q.nR);
+          var cl0 = shadeNormal(rl0[0], rl0[1], rl0[2], q.m);
+          var cr0 = shadeNormal(rr0[0], rr0[1], rr0[2], q.m);
+          var dAB = Math.abs(ca0[0] - cb0[0]) + Math.abs(ca0[1] - cb0[1]) + Math.abs(ca0[2] - cb0[2]);
+          var dLR = Math.abs(cl0[0] - cr0[0]) + Math.abs(cl0[1] - cr0[1]) + Math.abs(cl0[2] - cr0[2]);
+          axis = bandAxis[q.band] = (dLR >= dAB) ? 1 : 0;   // 1 = around the axis
+        }
+
+        if (axis === 1) {
+          var rl = rotN(q.nL), rr = rotN(q.nR);
+          rec.cA = shadeNormal(rl[0], rl[1], rl[2], q.m);
+          rec.cB = shadeNormal(rr[0], rr[1], rr[2], q.m);
           rec.gA = [(pts[0][0] + pts[1][0]) / 2, (pts[0][1] + pts[1][1]) / 2];
           rec.gB = [(pts[3][0] + pts[2][0]) / 2, (pts[3][1] + pts[2][1]) / 2];
         } else {
+          var ra = rotN(q.nA), rb = rotN(q.nB);
+          rec.cA = shadeNormal(ra[0], ra[1], ra[2], q.m);
+          rec.cB = shadeNormal(rb[0], rb[1], rb[2], q.m);
           rec.gA = [(pts[0][0] + pts[3][0]) / 2, (pts[0][1] + pts[3][1]) / 2];
           rec.gB = [(pts[1][0] + pts[2][0]) / 2, (pts[1][1] + pts[2][1]) / 2];
         }
@@ -427,7 +527,13 @@
       for (var pv = 1; pv < p2.length; pv++) ctx.lineTo(p2[pv][0], p2[pv][1]);
       ctx.closePath();
       var col = "rgb(" + (f2.r | 0) + "," + (f2.g | 0) + "," + (f2.b | 0) + ")";
-      if (f2.cA && (f2.gA[0] !== f2.gB[0] || f2.gA[1] !== f2.gB[1])) {
+      /* A gradient object per quad is the single most expensive thing in this
+         loop, and on any given frame a good share of quads have ends within a
+         shade of each other — on the shadow side, or wherever the surface
+         faces away from both lights. Those fill flat for free. */
+      var flatEnough = f2.cA &&
+        Math.abs(f2.cA[0] - f2.cB[0]) + Math.abs(f2.cA[1] - f2.cB[1]) + Math.abs(f2.cA[2] - f2.cB[2]) < 3;
+      if (f2.cA && !flatEnough && (f2.gA[0] !== f2.gB[0] || f2.gA[1] !== f2.gB[1])) {
         var lg = ctx.createLinearGradient(f2.gA[0], f2.gA[1], f2.gB[0], f2.gB[1]);
         lg.addColorStop(0, "rgb(" + (f2.cA[0]|0) + "," + (f2.cA[1]|0) + "," + (f2.cA[2]|0) + ")");
         lg.addColorStop(1, "rgb(" + (f2.cB[0]|0) + "," + (f2.cB[1]|0) + "," + (f2.cB[2]|0) + ")");
@@ -482,5 +588,5 @@
     }
   };
 
-  global.Rivet3D = { buildProfile: buildProfile, Mesh: Mesh, materials: materials };
+  global.Rivet3D = { buildProfile: buildProfile, Mesh: Mesh, materials: materials, models: models };
 })(window);
