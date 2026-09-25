@@ -196,7 +196,7 @@ export const TYPES = [
     id: "bimetal", name: "Bimetal Contact Rivet", sub: "Ag layer on Cu — flat head",
     desc: "A silver-alloy contact facing pressure-welded to a copper base, then headed. Saves precious metal while keeping full contact performance.",
     build: "Ag contact facing, Cu head & shank", use: "MCBs, wiring switches, contactors",
-    params: [P("headD", "Head diameter", 6, 2, 12, 0.1), P("headH", "Head thickness", 1.6, 0.5, 4), P("edgeR", "Head edge radius", 0.35, 0, 1.5), P("facing", "Facing thickness", 0.3, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 3, 0.8, 6, 0.1), P("shankL", "Shank length", 3, 0.5, 10, 0.1), P("filletR", "Shank-to-head radius", 0.25, 0, 1), P("chamfer", "Shank end chamfer", 0.2, 0, 0.8)],
+    params: [P("headD", "Head diameter", 6, 2, 12, 0.1), P("headH", "Head thickness", 1.6, 0.5, 4), P("edgeR", "Head edge radius", 0.35, 0, 1.5), P("facing", "Facing thickness", 0.1, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 3, 0.8, 6, 0.1), P("shankL", "Shank length", 3, 0.5, 10, 0.1), P("filletR", "Shank-to-head radius", 0.25, 0, 1), P("chamfer", "Shank end chamfer", 0.2, 0, 0.8)],
     mats: [["facing", "Contact facing", FACING, "AgNi 10"], ["base", "Base metal", BASE, "ETP copper"]],
     summary: p => `Head Ø${fmt(p.headD)} × ${fmt(p.headH)} · Facing ${fmt(p.facing)} · Shank Ø${fmt(p.shankD)} × ${fmt(p.shankL)}`,
     make(g, p, m) {
@@ -208,7 +208,7 @@ export const TYPES = [
     id: "radius", name: "Bimetal Radius-Head Rivet", sub: "Crowned Ag face on Cu",
     desc: "A spherical contact face concentrates force at a single point, giving stable resistance on mating contacts that are not perfectly aligned.",
     build: "Domed Ag facing, Cu base", use: "Relays, automotive switches",
-    params: [P("headD", "Head diameter", 5, 2, 12, 0.1), P("headH", "Head height (at crown)", 2, 0.6, 4), P("crownR", "Crown (spherical) radius", 4.5, 1.2, 30, 0.1), P("facing", "Facing thickness", 0.3, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 2.5, 0.8, 6, 0.1), P("shankL", "Shank length", 2.5, 0.5, 10, 0.1), P("filletR", "Shank-to-head radius", 0.22, 0, 1), P("chamfer", "Shank end chamfer", 0.18, 0, 0.8)],
+    params: [P("headD", "Head diameter", 5, 2, 12, 0.1), P("headH", "Head height (at crown)", 2, 0.6, 4), P("crownR", "Crown (spherical) radius", 4.5, 1.2, 30, 0.1), P("facing", "Facing thickness", 0.1, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 2.5, 0.8, 6, 0.1), P("shankL", "Shank length", 2.5, 0.5, 10, 0.1), P("filletR", "Shank-to-head radius", 0.22, 0, 1), P("chamfer", "Shank end chamfer", 0.18, 0, 0.8)],
     mats: [["facing", "Contact facing", FACING, "AgNi 10"], ["base", "Base metal", BASE, "ETP copper"]],
     summary: p => `Head Ø${fmt(p.headD)} × ${fmt(p.headH)} · Crown R${fmt(p.crownR)} · Facing ${fmt(p.facing)} · Shank Ø${fmt(p.shankD)} × ${fmt(p.shankL)}`,
     make(g, p, m) {
@@ -227,7 +227,7 @@ export const TYPES = [
     id: "trimetal", name: "Trimetal Contact Rivet", sub: "Ag · Cu · Ag — both faces",
     desc: "Silver alloy is bonded on both ends of a copper core, so the head and the shank tip each act as a working contact.",
     build: "Ag head facing, Cu core, Ag shank-end facing", use: "Changeover relays, bridging contacts",
-    params: [P("headD", "Head diameter", 6, 2, 12, 0.1), P("headH", "Head thickness", 1.5, 0.5, 4), P("edgeR", "Head edge radius", 0.35, 0, 1.5), P("facingHead", "Facing thickness — head", 0.3, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 3, 0.8, 6, 0.1), P("shankL", "Shank length", 2.4, 0.6, 10, 0.1), P("facingShank", "Facing thickness — shank end", 0.3, 0.1, 0.6, 0.01), P("filletR", "Shank-to-head radius", 0.25, 0, 1), P("chamfer", "Shank end chamfer", 0.25, 0, 0.8)],
+    params: [P("headD", "Head diameter", 6, 2, 12, 0.1), P("headH", "Head thickness", 1.5, 0.5, 4), P("edgeR", "Head edge radius", 0.35, 0, 1.5), P("facingHead", "Facing thickness — head", 0.1, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 3, 0.8, 6, 0.1), P("shankL", "Shank length", 2.4, 0.6, 10, 0.1), P("facingShank", "Facing thickness — shank end", 0.1, 0.1, 0.6, 0.01), P("filletR", "Shank-to-head radius", 0.25, 0, 1), P("chamfer", "Shank end chamfer", 0.25, 0, 0.8)],
     mats: [["facingHead", "Head facing", FACING, "AgCdO 12"], ["facingShank", "Shank-end facing", FACING, "AgCdO 12"], ["base", "Core metal", BASE, "ETP copper"]],
     summary: p => `Head Ø${fmt(p.headD)} × ${fmt(p.headH)} · Shank Ø${fmt(p.shankD)} × ${fmt(p.shankL)} · Facings ${fmt(p.facingHead)} / ${fmt(p.facingShank)}`,
     make(g, p, m) {
@@ -257,7 +257,7 @@ export const TYPES = [
     id: "trimmed", name: "Trimmed Rivet", sub: "Head flats — anti-rotation",
     desc: "Two flats are trimmed on the head so it fits narrow contact arms and locks against rotation in the carrier.",
     build: "Bimetal head with two trimmed flats", use: "Narrow contact arms, rotary switches",
-    params: [P("headD", "Head diameter", 7, 2, 12, 0.1), P("flats", "Width across flats", 5.2, 1, 12, 0.1), P("headH", "Head thickness", 1.6, 0.5, 4), P("facing", "Facing thickness", 0.3, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 2.8, 0.8, 6, 0.1), P("shankL", "Shank length", 2.8, 0.5, 10, 0.1), P("chamfer", "Shank end chamfer", 0.2, 0, 0.8)],
+    params: [P("headD", "Head diameter", 7, 2, 12, 0.1), P("flats", "Width across flats", 5.2, 1, 12, 0.1), P("headH", "Head thickness", 1.6, 0.5, 4), P("facing", "Facing thickness", 0.1, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 2.8, 0.8, 6, 0.1), P("shankL", "Shank length", 2.8, 0.5, 10, 0.1), P("chamfer", "Shank end chamfer", 0.2, 0, 0.8)],
     mats: [["facing", "Contact facing", FACING, "AgNi 10"], ["base", "Base metal", BASE, "ETP copper"]],
     summary: p => `Head Ø${fmt(p.headD)} × ${fmt(p.headH)} · A/F ${fmt(Math.min(p.flats, p.headD))} · Facing ${fmt(p.facing)} · Shank Ø${fmt(p.shankD)} × ${fmt(p.shankL)}`,
     make(g, p, m) {
@@ -274,7 +274,7 @@ export const TYPES = [
     id: "straight", name: "Straight Head Rivet", sub: "Cylindrical head — deep Ag",
     desc: "A tall, straight-sided head carries a thicker contact facing for heavy arcing duty where erosion depth matters.",
     build: "Tall cylindrical head, bimetal", use: "Contactors, motor starters",
-    params: [P("headD", "Head diameter", 4, 1.5, 10, 0.1), P("headH", "Head height", 2.4, 0.6, 6), P("edgeR", "Head edge radius", 0.12, 0, 1), P("facing", "Facing thickness", 0.3, 0.1, 1.2, 0.01), P("shankD", "Shank diameter", 2.6, 0.8, 6, 0.1), P("shankL", "Shank length", 2.5, 0.5, 10, 0.1), P("filletR", "Shank-to-head radius", 0.15, 0, 1), P("chamfer", "Shank end chamfer", 0.18, 0, 0.8)],
+    params: [P("headD", "Head diameter", 4, 1.5, 10, 0.1), P("headH", "Head height", 2.4, 0.6, 6), P("edgeR", "Head edge radius", 0.12, 0, 1), P("facing", "Facing thickness", 0.1, 0.1, 1.2, 0.01), P("shankD", "Shank diameter", 2.6, 0.8, 6, 0.1), P("shankL", "Shank length", 2.5, 0.5, 10, 0.1), P("filletR", "Shank-to-head radius", 0.15, 0, 1), P("chamfer", "Shank end chamfer", 0.18, 0, 0.8)],
     mats: [["facing", "Contact facing", FACING, "AgSnO₂ 12"], ["base", "Base metal", BASE, "ETP copper"]],
     summary: p => `Head Ø${fmt(p.headD)} × ${fmt(p.headH)} · Facing ${fmt(p.facing)} · Shank Ø${fmt(p.shankD)} × ${fmt(p.shankL)}`,
     make(g, p, m) {
@@ -288,8 +288,8 @@ export const TYPES = [
     build: "Ag facing · Cu shank · Ag facing", use: "Bridging contacts, bi-directional relays",
     params: [
       P("neckD", "Shank diameter", 2.6, 0.8, 6, 0.1), P("neckL", "Shank length (between heads)", 0.6, 0.1, 6), P("filletR", "Shank-to-head radius", 0.18, 0, 1),
-      P("head1D", "Head 1 diameter (top)", 5.6, 1.5, 12, 0.1), P("head1H", "Head 1 thickness", 1.1, 0.3, 4), P("head1R", "Head 1 edge radius", 0.15, 0, 1.5), P("facing1", "Head 1 facing thickness", 0.3, 0.1, 0.6, 0.01),
-      P("head2D", "Head 2 diameter (bottom)", 5.6, 1.5, 12, 0.1), P("head2H", "Head 2 thickness", 1.1, 0.3, 4), P("head2R", "Head 2 edge radius", 0.15, 0, 1.5), P("facing2", "Head 2 facing thickness", 0.3, 0.1, 0.6, 0.01)
+      P("head1D", "Head 1 diameter (top)", 5.6, 1.5, 12, 0.1), P("head1H", "Head 1 thickness", 1.1, 0.3, 4), P("head1R", "Head 1 edge radius", 0.15, 0, 1.5), P("facing1", "Head 1 facing thickness", 0.1, 0.1, 0.6, 0.01),
+      P("head2D", "Head 2 diameter (bottom)", 5.6, 1.5, 12, 0.1), P("head2H", "Head 2 thickness", 1.1, 0.3, 4), P("head2R", "Head 2 edge radius", 0.15, 0, 1.5), P("facing2", "Head 2 facing thickness", 0.1, 0.1, 0.6, 0.01)
     ],
     mats: [["facing1", "Head 1 facing", FACING, "AgNi 10"], ["facing2", "Head 2 facing", FACING, "AgNi 10"], ["base", "Core metal", BASE, "ETP copper"]],
     summary: p => `Head 1 Ø${fmt(p.head1D)} × ${fmt(p.head1H)} · Head 2 Ø${fmt(p.head2D)} × ${fmt(p.head2H)} · Shank Ø${fmt(p.neckD)} × ${fmt(p.neckL)} · Facings ${fmt(p.facing1)} / ${fmt(p.facing2)}`,
@@ -311,7 +311,7 @@ export const TYPES = [
     id: "doubleshank", name: "Double Shank Rivet", sub: "Oblong head — twin shanks",
     desc: "An elongated contact head on two shanks: it cannot rotate on the carrier and spreads current across a wider contact face.",
     build: "Oblong bimetal head, two shanks", use: "Heavy-duty switches, isolators",
-    params: [P("headL", "Head length", 9, 3, 20, 0.1), P("headW", "Head width", 4, 1.5, 12, 0.1), P("headH", "Head thickness", 1.6, 0.5, 4), P("cornerR", "Head corner radius", 1.4, 0, 6), P("facing", "Facing thickness", 0.3, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 1.6, 0.6, 5, 0.1), P("shankL", "Shank length", 2.2, 0.5, 10, 0.1), P("pitch", "Shank pitch (centre to centre)", 5.6, 1, 18, 0.1)],
+    params: [P("headL", "Head length", 9, 3, 20, 0.1), P("headW", "Head width", 4, 1.5, 12, 0.1), P("headH", "Head thickness", 1.6, 0.5, 4), P("cornerR", "Head corner radius", 1.4, 0, 6), P("facing", "Facing thickness", 0.1, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 1.6, 0.6, 5, 0.1), P("shankL", "Shank length", 2.2, 0.5, 10, 0.1), P("pitch", "Shank pitch (centre to centre)", 5.6, 1, 18, 0.1)],
     mats: [["facing", "Contact facing", FACING, "AgNi 10"], ["base", "Base metal", BASE, "ETP copper"]],
     summary: p => `Head ${fmt(p.headL)} × ${fmt(p.headW)} × ${fmt(p.headH)} · Facing ${fmt(p.facing)} · Shanks Ø${fmt(p.shankD)} × ${fmt(p.shankL)} @ ${fmt(p.pitch)}`,
     make(g, p, m) {
@@ -333,7 +333,7 @@ export const TYPES = [
     id: "projection", name: "Projection Weldable Contact", sub: "Ag on Ni / steel — weld nubs",
     desc: "No shank: projections under the base resistance-weld the contact straight onto the carrier. The silver facing sits on a weldable base.",
     build: "Ag facing on weldable base with projections", use: "Automated welding lines, appliance controls",
-    params: [P("dia", "Contact diameter", 6, 2, 14, 0.1), P("thick", "Total thickness", 1.4, 0.5, 4), P("crown", "Crown height", 0.15, 0.01, 1, 0.01), P("facing", "Facing thickness", 0.3, 0.1, 0.8, 0.01), P("projD", "Projection diameter", 0.8, 0.2, 2.5), P("projH", "Projection height", 0.3, 0.05, 1, 0.01), P("pcd", "Projection pitch circle Ø", 3.6, 0.5, 12, 0.1), P("count", "Number of projections", 3, 1, 8, 1)],
+    params: [P("dia", "Contact diameter", 6, 2, 14, 0.1), P("thick", "Total thickness", 1.4, 0.5, 4), P("crown", "Crown height", 0.15, 0.01, 1, 0.01), P("facing", "Facing thickness", 0.1, 0.1, 0.8, 0.01), P("projD", "Projection diameter", 0.8, 0.2, 2.5), P("projH", "Projection height", 0.3, 0.05, 1, 0.01), P("pcd", "Projection pitch circle Ø", 3.6, 0.5, 12, 0.1), P("count", "Number of projections", 3, 1, 8, 1)],
     mats: [["facing", "Contact facing", FACING, "AgCdO 12"], ["base", "Weld base", BASE, "Steel"]],
     summary: p => `Ø${fmt(p.dia)} × ${fmt(p.thick)} · Facing ${fmt(p.facing)} · ${p.count} × Ø${fmt(p.projD)} × ${fmt(p.projH)} on Ø${fmt(p.pcd)} PCD`,
     make(g, p, m) {
