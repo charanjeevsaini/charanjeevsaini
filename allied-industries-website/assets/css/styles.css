@@ -3180,3 +3180,177 @@ input[type="range"]::-moz-range-thumb {
 .range-card.glow { --glow-size: 320; }
 .range-card.glow > .glow-wash { background-image: radial-gradient(calc(var(--glow-size) * 1px) calc(var(--glow-size) * 1px) at calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px), hsl(var(--glow-hue) var(--glow-sat) 48% / 0.22), transparent 70%); }
 .range-card.glow > .range-media, .range-card.glow > .range-body, .range-card.glow > .range-go { position: relative; z-index: 1; }
+
+/* ==========================================================================
+   SHINY BUTTON — port of components/ui/shiny-button.tsx (ShinyButton)
+   ----------------------------------------------------------------------------
+   The React component scopes this CSS per instance with useId(); the site is
+   static HTML, so the same rules live here once and apply to every primary
+   button and the floating call button. Values are the component's props,
+   set to the brand:
+     fillColor #2A211B · labelColor #F2EDE6 · accentColor #C8763F
+     accentSoftColor #E7B592 · sweepDuration 3s · easeDuration 0.8s
+     arcWidth 5% · cornerRadius pill · speckle 0.4 · sheen on
+   The component's inner <span> glow is carried by an inset shadow on the
+   button itself, so no markup had to change.
+   ========================================================================== */
+@property --gleam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@property --gleam-angle-offset {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@property --gleam-percent {
+  syntax: "<percentage>";
+  initial-value: 5%;
+  inherits: false;
+}
+@property --gleam-shine {
+  syntax: "<color>";
+  initial-value: white;
+  inherits: false;
+}
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active,
+.float-btn.call,
+.float-btn.call:hover {
+  --gleam-base: #2A211B;
+  --gleam-inset: #1a1512;
+  --gleam-label: #F2EDE6;
+  --gleam-accent: #C8763F;
+  --gleam-accent-soft: #E7B592;
+  --gleam-animation: gleam-angle linear infinite;
+  --gleam-duration: 3s;
+  --gleam-transition: 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+
+  isolation: isolate;
+  position: relative;
+  overflow: hidden;
+  color: var(--gleam-label);
+  text-shadow: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background:
+    linear-gradient(var(--gleam-base), var(--gleam-base)) padding-box,
+    conic-gradient(
+      from calc(var(--gleam-angle) - var(--gleam-angle-offset)),
+      transparent,
+      var(--gleam-accent) var(--gleam-percent),
+      var(--gleam-shine) calc(var(--gleam-percent) * 2),
+      var(--gleam-accent) calc(var(--gleam-percent) * 3),
+      transparent calc(var(--gleam-percent) * 4)
+    ) border-box;
+  box-shadow: inset 0 0 0 1px var(--gleam-inset), 0 10px 24px -14px rgba(42, 33, 27, 0.55);
+  transform: none;
+  transition: var(--gleam-transition);
+  transition-property: --gleam-angle-offset, --gleam-percent, --gleam-shine, box-shadow;
+}
+.btn-primary { padding-inline: 1.9rem; }
+
+/* Speckle: a dot grid revealed by a mask that follows the sweep */
+.btn-primary::before,
+.float-btn.call::before {
+  content: "";
+  display: block;
+  pointer-events: none;
+  position: absolute;
+  inset: auto;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  translate: -50% -50%;
+  z-index: -1;
+  --gleam-size: calc(100% - 6px);
+  --gleam-pos: 2px;
+  --gleam-space: calc(var(--gleam-pos) * 2);
+  width: var(--gleam-size);
+  height: var(--gleam-size);
+  background: radial-gradient(circle at var(--gleam-pos) var(--gleam-pos), white calc(var(--gleam-pos) / 4), transparent 0) padding-box;
+  background-size: var(--gleam-space) var(--gleam-space);
+  background-repeat: space;
+  -webkit-mask-image: conic-gradient(from calc(var(--gleam-angle) + 45deg), black, transparent 10% 90%, black);
+  mask-image: conic-gradient(from calc(var(--gleam-angle) + 45deg), black, transparent 10% 90%, black);
+  border-radius: inherit;
+  opacity: 0.4;
+  transform: none;
+}
+
+/* Sheen: a soft accent wash that turns on hover */
+.btn-primary::after,
+.float-btn.call::after {
+  content: "";
+  display: block;
+  pointer-events: none;
+  position: absolute;
+  inset: auto;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  translate: -50% -50%;
+  z-index: -1;
+  --gleam-animation: gleam-shimmer linear infinite;
+  width: 100%;
+  aspect-ratio: 1;
+  background: linear-gradient(-50deg, transparent, var(--gleam-accent), transparent);
+  -webkit-mask-image: radial-gradient(circle at bottom, transparent 40%, black);
+  mask-image: radial-gradient(circle at bottom, transparent 40%, black);
+  border-radius: 0;
+  opacity: 0.6;
+  transform: none;
+}
+
+.btn-primary,
+.btn-primary::before,
+.btn-primary::after,
+.float-btn.call,
+.float-btn.call::before,
+.float-btn.call::after {
+  animation:
+    var(--gleam-animation) var(--gleam-duration),
+    var(--gleam-animation) calc(var(--gleam-duration) / 0.4) reverse paused;
+  animation-composition: add;
+}
+
+.btn-primary:is(:hover, :focus-visible),
+.float-btn.call:is(:hover, :focus-visible) {
+  --gleam-percent: 20%;
+  --gleam-angle-offset: 95deg;
+  --gleam-shine: var(--gleam-accent-soft);
+  /* the component's inner-span glow */
+  box-shadow: inset 0 0 0 1px var(--gleam-inset), inset 0 -1ex 2rem 4px rgba(200, 118, 63, 0.55), 0 12px 28px -14px rgba(42, 33, 27, 0.6);
+}
+.btn-primary:is(:hover, :focus-visible),
+.btn-primary:is(:hover, :focus-visible)::before,
+.btn-primary:is(:hover, :focus-visible)::after,
+.float-btn.call:is(:hover, :focus-visible),
+.float-btn.call:is(:hover, :focus-visible)::before,
+.float-btn.call:is(:hover, :focus-visible)::after {
+  animation-play-state: running;
+}
+.btn-primary:active,
+.float-btn.call:active { translate: 0 1px; }
+.btn-primary > *, .float-btn.call > * { position: relative; z-index: 1; }
+
+/* On the dark bands the base would vanish into the background: lift it */
+.band .btn-primary, .hero .btn-primary, .cta-band .btn-primary, .lines-band .btn-primary {
+  --gleam-base: #3A2E26;
+  --gleam-inset: #241c17;
+}
+
+@keyframes gleam-angle { to { --gleam-angle: 360deg; } }
+@keyframes gleam-shimmer { to { rotate: 360deg; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary, .btn-primary::before, .btn-primary::after,
+  .float-btn.call, .float-btn.call::before, .float-btn.call::after {
+    animation: none !important;
+  }
+  .btn-primary, .float-btn.call { transition: none; }
+}
+
+/* Every button shares the shiny button's pill silhouette */
+.btn { border-radius: 999px; }
