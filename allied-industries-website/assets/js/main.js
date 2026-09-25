@@ -735,3 +735,43 @@ var clearStagger = (function () {
 
   show(0, false);
 })();
+
+/* ---------------------------------------------------------------------------
+   Products mega menu — opens on hover or keyboard focus (CSS does the showing),
+   this keeps aria-expanded honest, adds a short grace period so a pointer
+   crossing the gap does not snap it shut, and lets Escape close it.
+   ------------------------------------------------------------------------- */
+(function () {
+  "use strict";
+  var item = document.querySelector(".nav-mega");
+  if (!item) return;
+  var trigger = item.querySelector(".nav-mega-trigger");
+  var timer = 0;
+  function set(open) {
+    window.clearTimeout(timer);
+    item.classList.toggle("is-open", open);
+    trigger.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  item.addEventListener("mouseenter", function () { set(true); });
+  item.addEventListener("mouseleave", function () {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(function () { set(false); }, 160);
+  });
+  // After Escape, focus goes back to the trigger without reopening the panel
+  var hushed = false;
+  item.addEventListener("focusin", function () { if (!hushed) set(true); });
+  item.addEventListener("focusout", function (e) {
+    if (!item.contains(e.relatedTarget)) { hushed = false; set(false); }
+  });
+  item.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { hushed = true; set(false); trigger.focus(); }
+    else if (e.key === "ArrowDown" && e.target === trigger) {
+      e.preventDefault(); hushed = false; set(true);
+      var first = item.querySelector(".mega a"); if (first) first.focus();
+    }
+  });
+  // Choosing a link closes the panel (same-page hash links would leave it open)
+  item.querySelectorAll(".mega a").forEach(function (a) {
+    a.addEventListener("click", function () { set(false); if (document.activeElement) document.activeElement.blur(); });
+  });
+})();

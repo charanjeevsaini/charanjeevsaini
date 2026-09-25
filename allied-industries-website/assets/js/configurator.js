@@ -244,6 +244,14 @@ function init() {
   if (m) { const i = TYPES.findIndex(t => t.id === m[1]); if (i >= 0) current = i; }
 
   show(current);
+  // Links from the Products menu change only the hash when already on this page
+  window.addEventListener("hashchange", () => {
+    const h = /^#configurator-(\w+)$/.exec(location.hash);
+    const i = h ? TYPES.findIndex(t => t.id === h[1]) : -1;
+    if (i < 0) return;
+    show(i);
+    document.getElementById("configurator").scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  });
   if (m) requestAnimationFrame(() => document.getElementById("configurator").scrollIntoView({ block: "start" }));
   if (lab) { lab.applyFinish(); lab.applyDisplay(); }
 }

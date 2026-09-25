@@ -23,6 +23,7 @@ assets/js/rivet-lab.js         The ten constructions in 3D (dimensions, alloys,
                                 finishes, section view) for the configurator
 assets/js/rivet3d.js           2D canvas fallback renderer (no WebGL)
 assets/js/hero.js              Hero flow + drag / spin for the hero part
+assets/js/home-stack.js        Home "What we manufacture" stacking cards (scroll depth)
 assets/js/home-configurator.js Home-page configurator section (live part)
 assets/js/configurator.js      Products-page configurator UI (module)
 assets/images/range/           Range thumbnails, rendered from rivet-lab.js
