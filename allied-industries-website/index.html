@@ -1,4 +1,3 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html>
 <html lang="en">
 <head>
@@ -12,10 +11,7 @@
 <link rel="icon" href="assets/images/site/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/images/site/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/images/site/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap"></noscript>
+<link rel="preload" href="assets/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
@@ -93,7 +89,7 @@
         <p class="lede">Allied Industries manufactures Metal Rivets and Contact Rivets from our ISO&nbsp;9001 &amp; IATF&nbsp;16949 certified facility in Mayapuri, New Delhi — supplying wiring harness, switchgear and automotive electrical component makers across India and abroad.</p>
         <div class="btn-group" style="margin-top: var(--space-5);">
           <a class="btn btn-primary" href="contact.html">Request a Quote</a>
-          <a class="btn btn-ghost-invert" href="products.html#metal-rivets">Browse Products</a>
+          <a class="btn btn-ghost-invert" href="products.html#range">Browse Products</a>
         </div>
       </div>
       <div class="hero-media" data-reveal="scale" style="transition-delay: 140ms;">
@@ -148,6 +144,7 @@
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="5" width="3.5" height="14" rx="1"/><rect x="13.5" y="5" width="3.5" height="14" rx="1"/></svg>
         </button>
       </div>
+    </div>
   </section>
 
   <!-- PRODUCT OVERVIEW — the range by construction, as stacking cards -->
@@ -173,7 +170,7 @@
             <p class="stack-tag">One material, end to end.</p>
             <p class="stack-desc">Cold-headed from a single wire — solid silver alloy for contacts, ETP copper for conductors. The simplest construction and the strongest joint.</p>
             <dl class="stack-facts"><dt>Built</dt><dd>Single metal, solid shank</dd><dt>Set by</dt><dd>Upsetting the whole tail</dd><dt>Used in</dt><dd>Low-current contacts, earth bonding</dd></dl>
-            <ul class="stack-types" aria-label="Solid rivets we make"><li><a href="products.html#configurator-solid"><img src="assets/images/range/solid.webp" alt="" width="44" height="44" loading="lazy"><span>Solid Contact Rivet</span></a></li><li><a href="products.html#range"><svg class="glyph" viewBox="0 0 40 40" aria-hidden="true"><rect x="9" y="11" width="22" height="7" rx="2.5" fill="#C8763F"/><rect x="16" y="17" width="8" height="13" rx="1.5" fill="#A6613C"/></svg><span>Copper Rivet</span></a></li></ul>
+            <ul class="stack-types"><li><a href="products.html#configurator-solid"><img src="assets/images/range/solid.webp" alt="" width="44" height="44" loading="lazy"><span>Solid Contact Rivet</span></a></li><li><a href="products.html#range"><svg class="glyph" viewBox="0 0 40 40" aria-hidden="true"><rect x="9" y="11" width="22" height="7" rx="2.5" fill="#C8763F"/><rect x="16" y="17" width="8" height="13" rx="1.5" fill="#A6613C"/></svg><span>Copper Rivet</span></a></li></ul>
           </div>
           <div class="stack-media">
             <img src="assets/images/renders/solid.webp" alt="Rendered solid rivets in copper and silver" loading="lazy">
@@ -187,7 +184,7 @@
             <p class="stack-tag">A blind bore in the tail.</p>
             <p class="stack-desc">The shank end is drilled shallower than its diameter, so the tail rolls over instead of upsetting — about a quarter of a solid rivet&#x27;s setting force, gentle on thin terminals and plastic housings.</p>
             <dl class="stack-facts"><dt>Built</dt><dd>Solid head, bored shank end</dd><dt>Set by</dt><dd>Rolling the bored tail outward</dd><dt>Used in</dt><dd>Terminal fixing, switch assemblies</dd></dl>
-            <ul class="stack-types" aria-label="Semi-tubular rivets we make"><li><a href="products.html#configurator-semitubular"><img src="assets/images/range/semitubular.webp" alt="" width="44" height="44" loading="lazy"><span>Semi-Tubular Rivet</span></a></li></ul>
+            <ul class="stack-types"><li><a href="products.html#configurator-semitubular"><img src="assets/images/range/semitubular.webp" alt="" width="44" height="44" loading="lazy"><span>Semi-Tubular Rivet</span></a></li></ul>
           </div>
           <div class="stack-media">
             <img src="assets/images/renders/semitubular.webp" alt="Rendered semi-tubular rivets in brass and nickel, bored shank ends visible" loading="lazy">
@@ -201,7 +198,7 @@
             <p class="stack-tag">Silver where it switches, copper everywhere else.</p>
             <p class="stack-desc">A silver-alloy facing is bonded to a copper body — on the head (bimetal) or on both ends (trimetal). Full contact performance with a fraction of the precious metal.</p>
             <dl class="stack-facts"><dt>Built</dt><dd>Ag facing bonded to a Cu base</dd><dt>Facings</dt><dd>AgNi, AgCdO, AgSnO₂, Ag 99.9, hard gold</dd><dt>Used in</dt><dd>MCBs, relays, contactors</dd></dl>
-            <ul class="stack-types" aria-label="Composite contact rivets we make"><li><a href="products.html#configurator-bimetal"><img src="assets/images/range/bimetal.webp" alt="" width="44" height="44" loading="lazy"><span>Bimetal Contact</span></a></li><li><a href="products.html#configurator-radius"><img src="assets/images/range/radius.webp" alt="" width="44" height="44" loading="lazy"><span>Bimetal Radius-Head</span></a></li><li><a href="products.html#configurator-trimetal"><img src="assets/images/range/trimetal.webp" alt="" width="44" height="44" loading="lazy"><span>Trimetal Contact</span></a></li><li><a href="products.html#configurator-straight"><img src="assets/images/range/straight.webp" alt="" width="44" height="44" loading="lazy"><span>Straight Head</span></a></li></ul>
+            <ul class="stack-types"><li><a href="products.html#configurator-bimetal"><img src="assets/images/range/bimetal.webp" alt="" width="44" height="44" loading="lazy"><span>Bimetal Contact</span></a></li><li><a href="products.html#configurator-radius"><img src="assets/images/range/radius.webp" alt="" width="44" height="44" loading="lazy"><span>Bimetal Radius-Head</span></a></li><li><a href="products.html#configurator-trimetal"><img src="assets/images/range/trimetal.webp" alt="" width="44" height="44" loading="lazy"><span>Trimetal Contact</span></a></li><li><a href="products.html#configurator-straight"><img src="assets/images/range/straight.webp" alt="" width="44" height="44" loading="lazy"><span>Straight Head</span></a></li></ul>
           </div>
           <div class="stack-media">
             <img src="assets/images/renders/composite.webp" alt="Rendered composite contact rivets, silver facings on copper bodies" loading="lazy">
@@ -215,7 +212,7 @@
             <p class="stack-tag">Shaped to the carrier they sit in.</p>
             <p class="stack-desc">Heads trimmed with flats, formed to non-round profiles, doubled, or carried on two shanks — geometry that locks against rotation, bridges two contacts or spreads current over a wider face.</p>
             <dl class="stack-facts"><dt>Built</dt><dd>Trimmed or formed heads, double head or shank</dd><dt>Solves</dt><dd>Anti-rotation, bridging, wide contact faces</dd><dt>Used in</dt><dd>Rotary switches, isolators, bridging contacts</dd></dl>
-            <ul class="stack-types" aria-label="Special-form rivets we make"><li><a href="products.html#configurator-trimmed"><img src="assets/images/range/trimmed.webp" alt="" width="44" height="44" loading="lazy"><span>Trimmed Rivet</span></a></li><li><a href="products.html#range"><svg class="glyph" viewBox="0 0 40 40" aria-hidden="true"><rect x="9" y="11" width="22" height="7" rx="2.5" fill="#C8763F"/><rect x="16" y="17" width="8" height="13" rx="1.5" fill="#A6613C"/></svg><span>Formed Rivet</span></a></li><li><a href="products.html#configurator-doublehead"><img src="assets/images/range/doublehead.webp" alt="" width="44" height="44" loading="lazy"><span>Double Head</span></a></li><li><a href="products.html#configurator-doubleshank"><img src="assets/images/range/doubleshank.webp" alt="" width="44" height="44" loading="lazy"><span>Double Shank</span></a></li></ul>
+            <ul class="stack-types"><li><a href="products.html#configurator-trimmed"><img src="assets/images/range/trimmed.webp" alt="" width="44" height="44" loading="lazy"><span>Trimmed Rivet</span></a></li><li><a href="products.html#range"><svg class="glyph" viewBox="0 0 40 40" aria-hidden="true"><rect x="9" y="11" width="22" height="7" rx="2.5" fill="#C8763F"/><rect x="16" y="17" width="8" height="13" rx="1.5" fill="#A6613C"/></svg><span>Formed Rivet</span></a></li><li><a href="products.html#configurator-doublehead"><img src="assets/images/range/doublehead.webp" alt="" width="44" height="44" loading="lazy"><span>Double Head</span></a></li><li><a href="products.html#configurator-doubleshank"><img src="assets/images/range/doubleshank.webp" alt="" width="44" height="44" loading="lazy"><span>Double Shank</span></a></li></ul>
           </div>
           <div class="stack-media">
             <img src="assets/images/renders/special.webp" alt="Rendered special-form rivets with trimmed, oblong and double-shank heads" loading="lazy">
@@ -229,7 +226,7 @@
             <p class="stack-tag">No shank — welded straight on.</p>
             <p class="stack-desc">A contact facing on a weldable nickel, steel or CuNi base, resistance-welded to the carrier through projections or a flat back. No hole and no riveting step, built for automated lines.</p>
             <dl class="stack-facts"><dt>Built</dt><dd>Ag facing on a weldable base</dd><dt>Set by</dt><dd>Projection or resistance welding</dd><dt>Used in</dt><dd>Appliance controls, automated assembly</dd></dl>
-            <ul class="stack-types" aria-label="Weldable contacts we make"><li><a href="products.html#configurator-projection"><img src="assets/images/range/projection.webp" alt="" width="44" height="44" loading="lazy"><span>Projection Weldable</span></a></li><li><a href="products.html#range"><svg class="glyph" viewBox="0 0 40 40" aria-hidden="true"><rect x="9" y="11" width="22" height="7" rx="2.5" fill="#C8763F"/><rect x="16" y="17" width="8" height="13" rx="1.5" fill="#A6613C"/></svg><span>Weldable Button</span></a></li><li><a href="products.html#range"><svg class="glyph" viewBox="0 0 40 40" aria-hidden="true"><rect x="9" y="11" width="22" height="7" rx="2.5" fill="#C8763F"/><rect x="16" y="17" width="8" height="13" rx="1.5" fill="#A6613C"/></svg><span>Disc Contact</span></a></li></ul>
+            <ul class="stack-types"><li><a href="products.html#configurator-projection"><img src="assets/images/range/projection.webp" alt="" width="44" height="44" loading="lazy"><span>Projection Weldable</span></a></li><li><a href="products.html#range"><svg class="glyph" viewBox="0 0 40 40" aria-hidden="true"><rect x="9" y="11" width="22" height="7" rx="2.5" fill="#C8763F"/><rect x="16" y="17" width="8" height="13" rx="1.5" fill="#A6613C"/></svg><span>Weldable Button</span></a></li><li><a href="products.html#range"><svg class="glyph" viewBox="0 0 40 40" aria-hidden="true"><rect x="9" y="11" width="22" height="7" rx="2.5" fill="#C8763F"/><rect x="16" y="17" width="8" height="13" rx="1.5" fill="#A6613C"/></svg><span>Disc Contact</span></a></li></ul>
           </div>
           <div class="stack-media">
             <img src="assets/images/renders/weldable.webp" alt="Rendered weldable contacts, silver discs and buttons with weld projections" loading="lazy">
@@ -241,32 +238,47 @@
   </section>
 
   <!-- WHY US -->
-  <section class="section-sunken">
-    <div class="container">
-      <div class="section-head" data-reveal>
+  <section class="why-band">
+    <div class="container why-grid">
+      <div class="why-intro" data-reveal>
         <span class="eyebrow">Why manufacturers work with us</span>
-        <h2>Client-focused, quality-first, built to hold tolerance at volume</h2>
+        <h2>Client-focused, quality-first, built to hold tolerance at volume.</h2>
+        <p class="lede">Twenty-seven years of supplying India's automotive and electrical OEMs, on one certified floor in Mayapuri, New Delhi.</p>
+        <ul class="why-certs">
+          <li><strong>ISO 9001:2015</strong><span>Quality management</span></li>
+          <li><strong>IATF 16949:2016</strong><span>Automotive quality</span></li>
+        </ul>
+        <a class="why-link" href="quality.html">See our certifications <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
-      <div class="card-grid cols-3" data-reveal-group>
-        <div class="feature-card glow tilt" data-tilt="7" data-reveal>
-          <div class="glow-wash" aria-hidden="true"></div>
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.5L21 11l-6.6 2.5L12 20l-2.4-6.5L3 11l6.6-2.5L12 2z"/></svg></span>
-          <h3>Certified quality system</h3>
-          <p>Manufacturing is governed by a documented ISO 9001:2015 &amp; IATF 16949:2016 quality management system, with in-house testing at every stage.</p>
-        </div>
-        <div class="feature-card glow tilt" data-tilt="7" data-reveal>
-          <div class="glow-wash" aria-hidden="true"></div>
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="1.5"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18"/></svg></span>
-          <h3>Built for custom drawings</h3>
-          <p>Close-tolerance production to customer drawings — head diameter, shank length, layer thickness and alloy composition specified by you.</p>
-        </div>
-        <div class="feature-card glow tilt" data-tilt="7" data-reveal>
-          <div class="glow-wash" aria-hidden="true"></div>
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-8.5-8.5"/><path d="M20.5 12L12 12l4-7"/></svg></span>
-          <h3>Full-cycle infrastructure</h3>
-          <p>Production, R&amp;D, quality testing, warehousing &amp; packaging and after-sales support under one roof — able to absorb bulk orders with consistency.</p>
-        </div>
-      </div>
+      <ol class="why-list" data-reveal-group>
+          <li class="why-row glow" data-reveal>
+            <div class="glow-wash" aria-hidden="true"></div>
+            <span class="why-num">01</span>
+            <span class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"/><path d="M8.8 12.2l2.2 2.2 4.2-4.6"/></svg></span>
+            <div class="why-text">
+              <h3>Certified quality system</h3>
+              <p>Manufacturing runs under a documented ISO 9001:2015 &amp; IATF 16949:2016 quality management system, with in-house testing at every stage.</p>
+            </div>
+          </li>
+          <li class="why-row glow" data-reveal>
+            <div class="glow-wash" aria-hidden="true"></div>
+            <span class="why-num">02</span>
+            <span class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20L20 4"/><path d="M4 20V8l12 12H4z"/><path d="M8 16h2v-2"/><path d="M15 4l5 5"/></svg></span>
+            <div class="why-text">
+              <h3>Built to your drawing</h3>
+              <p>Close-tolerance production to customer drawings — head diameter, shank length, layer thickness and alloy composition specified by you.</p>
+            </div>
+          </li>
+          <li class="why-row glow" data-reveal>
+            <div class="glow-wash" aria-hidden="true"></div>
+            <span class="why-num">03</span>
+            <span class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/><path d="M12 8v4l2.5 2.5"/></svg></span>
+            <div class="why-text">
+              <h3>The whole cycle under one roof</h3>
+              <p>Production, R&amp;D, quality testing, warehousing &amp; packaging and after-sales support in one facility — able to absorb bulk orders with consistency.</p>
+            </div>
+          </li>
+      </ol>
     </div>
   </section>
 
@@ -277,7 +289,7 @@
         <div class="cfg-promo-stage" id="promoStage">
           <img class="cfg-promo-fallback" src="assets/images/range/bimetal.webp" alt="Bimetal contact rivet from the configurator" width="480" height="480">
           <span class="cfg-promo-badge">Bimetal Contact Rivet · live preview</span>
-          <ul class="cfg-promo-dims" aria-label="The part's specification">
+          <ul class="cfg-promo-dims">
             <li class="d-head"><b>Head</b> Ø 6.00 × 1.60 mm</li>
             <li class="d-face"><b>Facing</b> AgNi 10 · 0.10 mm</li>
             <li class="d-base"><b>Base</b> ETP copper</li>
@@ -340,10 +352,10 @@
     <div class="footer-brand">
       <a class="brand" href="index.html">
         <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
-        <defs><mask id="bm-slit"><rect width="100" height="100" fill="#fff"/><rect x="14" y="47.6" width="72" height="4.8" fill="#000"/></mask></defs>
+        <defs><mask id="bm-slit-f"><rect width="100" height="100" fill="#fff"/><rect x="14" y="47.6" width="72" height="4.8" fill="#000"/></mask></defs>
         <rect width="100" height="100" rx="26" fill="#1A1C20"/>
         <circle cx="50" cy="26" r="8.6" fill="#C8763F"/>
-        <g mask="url(#bm-slit)" fill="#F2F0EB"><circle cx="31.5" cy="50" r="10.8"/><circle cx="68.5" cy="50" r="10.8"/></g>
+        <g mask="url(#bm-slit-f)" fill="#F2F0EB"><circle cx="31.5" cy="50" r="10.8"/><circle cx="68.5" cy="50" r="10.8"/></g>
         <circle cx="27" cy="75" r="8.6" fill="#C8763F"/><circle cx="50" cy="75" r="8.6" fill="#C8763F"/><circle cx="73" cy="75" r="8.6" fill="#C8763F"/>
       </svg>
         <span class="brand-word">
@@ -360,8 +372,9 @@
     <div class="footer-col">
       <h3>Products</h3>
       <ul>
-        <li><a href="products.html#metal-rivets">Metal Rivets</a></li>
-        <li><a href="products.html#contact-rivets">Contact Rivets</a></li>
+        <li><a href="products.html#range">The full range</a></li>
+        <li><a href="products.html#configurator">Rivet configurator</a></li>
+        <li><a href="products.html#technical-data">Materials guide</a></li>
         <li><a href="quality.html">Quality Certification</a></li>
         <li><a href="gallery.html">Gallery</a></li>
       </ul>
@@ -416,5 +429,3 @@
 <script type="module" src="assets/js/home-configurator.js"></script>
 </body>
 </html>
-
-</body></html>

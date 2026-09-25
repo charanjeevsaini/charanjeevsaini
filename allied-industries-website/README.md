@@ -53,5 +53,5 @@ endpoint — no other changes needed.
   no-key `output=embed` query form) but depends on the visitor's network
   allowing `google.com` — the address is also shown as plain text above
   it as a fallback.
-- Fonts (IBM Plex Sans / IBM Plex Mono) load from Google Fonts; the CSS
-  falls back to system fonts if that's blocked on a given network.
+- Font: Space Grotesk (variable, 300–700), self-hosted in `assets/fonts/`
+  under the SIL Open Font License; no third-party font requests.

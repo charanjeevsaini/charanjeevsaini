@@ -8,6 +8,24 @@
    whole site stays fast on low-end Android.
    ========================================================================== */
 
+/* Space Grotesk, self-hosted (variable, 300–700; SIL OFL — see assets/fonts) */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url(../fonts/space-grotesk-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url(../fonts/space-grotesk-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 /* ---------------------------------------------------------------- tokens -- */
 :root {
   /* ---- Surfaces: beige ground, near-white cards, sampled from the brief's
@@ -62,7 +80,10 @@
   /* ---- Type ---- */
   --font-display: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
   --font-body:    'Space Grotesk', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --font-mono:    'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* One family site-wide. Labels that used to be monospaced keep their
+     small-caps treatment (uppercase + tracking) but are now Space Grotesk;
+     figures that must line up use tabular numerals instead of a mono face. */
+  --font-mono:    var(--font-body);
 
   --step--2: clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
   --step--1: clamp(0.84rem, 0.81rem + 0.14vw, 0.92rem);
@@ -3523,3 +3544,150 @@ html:not(.js) .nav-mega:hover .mega-col { opacity: 1; transform: none; }
 @media (min-width: 861px) and (max-height: 640px) {
   .stack-desc { -webkit-line-clamp: 2; }
 }
+
+/* ==========================================================================
+   HOME — "Why manufacturers work with us": a deep espresso band between the
+   light product stack and the light configurator, so the page alternates
+   instead of running one light section into the next.
+   ========================================================================== */
+main > section.why-band { padding-block: var(--space-8); }
+.why-band {
+  position: relative;
+  color: var(--band-text);
+  background:
+    radial-gradient(50% 70% at 0% 0%, rgba(200, 118, 63, 0.14), rgba(200, 118, 63, 0) 70%),
+    radial-gradient(40% 60% at 100% 100%, rgba(200, 118, 63, 0.08), rgba(200, 118, 63, 0) 70%),
+    #221A15;
+  overflow: hidden;
+}
+.why-grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: var(--space-8); align-items: start; }
+.why-intro { position: sticky; top: calc(var(--header-h) + var(--space-6)); }
+.why-intro .eyebrow { color: var(--band-copper); }
+.why-intro h2 { margin: var(--space-3) 0 var(--space-4); color: var(--band-text); font-size: clamp(2rem, 1.4rem + 1.9vw, 3rem); line-height: 1.08; letter-spacing: -0.015em; max-width: 16ch; }
+.why-intro .lede { color: var(--band-dim); font-size: var(--step-0); max-width: 42ch; margin: 0 0 var(--space-5); }
+.why-certs { list-style: none; margin: 0 0 var(--space-5); padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.why-certs li {
+  display: inline-flex; align-items: baseline; gap: 8px;
+  padding: 9px 16px; border-radius: 999px;
+  border: 1px solid rgba(231, 181, 146, 0.28);
+  background: rgba(242, 237, 230, 0.04);
+  font-size: var(--step--1); color: var(--band-dim);
+}
+.why-certs strong { color: var(--band-text); font-weight: 600; }
+.why-link { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: var(--step--1); color: #E7B592; }
+.why-link svg { width: 17px; height: 17px; transition: transform var(--dur-base) var(--ease-out); }
+.why-link:hover svg { transform: translateX(4px); }
+
+.why-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--band-line); }
+.why-row {
+  position: relative;
+  display: grid; grid-template-columns: 44px 52px minmax(0, 1fr); gap: var(--space-4);
+  align-items: start;
+  padding: var(--space-5) var(--space-4) var(--space-5) var(--space-2);
+  border-bottom: 1px solid var(--band-line);
+  transition: background-color var(--dur-base) var(--ease-out);
+}
+.why-row:hover { background: rgba(242, 237, 230, 0.03); }
+.why-num { font-size: var(--step--1); font-weight: 600; letter-spacing: 0.08em; color: var(--band-copper); padding-top: 14px; font-variant-numeric: tabular-nums; }
+.why-icon {
+  display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%;
+  color: #E7B592; border: 1px solid rgba(231, 181, 146, 0.35);
+  background: radial-gradient(circle at 50% 30%, rgba(200, 118, 63, 0.22), rgba(200, 118, 63, 0.04));
+  transition: transform 500ms var(--ease-out), border-color var(--dur-base) var(--ease-out);
+}
+.why-icon svg { width: 24px; height: 24px; }
+.why-row:hover .why-icon { transform: rotate(-8deg) scale(1.06); border-color: rgba(231, 181, 146, 0.7); }
+.why-text h3 { margin: 6px 0 var(--space-2); font-size: var(--step-1); color: var(--band-text); letter-spacing: -0.005em; }
+.why-text p { margin: 0; color: var(--band-dim); font-size: var(--step--1); line-height: 1.65; max-width: 54ch; }
+/* The spotlight reads warmer on the dark band */
+.why-row.glow > .glow-wash { background-image: radial-gradient(calc(var(--glow-size) * 1.2px) calc(var(--glow-size) * 1.2px) at calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px), hsl(var(--glow-hue) 70% 55% / 0.14), transparent 70%); }
+.why-row.glow::before, .why-row.glow::after { border-radius: 0; }
+
+@media (max-width: 900px) {
+  .why-grid { grid-template-columns: 1fr; gap: var(--space-6); }
+  .why-intro { position: static; }
+  .why-row { grid-template-columns: 36px 44px minmax(0, 1fr); gap: var(--space-3); padding-inline: 0; }
+  .why-icon { width: 44px; height: 44px; }
+}
+
+/* ==========================================================================
+   FINISH PASS — one typographic system and the last layer of polish
+   Space Grotesk throughout (self-hosted, 300–700):
+     display  600, tight tracking, balanced lines      (section + card titles)
+     accent   600, copper                              (taglines, chips, links)
+     label    500, uppercase, 0.14em tracking, small    (eyebrows, spec terms)
+     body     400, 1.65 leading                         (running text)
+   ========================================================================== */
+h1, h2, h3, h4 {
+  font-weight: 600;
+  font-variation-settings: normal;
+  letter-spacing: -0.024em;
+  text-wrap: balance;
+}
+h1 { letter-spacing: -0.032em; line-height: 1.04; }
+h2 { letter-spacing: -0.028em; line-height: 1.08; }
+h3 { letter-spacing: -0.014em; line-height: 1.18; }
+body { line-height: 1.65; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+.lede { letter-spacing: -0.005em; }
+
+/* Every former monospace label: the same small tracked caps */
+.eyebrow, .strip-label, .stack-kicker, .stack-facts dt, .stack-media-tag, .lab-row,
+.lab-spec dt, .guide-sub, .size-meta b, .size-tol b, .mega-foot > span, .cfg-promo-badge,
+.cfg-promo-dims b, .cfg-promo-range p, .footer-col h3, .breadcrumb, .cert-meta {
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+.eyebrow { letter-spacing: 0.16em; }
+/* Numbers that sit in columns stay aligned without a mono face */
+.stat-num, .stack-num, .range-num, .lab-num, .step-num, .why-num, .mega-h span,
+.lab-num-in input, .size-table, .spec-table td, .cfg-promo-dims li {
+  font-variant-numeric: tabular-nums;
+}
+.stat-num { font-weight: 500; letter-spacing: -0.03em; }
+.lab-num-in input { font-family: var(--font-body); }
+
+/* ---- prose rhythm (About, Careers) ---- */
+.prose h2 { margin: var(--space-3) 0 var(--space-4); }
+.prose .eyebrow + h2 { margin-top: var(--space-3); }
+.prose p + p { margin-top: var(--space-3); }
+
+/* ---- About: process steps read as a spec sheet, not boxes of small print ---- */
+.step { grid-template-columns: minmax(170px, 230px) 1fr; padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg); }
+.step-num { font-size: var(--step--1); letter-spacing: 0.08em; text-transform: uppercase; color: var(--copper-ink); padding-top: 3px; font-weight: 600; }
+.step h3 { font-size: var(--step-1); margin-bottom: 6px; }
+.step p { font-size: var(--step-0); line-height: 1.6; }
+
+/* ---- Quality: certificates framed identically ---- */
+.cert-card img { aspect-ratio: 4 / 3; object-fit: contain; padding: 6px; }
+.cert-card { border-radius: var(--radius-lg); }
+
+/* ---- Careers: the form sits on a card like the contact form ---- */
+.form-card {
+  padding: var(--space-6);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 50px -30px rgba(42, 33, 27, 0.28), 0 1px 3px rgba(42, 33, 27, 0.05);
+}
+@media (max-width: 640px) { .form-card { padding: var(--space-4); } }
+
+/* ---- Page heroes: a hairline copper rule and more air ---- */
+.page-hero { padding-block: var(--space-7) var(--space-6); }
+.page-hero h1 { font-size: clamp(2.4rem, 1.6rem + 2.6vw, 3.9rem); }
+
+/* ---- Cards across the site: one radius, one shadow language ---- */
+.feature-card, .cert-card, .contact-action, .side-card, .range-card, .table-wrap, .notice {
+  border-radius: var(--radius-lg);
+}
+.spec-table th[scope="col"] { font-weight: 600; letter-spacing: 0.06em; }
+
+/* ---- Footer ---- */
+.footer-col h3 { letter-spacing: 0.14em; }
+.site-footer a { transition: color var(--dur-fast) var(--ease-out); }
+.site-footer a:hover { color: #E7B592; }
+
+/* ---- Selection and scrollbar in brand colour ---- */
+::selection { background: rgba(200, 118, 63, 0.28); color: var(--text); }
+html { scrollbar-color: #b9a592 transparent; }
+.two-col:has(.form-card) { align-items: start; }
+.two-col:has(.form-card) > .prose:first-child { padding-top: var(--space-4); }

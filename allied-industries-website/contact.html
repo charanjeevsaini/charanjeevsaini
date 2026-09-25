@@ -11,10 +11,7 @@
 <link rel="icon" href="assets/images/site/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/images/site/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/images/site/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap"></noscript>
+<link rel="preload" href="assets/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
@@ -137,7 +134,7 @@
         <form id="contactForm" data-validate
                     data-mailto="info@alliedindustries.in"
                     data-subject="Website enquiry — Allied Industries">
-                <h3 style="margin-top:0;">Send a message</h3>
+                
                 <div class="error-summary" id="contactErrors" tabindex="-1" role="alert">
                   <h3>Please fix the following before sending</h3>
                   <ul></ul>
@@ -217,7 +214,7 @@
             <iframe
               title="Allied Industries location — Mayapuri Industrial Area, New Delhi"
               src="https://www.google.com/maps?q=A-13%2C+Phase-2%2C+Mayapuri+Industrial+Area%2C+New+Delhi+110064&amp;output=embed"
-              width="100%" height="260" style="border:0;display:block;" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+              width="600" height="260" style="border:0;display:block;width:100%;" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
             </iframe>
           </div>
           <a class="btn btn-outline btn-sm" style="margin-top:var(--space-4);" href="https://www.google.com/maps?q=A-13%2C+Phase-2%2C+Mayapuri+Industrial+Area%2C+New+Delhi+110064" target="_blank" rel="noopener">Open in Maps</a>
@@ -252,10 +249,10 @@
     <div class="footer-brand">
       <a class="brand" href="index.html">
         <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
-        <defs><mask id="bm-slit"><rect width="100" height="100" fill="#fff"/><rect x="14" y="47.6" width="72" height="4.8" fill="#000"/></mask></defs>
+        <defs><mask id="bm-slit-f"><rect width="100" height="100" fill="#fff"/><rect x="14" y="47.6" width="72" height="4.8" fill="#000"/></mask></defs>
         <rect width="100" height="100" rx="26" fill="#1A1C20"/>
         <circle cx="50" cy="26" r="8.6" fill="#C8763F"/>
-        <g mask="url(#bm-slit)" fill="#F2F0EB"><circle cx="31.5" cy="50" r="10.8"/><circle cx="68.5" cy="50" r="10.8"/></g>
+        <g mask="url(#bm-slit-f)" fill="#F2F0EB"><circle cx="31.5" cy="50" r="10.8"/><circle cx="68.5" cy="50" r="10.8"/></g>
         <circle cx="27" cy="75" r="8.6" fill="#C8763F"/><circle cx="50" cy="75" r="8.6" fill="#C8763F"/><circle cx="73" cy="75" r="8.6" fill="#C8763F"/>
       </svg>
         <span class="brand-word">
@@ -272,8 +269,9 @@
     <div class="footer-col">
       <h3>Products</h3>
       <ul>
-        <li><a href="products.html#metal-rivets">Metal Rivets</a></li>
-        <li><a href="products.html#contact-rivets">Contact Rivets</a></li>
+        <li><a href="products.html#range">The full range</a></li>
+        <li><a href="products.html#configurator">Rivet configurator</a></li>
+        <li><a href="products.html#technical-data">Materials guide</a></li>
         <li><a href="quality.html">Quality Certification</a></li>
         <li><a href="gallery.html">Gallery</a></li>
       </ul>
