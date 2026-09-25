@@ -11,7 +11,7 @@
    without it). The spec list is the accessible record of the part; the
    canvas is a picture of the same state.
    ========================================================================== */
-import { TYPES, MATS, FACING, BASE, DEFAULT_TWEAKS, fmt, createLab, webglAvailable } from "./rivet-lab.js";
+import { TYPES, MATS, FACING, BASE, NONE, constructionOf, DEFAULT_TWEAKS, fmt, createLab, webglAvailable } from "./rivet-lab.js";
 
 const root = document.getElementById("lab");
 if (root) init();
@@ -36,6 +36,11 @@ function init() {
   };
   const dimsOf = (t) => Object.assign(Object.fromEntries(t.params.map(q => [q.k, q.def])), DIMS[t.id] || {});
   const matsOf = (t) => Object.assign(Object.fromEntries(t.mats.map(q => [q[0], q[3]])), MATSEL[t.id] || {});
+  // Facing slots set to None: their thickness does not apply
+  const unused = (t, ms) => new Set((t.slots || []).filter(k => ms[k] === NONE));
+  const swatch = (v) => v === NONE ? "transparent" : MATS[v].hex;
+  // Remembers the alloy a facing had, so Solid -> Bimetal restores it
+  const lastAlloy = {};
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
   /* ---- 3D stage ----------------------------------------------------------- */
@@ -74,12 +79,14 @@ function init() {
 
   /* ---- spec, summary, quote ---------------------------------------------- */
   function rows(t, p, ms) {
-    return [["Construction", t.name]]
-      .concat(t.params.map(q => [q.label, q.k === "count" ? String(p[q.k]) + " pcs" : fmt(p[q.k]) + " mm"]))
+    const skip = unused(t, ms);
+    return [["Part", t.name], ["Construction", constructionOf(t, ms)]]
+      .concat(t.params.filter(q => !skip.has(q.k)).map(q => [q.label, q.k === "count" ? String(p[q.k]) + " pcs" : fmt(p[q.k]) + " mm"]))
       .concat(t.mats.map(q => [q[1], ms[q[0]]]));
   }
   function renderSpec(t, p, ms) {
-    const used = [...new Set(Object.values(ms))];
+    const used = [...new Set(Object.values(ms))].filter(v => v !== NONE);
+    const matText = t.mats.filter(q => ms[q[0]] !== NONE).map(q => q[1] + ": " + ms[q[0]]).join(" · ");
     spec.innerHTML = `
       <div class="lab-spec-head">
         <span class="eyebrow">Type ${String(current + 1).padStart(2, "0")} / ${TYPES.length}</span>
@@ -88,14 +95,14 @@ function init() {
       </div>
       <div class="lab-spec-facts">
         <dl>
-          <dt>Build</dt><dd>${t.build}</dd>
-          <dt>Material</dt><dd>${t.mats.map(q => q[1] + ": " + ms[q[0]]).join(" · ")}</dd>
+          <dt>Construction</dt><dd>${constructionOf(t, ms)}</dd>
+          <dt>Material</dt><dd>${matText}</dd>
           <dt>Dimensions</dt><dd>${t.summary(p)} mm</dd>
           <dt>Used in</dt><dd>${t.use}</dd>
         </dl>
         <div class="lab-legend">${used.map(k => `<span><i style="background:${MATS[k].hex}"></i>${k}</span>`).join("")}</div>
       </div>`;
-    $("labSrNote").textContent = `${t.name}: ${t.summary(p)} mm, ${t.mats.map(q => q[1] + " " + ms[q[0]]).join(", ")}.`;
+    $("labSrNote").textContent = `${t.name}, ${constructionOf(t, ms).toLowerCase()}: ${t.summary(p)} mm, ${matText}.`;
   }
 
   function build(keepView) {
@@ -105,10 +112,12 @@ function init() {
   }
 
   function renderPanel() {
-    const t = TYPES[current], p = dimsOf(t), ms = matsOf(t);
+    const t = TYPES[current], p = dimsOf(t), ms = matsOf(t), skip = unused(t, ms);
+    const slots = t.slots || [], cons = constructionOf(t, ms);
+    const consOpts = ["Solid", "Bimetal", "Trimetal"].slice(0, slots.length + 1);
     dimsBox.innerHTML =
       `<h3 class="lab-h lab-h-first"><span>Dimensions · ${t.name}</span><button type="button" class="lab-link" data-reset>Reset</button></h3>` +
-      t.params.map(q => {
+      t.params.filter(q => !skip.has(q.k)).map(q => {
         const id = "dim-" + q.k, unit = q.k === "count" ? "pcs" : "mm";
         return `<div class="lab-dim">
           <label for="${id}">${q.label}</label>
@@ -117,8 +126,12 @@ function init() {
         </div>`;
       }).join("") +
       `<h3 class="lab-h">Materials</h3>` +
+      (slots.length ? `<div class="lab-field"><span class="lab-row"><span>Construction</span></span>
+        <span class="lab-seg${consOpts.length === 2 ? " lab-seg-2" : ""}" role="group" aria-label="Construction">${consOpts.map(o =>
+          `<button type="button" data-cons="${o}" aria-pressed="${o === cons}">${o}</button>`).join("")}</span>
+        <span class="lab-cons-note">${cons === "Solid" ? "One metal throughout — no contact facing." : cons === "Bimetal" ? "One contact facing bonded to the base metal." : "Contact facings on both faces, base metal between."}</span></div>` : "") +
       t.mats.map(([k, label, opts]) => `<label class="lab-field"><span class="lab-row"><span>${label}</span></span>
-        <span class="lab-mrow"><i style="background:${MATS[ms[k]].hex}"></i><select data-m="${k}">${opts.map(o => `<option${o === ms[k] ? " selected" : ""}>${o}</option>`).join("")}</select></span></label>`).join("");
+        <span class="lab-mrow"><i class="${ms[k] === NONE ? "is-none" : ""}" style="background:${swatch(ms[k])}"></i><select data-m="${k}">${opts.map(o => `<option${o === ms[k] ? " selected" : ""}>${o}</option>`).join("")}</select></span></label>`).join("");
   }
 
   dimsBox.addEventListener("input", e => {
@@ -134,10 +147,25 @@ function init() {
     const k = e.target.dataset.m; if (!k) return;
     const t = TYPES[current];
     (MATSEL[t.id] = MATSEL[t.id] || {})[k] = e.target.value;
-    e.target.previousElementSibling.style.background = MATS[e.target.value].hex;
-    save(); build(true);
+    save(); renderPanel(); build(true);
   });
   dimsBox.addEventListener("click", e => {
+    const cb = e.target.closest("[data-cons]");
+    if (cb) {
+      /* Solid clears every facing; Bimetal keeps the first; Trimetal fills
+         both. A slot being switched on gets back the alloy it last had. */
+      const t = TYPES[current], ms = matsOf(t), want = { Solid: 0, Bimetal: 1, Trimetal: 2 }[cb.dataset.cons];
+      const sel = (MATSEL[t.id] = MATSEL[t.id] || {});
+      const dflt = Object.fromEntries(t.mats.map(q => [q[0], q[3]]));
+      (t.slots || []).forEach((k, i) => {
+        if (ms[k] !== NONE) lastAlloy[t.id + k] = ms[k];
+        const fallback = lastAlloy[t.id + k] || (dflt[k] !== NONE ? dflt[k] : null) || lastAlloy[t.id + t.slots[0]] || "AgNi 10";
+        sel[k] = i < want ? (ms[k] !== NONE ? ms[k] : fallback) : NONE;
+      });
+      save(); renderPanel(); build(true);
+      const again = dimsBox.querySelector(`[data-cons="${cb.dataset.cons}"]`); if (again) again.focus();
+      return;
+    }
     if (!e.target.closest("[data-reset]")) return;
     const t = TYPES[current]; delete DIMS[t.id]; delete MATSEL[t.id];
     save(); renderPanel(); build(true);
@@ -204,8 +232,8 @@ function init() {
       if (!open) return;
       const t = TYPES[current], p = dimsOf(t), ms = matsOf(t);
       const pick = (...ks) => { for (const k of ks) if (p[k] != null) return fmt(p[k]) + " mm"; return ""; };
-      const facingKey = t.mats.find(q => q[2] === FACING);
-      const baseKey = t.mats.find(q => q[2] === BASE);
+      const facingKey = (t.slots || []).map(k => [k]).find(q => ms[q[0]] !== NONE);
+      const baseKey = t.core ? [t.core] : null;
       const facingT = pick("facing", "facingHead", "facing1");
       const seed = {
         csHeadDia: pick("headD", "head1D", "dia", "headL"), csHeadThk: pick("headH", "head1H", "thick"),
@@ -215,7 +243,7 @@ function init() {
       };
       Object.keys(seed).forEach(k => { const f = customForm.querySelector("#" + k); if (f && !f.value) f.value = seed[k]; });
       const notes = customForm.querySelector("#csNotes");
-      if (notes && !notes.value) notes.value = "Starting point: " + t.name + " — " + t.summary(p) + " mm.\n";
+      if (notes && !notes.value) notes.value = "Starting point: " + t.name + " (" + constructionOf(t, ms).toLowerCase() + ") — " + t.summary(p) + " mm.\n";
       customForm.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
       customForm.querySelector("#csName").focus({ preventScroll: true });
     });

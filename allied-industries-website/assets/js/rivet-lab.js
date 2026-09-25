@@ -34,6 +34,10 @@ export const MATS = {
 };
 export const FACING = ["Ag 99.9", "AgNi 10", "AgNi 15", "AgCdO 12", "AgSnO₂ 12", "Hard gold plated"];
 export const BASE = ["ETP copper", "Brass", "Nickel", "CuNi", "Steel"];
+/* "None" on a facing makes that face plain base metal: the part becomes
+   solid (no facings), bimetal (one) or trimetal (two). */
+export const NONE = "None";
+const FACING_OPT = [NONE, ...FACING];
 export const FINISHES = { polished: "Polished", turned: "Turned", tumbled: "Tumbled", plated: "Satin" };
 
 let seed = 7;
@@ -187,21 +191,30 @@ export const TYPES = [
     id: "solid", name: "Solid Contact Rivet", sub: "Ag / AgNi — one piece",
     desc: "Cold-headed from a single silver-alloy wire. The shank stays soft for riveting while the head is work-hardened for contact life.",
     build: "Monolithic, cold headed", use: "Relays, thermostats, low-current switches",
-    params: [P("headD", "Head diameter", 6, 2, 12, 0.1), P("headH", "Head thickness", 1.4, 0.4, 4), P("edgeR", "Head edge radius", 0.35, 0, 1.5), P("shankD", "Shank diameter", 3, 0.8, 6, 0.1), P("shankL", "Shank length", 2.5, 0.5, 10, 0.1), P("filletR", "Shank-to-head radius", 0.25, 0, 1), P("chamfer", "Shank end chamfer", 0.2, 0, 0.8)],
-    mats: [["body", "Contact alloy", FACING, "Ag 99.9"]],
+    params: [P("headD", "Head diameter", 6, 2, 12, 0.1), P("headH", "Head thickness", 1.4, 0.4, 4), P("edgeR", "Head edge radius", 0.35, 0, 1.5), P("facing", "Facing thickness — head", 0.1, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 3, 0.8, 6, 0.1), P("shankL", "Shank length", 2.5, 0.5, 10, 0.1), P("facingShank", "Facing thickness — shank end", 0.1, 0.1, 0.6, 0.01), P("filletR", "Shank-to-head radius", 0.25, 0, 1), P("chamfer", "Shank end chamfer", 0.2, 0, 0.8)],
+    mats: [["body", "Rivet material", [...FACING, ...BASE], "Ag 99.9"], ["facing", "Head facing", FACING_OPT, NONE], ["facingShank", "Shank-end facing", FACING_OPT, NONE]],
+    slots: ["facing", "facingShank"], core: "body",
     summary: p => `Head Ø${fmt(p.headD)} × ${fmt(p.headH)} · Shank Ø${fmt(p.shankD)} × ${fmt(p.shankL)}`,
-    make(g, p, m) { g.add(mesh("contact_body", latheGeo(flatRivet({ R: p.headD / 2, H: p.headH, f: p.edgeR, rs: p.shankD / 2, L: p.shankL, u: p.filletR, c: p.chamfer })), m.body)); }
+    make(g, p, m) {
+      const t = Math.min(p.facing, p.headH - 0.2);
+      const c = clamp(p.chamfer, 0, Math.min(p.shankD / 2 - 0.05, p.shankL / 2));
+      const t2 = clamp(p.facingShank, 0.02, p.shankL - c - p.filletR - 0.1);
+      capped(g, flatRivet({ R: p.headD / 2, H: p.headH, f: p.edgeR, rs: p.shankD / 2, L: p.shankL, u: p.filletR, c, t }), { t, t2, top: "contact_facing_head", bottom: "contact_facing_shank", core: "contact_body", mTop: m.facing, mBot: m.facingShank, mCore: m.body });
+    }
   },
   {
     id: "bimetal", name: "Bimetal Contact Rivet", sub: "Ag layer on Cu — flat head",
     desc: "A silver-alloy contact facing pressure-welded to a copper base, then headed. Saves precious metal while keeping full contact performance.",
     build: "Ag contact facing, Cu head & shank", use: "MCBs, wiring switches, contactors",
-    params: [P("headD", "Head diameter", 6, 2, 12, 0.1), P("headH", "Head thickness", 1.6, 0.5, 4), P("edgeR", "Head edge radius", 0.35, 0, 1.5), P("facing", "Facing thickness", 0.1, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 3, 0.8, 6, 0.1), P("shankL", "Shank length", 3, 0.5, 10, 0.1), P("filletR", "Shank-to-head radius", 0.25, 0, 1), P("chamfer", "Shank end chamfer", 0.2, 0, 0.8)],
-    mats: [["facing", "Contact facing", FACING, "AgNi 10"], ["base", "Base metal", BASE, "ETP copper"]],
+    params: [P("headD", "Head diameter", 6, 2, 12, 0.1), P("headH", "Head thickness", 1.6, 0.5, 4), P("edgeR", "Head edge radius", 0.35, 0, 1.5), P("facing", "Facing thickness", 0.1, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 3, 0.8, 6, 0.1), P("shankL", "Shank length", 3, 0.5, 10, 0.1), P("facingShank", "Facing thickness — shank end", 0.1, 0.1, 0.6, 0.01), P("filletR", "Shank-to-head radius", 0.25, 0, 1), P("chamfer", "Shank end chamfer", 0.2, 0, 0.8)],
+    mats: [["facing", "Contact facing", FACING_OPT, "AgNi 10"], ["facingShank", "Shank-end facing", FACING_OPT, NONE], ["base", "Base metal", BASE, "ETP copper"]],
+    slots: ["facing", "facingShank"], core: "base",
     summary: p => `Head Ø${fmt(p.headD)} × ${fmt(p.headH)} · Facing ${fmt(p.facing)} · Shank Ø${fmt(p.shankD)} × ${fmt(p.shankL)}`,
     make(g, p, m) {
       const t = Math.min(p.facing, p.headH - 0.2);
-      capped(g, flatRivet({ R: p.headD / 2, H: p.headH, f: p.edgeR, rs: p.shankD / 2, L: p.shankL, u: p.filletR, c: p.chamfer, t }), { t, top: "contact_facing", core: "base", mTop: m.facing, mCore: m.base });
+      const c = clamp(p.chamfer, 0, Math.min(p.shankD / 2 - 0.05, p.shankL / 2));
+      const t2 = clamp(p.facingShank, 0.02, p.shankL - c - p.filletR - 0.1);
+      capped(g, flatRivet({ R: p.headD / 2, H: p.headH, f: p.edgeR, rs: p.shankD / 2, L: p.shankL, u: p.filletR, c, t }), { t, t2, top: "contact_facing", bottom: "contact_facing_shank", core: "base", mTop: m.facing, mBot: m.facingShank, mCore: m.base });
     }
   },
   {
@@ -209,7 +222,8 @@ export const TYPES = [
     desc: "A spherical contact face concentrates force at a single point, giving stable resistance on mating contacts that are not perfectly aligned.",
     build: "Domed Ag facing, Cu base", use: "Relays, automotive switches",
     params: [P("headD", "Head diameter", 5, 2, 12, 0.1), P("headH", "Head height (at crown)", 2, 0.6, 4), P("crownR", "Crown (spherical) radius", 4.5, 1.2, 30, 0.1), P("facing", "Facing thickness", 0.1, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 2.5, 0.8, 6, 0.1), P("shankL", "Shank length", 2.5, 0.5, 10, 0.1), P("filletR", "Shank-to-head radius", 0.22, 0, 1), P("chamfer", "Shank end chamfer", 0.18, 0, 0.8)],
-    mats: [["facing", "Contact facing", FACING, "AgNi 10"], ["base", "Base metal", BASE, "ETP copper"]],
+    mats: [["facing", "Contact facing", FACING_OPT, "AgNi 10"], ["base", "Base metal", BASE, "ETP copper"]],
+    slots: ["facing"], core: "base",
     summary: p => `Head Ø${fmt(p.headD)} × ${fmt(p.headH)} · Crown R${fmt(p.crownR)} · Facing ${fmt(p.facing)} · Shank Ø${fmt(p.shankD)} × ${fmt(p.shankL)}`,
     make(g, p, m) {
       const R = p.headD / 2, H = p.headH, t = Math.min(p.facing, H - 0.3), e = 0.1;
@@ -228,7 +242,8 @@ export const TYPES = [
     desc: "Silver alloy is bonded on both ends of a copper core, so the head and the shank tip each act as a working contact.",
     build: "Ag head facing, Cu core, Ag shank-end facing", use: "Changeover relays, bridging contacts",
     params: [P("headD", "Head diameter", 6, 2, 12, 0.1), P("headH", "Head thickness", 1.5, 0.5, 4), P("edgeR", "Head edge radius", 0.35, 0, 1.5), P("facingHead", "Facing thickness — head", 0.1, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 3, 0.8, 6, 0.1), P("shankL", "Shank length", 2.4, 0.6, 10, 0.1), P("facingShank", "Facing thickness — shank end", 0.1, 0.1, 0.6, 0.01), P("filletR", "Shank-to-head radius", 0.25, 0, 1), P("chamfer", "Shank end chamfer", 0.25, 0, 0.8)],
-    mats: [["facingHead", "Head facing", FACING, "AgCdO 12"], ["facingShank", "Shank-end facing", FACING, "AgCdO 12"], ["base", "Core metal", BASE, "ETP copper"]],
+    mats: [["facingHead", "Head facing", FACING_OPT, "AgCdO 12"], ["facingShank", "Shank-end facing", FACING_OPT, "AgCdO 12"], ["base", "Core metal", BASE, "ETP copper"]],
+    slots: ["facingHead", "facingShank"], core: "base",
     summary: p => `Head Ø${fmt(p.headD)} × ${fmt(p.headH)} · Shank Ø${fmt(p.shankD)} × ${fmt(p.shankL)} · Facings ${fmt(p.facingHead)} / ${fmt(p.facingShank)}`,
     make(g, p, m) {
       const t = Math.min(p.facingHead, p.headH - 0.2);
@@ -241,8 +256,9 @@ export const TYPES = [
     id: "semitubular", name: "Semi-Tubular Rivet", sub: "Drilled shank — brass / Cu",
     desc: "A blind bore in the shank end lets the rivet roll over with low setting force, protecting thin terminals and plastic housings.",
     build: "Solid head, bored shank", use: "Terminal fixing, switch assemblies",
-    params: [P("headD", "Head diameter", 5.6, 2, 12, 0.1), P("headH", "Head thickness", 1.2, 0.4, 4), P("edgeR", "Head edge radius", 0.3, 0, 1.5), P("shankD", "Shank diameter", 2.8, 1, 6, 0.1), P("shankL", "Shank length", 4, 1, 12, 0.1), P("boreD", "Bore diameter", 1.8, 0.4, 5, 0.1), P("boreDepth", "Bore depth", 2.2, 0.3, 10, 0.1), P("filletR", "Shank-to-head radius", 0.22, 0, 1)],
-    mats: [["body", "Rivet material", BASE, "Brass"]],
+    params: [P("headD", "Head diameter", 5.6, 2, 12, 0.1), P("headH", "Head thickness", 1.2, 0.4, 4), P("edgeR", "Head edge radius", 0.3, 0, 1.5), P("facing", "Facing thickness", 0.1, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 2.8, 1, 6, 0.1), P("shankL", "Shank length", 4, 1, 12, 0.1), P("boreD", "Bore diameter", 1.8, 0.4, 5, 0.1), P("boreDepth", "Bore depth", 2.2, 0.3, 10, 0.1), P("filletR", "Shank-to-head radius", 0.22, 0, 1)],
+    mats: [["body", "Rivet material", BASE, "Brass"], ["facing", "Head facing", FACING_OPT, NONE]],
+    slots: ["facing"], core: "body",
     summary: p => `Head Ø${fmt(p.headD)} × ${fmt(p.headH)} · Shank Ø${fmt(p.shankD)} × ${fmt(p.shankL)} · Bore Ø${fmt(p.boreD)} × ${fmt(p.boreDepth)}`,
     make(g, p, m) {
       const R = p.headD / 2, rs = Math.min(p.shankD / 2, R - 0.1), L = p.shankL, e = 0.1;
@@ -250,7 +266,8 @@ export const TYPES = [
       const ri = clamp(p.boreD / 2, 0.1, rs - 0.15), d = clamp(p.boreDepth, 0.1, L + p.headH - ri * 0.6 - 0.3), ch = 0.08;
       const c = [[0, p.headH], ...arc(R - f, p.headH - f, f, 90, 0), ...arc(R - e, e, e, 0, -90, 5), ...arc(rs + u, -u, u, 90, 180, 8),
         [rs, -L + 0.12], [rs - 0.12, -L], [ri + ch, -L], [ri, -L + ch], [ri, -L + d], [0, -L + d + ri * 0.55]];
-      g.add(mesh("rivet_body", latheGeo(c), m.body));
+      const t = Math.min(p.facing, p.headH - f - 0.12);
+      capped(g, c, { t, top: "contact_facing", core: "rivet_body", mTop: m.facing, mCore: m.body });
     }
   },
   {
@@ -258,7 +275,8 @@ export const TYPES = [
     desc: "Two flats are trimmed on the head so it fits narrow contact arms and locks against rotation in the carrier.",
     build: "Bimetal head with two trimmed flats", use: "Narrow contact arms, rotary switches",
     params: [P("headD", "Head diameter", 7, 2, 12, 0.1), P("flats", "Width across flats", 5.2, 1, 12, 0.1), P("headH", "Head thickness", 1.6, 0.5, 4), P("facing", "Facing thickness", 0.1, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 2.8, 0.8, 6, 0.1), P("shankL", "Shank length", 2.8, 0.5, 10, 0.1), P("chamfer", "Shank end chamfer", 0.2, 0, 0.8)],
-    mats: [["facing", "Contact facing", FACING, "AgNi 10"], ["base", "Base metal", BASE, "ETP copper"]],
+    mats: [["facing", "Contact facing", FACING_OPT, "AgNi 10"], ["base", "Base metal", BASE, "ETP copper"]],
+    slots: ["facing"], core: "base",
     summary: p => `Head Ø${fmt(p.headD)} × ${fmt(p.headH)} · A/F ${fmt(Math.min(p.flats, p.headD))} · Facing ${fmt(p.facing)} · Shank Ø${fmt(p.shankD)} × ${fmt(p.shankL)}`,
     make(g, p, m) {
       const R = p.headD / 2, w = clamp(p.flats / 2, 0.3, R - 0.001), a = Math.acos(w / R), s = R * Math.sin(a);
@@ -274,12 +292,15 @@ export const TYPES = [
     id: "straight", name: "Straight Head Rivet", sub: "Cylindrical head — deep Ag",
     desc: "A tall, straight-sided head carries a thicker contact facing for heavy arcing duty where erosion depth matters.",
     build: "Tall cylindrical head, bimetal", use: "Contactors, motor starters",
-    params: [P("headD", "Head diameter", 4, 1.5, 10, 0.1), P("headH", "Head height", 2.4, 0.6, 6), P("edgeR", "Head edge radius", 0.12, 0, 1), P("facing", "Facing thickness", 0.1, 0.1, 1.2, 0.01), P("shankD", "Shank diameter", 2.6, 0.8, 6, 0.1), P("shankL", "Shank length", 2.5, 0.5, 10, 0.1), P("filletR", "Shank-to-head radius", 0.15, 0, 1), P("chamfer", "Shank end chamfer", 0.18, 0, 0.8)],
-    mats: [["facing", "Contact facing", FACING, "AgSnO₂ 12"], ["base", "Base metal", BASE, "ETP copper"]],
+    params: [P("headD", "Head diameter", 4, 1.5, 10, 0.1), P("headH", "Head height", 2.4, 0.6, 6), P("edgeR", "Head edge radius", 0.12, 0, 1), P("facing", "Facing thickness", 0.1, 0.1, 1.2, 0.01), P("shankD", "Shank diameter", 2.6, 0.8, 6, 0.1), P("shankL", "Shank length", 2.5, 0.5, 10, 0.1), P("facingShank", "Facing thickness — shank end", 0.1, 0.1, 0.6, 0.01), P("filletR", "Shank-to-head radius", 0.15, 0, 1), P("chamfer", "Shank end chamfer", 0.18, 0, 0.8)],
+    mats: [["facing", "Contact facing", FACING_OPT, "AgSnO₂ 12"], ["facingShank", "Shank-end facing", FACING_OPT, NONE], ["base", "Base metal", BASE, "ETP copper"]],
+    slots: ["facing", "facingShank"], core: "base",
     summary: p => `Head Ø${fmt(p.headD)} × ${fmt(p.headH)} · Facing ${fmt(p.facing)} · Shank Ø${fmt(p.shankD)} × ${fmt(p.shankL)}`,
     make(g, p, m) {
       const t = Math.min(p.facing, p.headH - 0.2);
-      capped(g, flatRivet({ R: p.headD / 2, H: p.headH, f: p.edgeR, rs: p.shankD / 2, L: p.shankL, u: p.filletR, c: p.chamfer, t }), { t, top: "contact_facing", core: "base", mTop: m.facing, mCore: m.base });
+      const c = clamp(p.chamfer, 0, Math.min(p.shankD / 2 - 0.05, p.shankL / 2));
+      const t2 = clamp(p.facingShank, 0.02, p.shankL - c - p.filletR - 0.1);
+      capped(g, flatRivet({ R: p.headD / 2, H: p.headH, f: p.edgeR, rs: p.shankD / 2, L: p.shankL, u: p.filletR, c, t }), { t, t2, top: "contact_facing", bottom: "contact_facing_shank", core: "base", mTop: m.facing, mBot: m.facingShank, mCore: m.base });
     }
   },
   {
@@ -291,7 +312,8 @@ export const TYPES = [
       P("head1D", "Head 1 diameter (top)", 5.6, 1.5, 12, 0.1), P("head1H", "Head 1 thickness", 1.1, 0.3, 4), P("head1R", "Head 1 edge radius", 0.15, 0, 1.5), P("facing1", "Head 1 facing thickness", 0.1, 0.1, 0.6, 0.01),
       P("head2D", "Head 2 diameter (bottom)", 5.6, 1.5, 12, 0.1), P("head2H", "Head 2 thickness", 1.1, 0.3, 4), P("head2R", "Head 2 edge radius", 0.15, 0, 1.5), P("facing2", "Head 2 facing thickness", 0.1, 0.1, 0.6, 0.01)
     ],
-    mats: [["facing1", "Head 1 facing", FACING, "AgNi 10"], ["facing2", "Head 2 facing", FACING, "AgNi 10"], ["base", "Core metal", BASE, "ETP copper"]],
+    mats: [["facing1", "Head 1 facing", FACING_OPT, "AgNi 10"], ["facing2", "Head 2 facing", FACING_OPT, "AgNi 10"], ["base", "Core metal", BASE, "ETP copper"]],
+    slots: ["facing1", "facing2"], core: "base",
     summary: p => `Head 1 Ø${fmt(p.head1D)} × ${fmt(p.head1H)} · Head 2 Ø${fmt(p.head2D)} × ${fmt(p.head2H)} · Shank Ø${fmt(p.neckD)} × ${fmt(p.neckL)} · Facings ${fmt(p.facing1)} / ${fmt(p.facing2)}`,
     make(g, p, m) {
       const R1 = p.head1D / 2, R2 = p.head2D / 2, eb = 0.08;
@@ -312,7 +334,8 @@ export const TYPES = [
     desc: "An elongated contact head on two shanks: it cannot rotate on the carrier and spreads current across a wider contact face.",
     build: "Oblong bimetal head, two shanks", use: "Heavy-duty switches, isolators",
     params: [P("headL", "Head length", 9, 3, 20, 0.1), P("headW", "Head width", 4, 1.5, 12, 0.1), P("headH", "Head thickness", 1.6, 0.5, 4), P("cornerR", "Head corner radius", 1.4, 0, 6), P("facing", "Facing thickness", 0.1, 0.1, 0.6, 0.01), P("shankD", "Shank diameter", 1.6, 0.6, 5, 0.1), P("shankL", "Shank length", 2.2, 0.5, 10, 0.1), P("pitch", "Shank pitch (centre to centre)", 5.6, 1, 18, 0.1)],
-    mats: [["facing", "Contact facing", FACING, "AgNi 10"], ["base", "Base metal", BASE, "ETP copper"]],
+    mats: [["facing", "Contact facing", FACING_OPT, "AgNi 10"], ["base", "Base metal", BASE, "ETP copper"]],
+    slots: ["facing"], core: "base",
     summary: p => `Head ${fmt(p.headL)} × ${fmt(p.headW)} × ${fmt(p.headH)} · Facing ${fmt(p.facing)} · Shanks Ø${fmt(p.shankD)} × ${fmt(p.shankL)} @ ${fmt(p.pitch)}`,
     make(g, p, m) {
       const W = p.headL / 2, Dp = p.headW / 2, r = clamp(p.cornerR, 0.001, Math.min(W, Dp) - 0.001);
@@ -334,7 +357,8 @@ export const TYPES = [
     desc: "No shank: projections under the base resistance-weld the contact straight onto the carrier. The silver facing sits on a weldable base.",
     build: "Ag facing on weldable base with projections", use: "Automated welding lines, appliance controls",
     params: [P("dia", "Contact diameter", 6, 2, 14, 0.1), P("thick", "Total thickness", 1.4, 0.5, 4), P("crown", "Crown height", 0.15, 0.01, 1, 0.01), P("facing", "Facing thickness", 0.1, 0.1, 0.8, 0.01), P("projD", "Projection diameter", 0.8, 0.2, 2.5), P("projH", "Projection height", 0.3, 0.05, 1, 0.01), P("pcd", "Projection pitch circle Ø", 3.6, 0.5, 12, 0.1), P("count", "Number of projections", 3, 1, 8, 1)],
-    mats: [["facing", "Contact facing", FACING, "AgCdO 12"], ["base", "Weld base", BASE, "Steel"]],
+    mats: [["facing", "Contact facing", FACING_OPT, "AgCdO 12"], ["base", "Weld base", BASE, "Steel"]],
+    slots: ["facing"], core: "base",
     summary: p => `Ø${fmt(p.dia)} × ${fmt(p.thick)} · Facing ${fmt(p.facing)} · ${p.count} × Ø${fmt(p.projD)} × ${fmt(p.projH)} on Ø${fmt(p.pcd)} PCD`,
     make(g, p, m) {
       const R = p.dia / 2, T = p.thick, cr = clamp(p.crown, 0.005, Math.min(R * 0.9, T - 0.35)), t = clamp(p.facing, 0.05, T - cr - 0.2);
@@ -351,6 +375,12 @@ export const TYPES = [
     }
   }
 ];
+
+/* Solid / Bimetal / Trimetal, from how many facing slots carry an alloy */
+export function constructionOf(type, mats) {
+  const n = (type.slots || []).filter(k => mats[k] && mats[k] !== NONE).length;
+  return n === 0 ? "Solid" : n === 1 ? "Bimetal" : "Trimetal";
+}
 
 export const DEFAULT_TWEAKS = {
   finish: "turned", texture: 1, roughMul: 1, exposure: 1, reflect: 1.1,
@@ -391,7 +421,10 @@ export function createLab(host, tw, opts) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, stencil: true, preserveDrawingBuffer: !opts.interactive });
   renderer.setPixelRatio(opts.pixelRatio || Math.min(window.devicePixelRatio || 1, 2));
   renderer.setClearColor(0x000000, 0);
-  renderer.shadowMap.enabled = true;
+  /* No real-time shadow map: on laptop GPUs its filtered edge shimmered as
+     the part turned. A soft contact shadow painted into a texture sits
+     under the part instead; it cannot flicker. */
+  renderer.shadowMap.enabled = false;
   /* Variance shadow maps: the soft edge comes from a blur baked into the
      map, so it is identical from every camera angle. The PCF soft filter
      samples through per-pixel screen-space noise instead, which stays put
@@ -427,9 +460,11 @@ export function createLab(host, tw, opts) {
   const fill = new THREE.DirectionalLight(0xfff4e6, 0.5);
   fill.position.set(-5, 3, -4);
   scene.add(fill);
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ opacity: 0.18 }));
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({
+    map: contactShadow(), transparent: true, depthWrite: false, opacity: 0.55, toneMapped: false
+  }));
   ground.rotation.x = -Math.PI / 2;
-  ground.receiveShadow = true;
+  ground.renderOrder = -1;
   scene.add(ground);
 
   const clip = [new THREE.Plane(new THREE.Vector3(0, 0, -1), 0)];
@@ -510,7 +545,13 @@ export function createLab(host, tw, opts) {
   }
 
   function setPart(type, dims, mats, keepView) {
-    const m = Object.fromEntries(Object.entries(mats).map(([k, v]) => [k, getMat(v)]));
+    dims = Object.assign({}, dims);
+    const coreName = mats[type.core] || mats.base || mats.body;
+    const m = Object.fromEntries(Object.entries(mats).map(([k, v]) => {
+      if (v !== NONE) return [k, getMat(v)];
+      if (k in dims) dims[k] = 0.02;          // no layer: the face is base metal
+      return [k, getMat(coreName)];
+    }));
     const g = new THREE.Group(); g.name = "allied_" + type.id;
     type.make(g, dims, m);
     clearCaps();
@@ -520,7 +561,8 @@ export function createLab(host, tw, opts) {
     const box = new THREE.Box3().setFromObject(g);
     const sphere = box.getBoundingSphere(new THREE.Sphere());
     center.copy(sphere.center); radius = sphere.radius;
-    ground.position.y = box.min.y;
+    ground.position.set(sphere.center.x, box.min.y - sphere.radius * 0.002, sphere.center.z);
+    ground.scale.setScalar(Math.max(box.max.x - box.min.x, box.max.z - box.min.z) * 1.7);
     camera.near = Math.max(sphere.radius / 100, 0.00001);
     camera.far = sphere.radius * 400;
     camera.updateProjectionMatrix();
@@ -550,9 +592,8 @@ export function createLab(host, tw, opts) {
     refreshShadow();
   }
   function applyDisplay() {
-    key.castShadow = tw.shadow !== "off";
+    key.castShadow = false;
     key.shadow.radius = tw.shadow === "soft" ? tw.soft : 2;
-    ground.material.opacity = tw.opacity;
     ground.visible = tw.shadow !== "off";
     if (controls) controls.autoRotateSpeed = tw.speed;
     placeLight();
@@ -642,6 +683,21 @@ export function createLab(host, tw, opts) {
       canvas.remove();
     }
   };
+}
+
+function contactShadow() {
+  const c = document.createElement("canvas");
+  c.width = c.height = 128;
+  const x = c.getContext("2d");
+  const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+  g.addColorStop(0, "rgba(40,28,20,0.75)");
+  g.addColorStop(0.35, "rgba(40,28,20,0.45)");
+  g.addColorStop(0.7, "rgba(40,28,20,0.12)");
+  g.addColorStop(1, "rgba(40,28,20,0)");
+  x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
 }
 
 export function webglAvailable() {

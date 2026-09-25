@@ -3691,3 +3691,6 @@ body { line-height: 1.65; -webkit-font-smoothing: antialiased; -moz-osx-font-smo
 html { scrollbar-color: #b9a592 transparent; }
 .two-col:has(.form-card) { align-items: start; }
 .two-col:has(.form-card) > .prose:first-child { padding-top: var(--space-4); }
+.lab-seg-2 { grid-template-columns: repeat(2, 1fr); }
+.lab-cons-note { font-size: 0.74rem; color: var(--text-faint); line-height: 1.4; }
+.lab-mrow i.is-none { background: repeating-linear-gradient(135deg, transparent 0 3px, rgba(42, 33, 27, 0.25) 3px 4px) !important; }
