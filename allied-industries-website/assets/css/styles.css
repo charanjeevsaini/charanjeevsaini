@@ -3176,18 +3176,45 @@ html { scrollbar-color: var(--scrollbar) transparent; }
 .stack-all, .why-link { padding-block: 11px; margin-block: -11px; }
 .lab-link { padding: 8px 6px; margin: -8px -6px; }
 
-/* Types made to order but not yet modelled: shown, not linked */
-.stack-types .is-static {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 3px 12px 3px 3px;
-  font-size: var(--step--2); font-weight: 600; color: var(--text-dim);
-  background: transparent;
-  border: 1px dashed rgba(42, 33, 27, 0.2);
-  border-radius: var(--radius-pill);
+/* Types made to order but not yet in the configurator: they open an enquiry
+   for that part. Same chip as the others, with a dashed edge to tell them apart. */
+.stack-types a.is-enquire { border-style: dashed; }
+.stack-types a.is-enquire .glyph { width: 26px; height: 26px; border-radius: 50%; background: var(--white); padding: 3px; }
+.nav-links .mega-col li a.is-enquire { grid-template-columns: 34px 1fr auto 14px; }
+.mega-col li a.is-enquire small { font-size: var(--step-label); letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-faint); }
+
+/* ==========================================================================
+   PRODUCTS — quote form (every configurator attribute + drawing)
+   ========================================================================== */
+.custom-spec { max-width: 980px; margin-inline: auto; }
+.sf-head h3 { margin: var(--space-2) 0 var(--space-2); font-size: var(--step-2); }
+.sf-head p { color: var(--text-dim); max-width: 64ch; margin: 0 0 var(--space-4); }
+.sf-group { border: 0; margin: 0; padding: var(--space-4) 0; border-top: 1px solid var(--line); min-width: 0; }
+.sf-group legend {
+  display: flex; align-items: baseline; gap: 10px; padding: 0; margin-bottom: var(--space-3);
+  font-weight: 600; font-size: var(--step-0); color: var(--text);
 }
-.stack-types .is-static .glyph { width: 26px; height: 26px; border-radius: 50%; background: var(--white); padding: 3px; }
-.mega-col li .is-static {
-  display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 8px;
-  padding: 5px 8px; font-size: var(--step--2); color: var(--text-faint);
+.sf-group legend span { font-size: var(--step--2); letter-spacing: 0.08em; color: var(--copper-accent); font-variant-numeric: tabular-nums; }
+.sf-group legend small { font-size: var(--step--2); font-weight: 500; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+.sf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--space-3) var(--space-4); margin-bottom: var(--space-3); }
+.sf-grid .field { margin: 0; }
+.sf-qty { display: grid; grid-template-columns: 1fr 88px; gap: 8px; }
+.sf-drop {
+  position: relative; display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-4); border: 1.5px dashed var(--line-bright); border-radius: var(--radius-md);
+  background: var(--surface); cursor: pointer;
 }
-.mega-col li .is-static small { font-size: var(--step-label); letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-faint); }
+.sf-drop input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.sf-drop:focus-within { border-color: var(--copper); box-shadow: var(--ring); }
+.sf-drop.is-over, .sf-drop:hover { border-color: var(--copper); background: var(--copper-wash); }
+.sf-drop.has-file { border-style: solid; }
+.sf-drop-icon { display: grid; place-items: center; width: 46px; height: 46px; flex: none; border-radius: 50%; color: var(--copper-accent); background: var(--copper-wash); }
+.sf-drop-icon svg { width: 24px; height: 24px; }
+.sf-drop-text { display: grid; gap: 2px; font-size: var(--step--1); color: var(--text-dim); }
+.sf-drop-text strong { color: var(--text); font-weight: 600; font-size: var(--step-0); }
+.sf-file { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-2); padding: 10px 14px; border-radius: var(--radius-md); background: var(--surface-2); font-size: var(--step--1); }
+.sf-file-name { overflow-wrap: anywhere; font-weight: 500; }
+.sf-group > .error { display: none; margin-top: var(--space-2); }
+.sf-group.is-invalid > .error { display: flex; }
+.sf-actions { margin-top: var(--space-4); }
+.form-status a { color: var(--copper-accent); text-decoration: underline; text-underline-offset: 2px; }

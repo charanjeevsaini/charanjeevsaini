@@ -42,6 +42,15 @@ the visitor's email client with the message pre-filled to
 `contact.html` / `careers.html` with a `fetch()` POST to your form
 endpoint — no other changes needed.
 
+The quote form under the configurator (`products.html#customSpec`,
+handled in `assets/js/configurator.js`) mirrors every configurator tweak
+and accepts an optional drawing. A `mailto:` link cannot carry an
+attachment, so when a drawing is attached it uses the system share sheet
+on phones and tablets, and on desktop it downloads a ready-to-send
+`.eml` draft (addressed, with the spec and drawing attached) that opens
+in Outlook, Apple Mail or Thunderbird. A plain-email fallback link is
+always shown. A server endpoint would remove the extra step.
+
 ## Known follow-ups
 
 - **Certificates**: the ISO 9001:2015 and IATF 16949:2016 certificate

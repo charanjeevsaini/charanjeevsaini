@@ -775,3 +775,19 @@ var clearStagger = (function () {
     a.addEventListener("click", function () { set(false); if (document.activeElement) document.activeElement.blur(); });
   });
 })();
+
+/* ---------------------------------------------------------------------------
+   Contact form prefill — "?part=Formed%20Rivet" (from the made-to-order chips
+   and menu rows) seeds the subject and gives the requirement box a start.
+   ------------------------------------------------------------------------- */
+(function () {
+  "use strict";
+  var form = document.getElementById("contactForm");
+  if (!form || !window.URLSearchParams) return;
+  var part = new URLSearchParams(window.location.search).get("part");
+  if (!part) return;
+  part = part.slice(0, 60);
+  var subject = form.querySelector("#subject"), message = form.querySelector("#message");
+  if (subject && !subject.value) subject.value = "Quote for " + part;
+  if (message && !message.value) message.value = part + " — material: \nHead diameter / thickness: \nShank diameter / length: \nQuantity: \nTarget date: ";
+})();

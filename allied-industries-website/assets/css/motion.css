@@ -63,9 +63,22 @@
 .form-status.is-visible { animation: m-slide var(--m-base) var(--m-ease) both; }
 .form-status.is-success svg { animation: m-pop var(--m-reveal) var(--m-ease) both; }
 
-/* ---- Images that load after they are on screen fade in, never pop ---- */
-img[data-m-fade] { opacity: 0; transition: opacity var(--m-reveal) var(--m-ease); }
-img[data-m-fade].is-loaded { opacity: 1; }
+/* ---- Image loading: nothing pops in.
+        motion.js holds each not-yet-loaded image invisible until it is fully
+        decoded, then it develops in: opacity plus a small blur settling to
+        sharp. Opacity/filter only, via an animation, so the transforms other
+        effects drive on these images (hover zooms, the product-stack scale)
+        are never touched. While a large image loads, its own frame carries a
+        soft shimmer. ---- */
+@keyframes m-img-in { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: none; } }
+img[data-m-img] { opacity: 0; }
+img[data-m-img].is-loaded { opacity: 1; animation: m-img-in 560ms var(--m-ease) both; }
+[data-m-wait] {
+  background-image: linear-gradient(100deg, rgba(42, 33, 27, 0) 30%, rgba(255, 255, 255, 0.45) 50%, rgba(42, 33, 27, 0) 70%);
+  background-size: 250% 100%;
+  background-repeat: no-repeat;
+  animation: m-shimmer 1.3s linear infinite;
+}
 
 /* ---- Links and icons, pointer devices only ---- */
 @media (hover: hover) {
@@ -78,13 +91,12 @@ img[data-m-fade].is-loaded { opacity: 1; }
   .contact-action-icon { transition: transform var(--m-base) var(--m-ease); }
   .contact-action:hover .contact-action-icon { transform: translateY(-2px) rotate(-6deg); }
 
-  .mega-col li .is-static { transition: color var(--m-fast) var(--m-ease); }
-  .mega-col li .is-static:hover { color: var(--text-dim); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .lab-tweaks, .lab-spec > *, .custom-spec, .field .error, .error-summary,
   .form-status, .form-status svg, .lab-stage::before { animation: none !important; }
-  img[data-m-fade] { opacity: 1; transition: none; }
+  img[data-m-img], img[data-m-img].is-loaded { opacity: 1; animation: none; }
+  [data-m-wait] { animation: none; background-image: none; }
   .contact-action-icon { transition: none; transform: none !important; }
 }
