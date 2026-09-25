@@ -24,6 +24,11 @@
   var scrollY = 0, targetScroll = 0;
   var trail = [];
   var running = false, lastSpawn = 0;
+  /* Idle-aware: the field only redraws while the pointer or the page is
+     moving (or the wake is still fading), then parks on its last frame.
+     The drift clock advances only while drawing, so nothing jumps when it
+     wakes again. Same look, a fraction of the work. */
+  var clock = 0, lastNow = 0, idleFrames = 0;
   var speed = 0, lastPx = 0, lastPy = 0;
 
   // Large, slow shapes. Each parallaxes at its own rate so the field has depth.
@@ -58,6 +63,9 @@
   }
 
   function draw(now) {
+    var dt = lastNow ? Math.min(now - lastNow, 50) : 16;
+    lastNow = now;
+    clock += dt;
     ctx.clearRect(0, 0, W, H);
     ctx.globalCompositeOperation = "lighter";   // overlaps bloom
 
@@ -74,7 +82,7 @@
 
     for (var i = 0; i < blobs.length; i++) {
       var bl = blobs[i];
-      var t = reduced ? 0 : now * 0.00007 + bl.ph;
+      var t = reduced ? 0 : clock * 0.00007 + bl.ph;
       var driftX = Math.cos(t) * min * 0.05;
       var driftY = Math.sin(t * 0.8) * min * 0.04;
       blob(
@@ -110,21 +118,28 @@
     }
 
     ctx.globalCompositeOperation = "source-over";
-    if (running) window.requestAnimationFrame(draw);
+
+    var settling = Math.abs(targetScroll - scrollY) > 0.5 ||
+                   Math.abs(tx - px) > 0.5 || Math.abs(ty - py) > 0.5 ||
+                   trail.length > 0 || speed > 0.01;
+    idleFrames = settling ? 0 : idleFrames + 1;
+    if (running && idleFrames < 3) window.requestAnimationFrame(draw);
+    else { running = false; lastNow = 0; }
   }
 
-  function start() { if (!running) { running = true; window.requestAnimationFrame(draw); } }
-  function stop() { running = false; }
+  function start() { if (!running && !document.hidden) { running = true; idleFrames = 0; window.requestAnimationFrame(draw); } }
+  function stop() { running = false; lastNow = 0; }
 
-  window.addEventListener("resize", resize, { passive: true });
-  window.addEventListener("scroll", function () { targetScroll = window.scrollY || 0; }, { passive: true });
+  window.addEventListener("resize", function () { resize(); if (reduced) draw(0); else start(); }, { passive: true });
+  window.addEventListener("scroll", function () { targetScroll = window.scrollY || 0; if (!reduced) start(); }, { passive: true });
 
   if (fine && !reduced) {
     window.addEventListener("pointermove", function (e) {
       if (tx < -9000) { px = e.clientX; py = e.clientY; }   // no swoop on first move
       tx = e.clientX; ty = e.clientY;
+      start();
     }, { passive: true });
-    window.addEventListener("pointerleave", function () { tx = -9999; ty = -9999; });
+    window.addEventListener("pointerleave", function () { tx = -9999; ty = -9999; start(); });
   }
 
   resize();
@@ -134,7 +149,7 @@
     start();
     // Don't burn frames in a background tab
     document.addEventListener("visibilitychange", function () {
-      document.hidden ? stop() : start();
+      if (document.hidden) stop(); else start();
     });
   }
 })();

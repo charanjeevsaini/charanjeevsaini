@@ -178,6 +178,8 @@ function init() {
       b.tabIndex = j === current ? 0 : -1;
     });
     renderPanel(); build(false); save();
+    // Crossfade the spec copy (motion.css); restart it for rapid switching
+    spec.classList.remove("is-swapping"); void spec.offsetWidth; spec.classList.add("is-swapping");
   }
 
   /* ---- toolbar ------------------------------------------------------------ */

@@ -1,0 +1,90 @@
+/* ============================================================================
+   motion.css — micro-interactions added in the finishing pass
+   ----------------------------------------------------------------------------
+   Everything here targets elements that had no motion before; nothing in
+   styles.css is retimed or overridden. Shared tokens below; transform and
+   opacity only (plus colour/border/shadow on controls). All motion is
+   dropped under prefers-reduced-motion, and hover-only effects are limited
+   to devices that can hover.
+   ========================================================================== */
+:root {
+  --m-fast:   160ms;
+  --m-base:   220ms;
+  --m-reveal: 480ms;
+  --m-ease:   cubic-bezier(0.22, 1, 0.36, 1);
+  --m-rise:   10px;
+}
+
+@keyframes m-rise { from { opacity: 0; transform: translate3d(0, var(--m-rise), 0); } to { opacity: 1; transform: none; } }
+@keyframes m-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes m-pop  { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes m-slide { from { opacity: 0; transform: translate3d(0, -4px, 0); } to { opacity: 1; transform: none; } }
+@keyframes m-shimmer { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+
+/* Guide tabs are NOT animated here: main.js already re-runs the staggered
+   reveal on a panel's contents each time its tab is selected. */
+
+/* ---- Configurator ---- */
+.lab-tweaks[data-open="true"] {
+  transform-origin: 100% 0;
+  animation: m-pop var(--m-base) var(--m-ease) both;
+}
+@media (max-width: 960px) { .lab-tweaks[data-open="true"] { animation-name: m-fade; } }
+
+/* Spec copy crossfades when a different construction is chosen */
+.lab-spec.is-swapping > * { animation: m-fade var(--m-base) var(--m-ease) both; }
+.lab-spec.is-swapping > :nth-child(2) { animation-delay: 40ms; }
+
+/* Controls answer smoothly */
+.lab-seg button, .lab-mrow select, .lab-num-in, .lab-link {
+  transition:
+    background-color var(--m-fast) var(--m-ease),
+    color var(--m-fast) var(--m-ease),
+    border-color var(--m-fast) var(--m-ease),
+    box-shadow var(--m-fast) var(--m-ease);
+}
+.lab-mrow select:focus { outline: none; border-color: var(--copper); box-shadow: var(--ring); }
+
+/* Waiting for WebGL: a quiet shimmer where the part will appear */
+.lab-stage::before {
+  content: ""; position: absolute; left: 50%; top: 50%; z-index: 0;
+  width: 42%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
+  background: linear-gradient(100deg, rgba(42, 33, 27, 0.04) 30%, rgba(255, 255, 255, 0.55) 50%, rgba(42, 33, 27, 0.04) 70%);
+  background-size: 250% 100%;
+  animation: m-shimmer 1.4s linear infinite;
+  pointer-events: none;
+}
+.lab-stage:has(.lab-canvas)::before, .lab-no-gl .lab-stage::before { display: none; }
+
+/* ---- Forms: new states arrive instead of appearing ---- */
+.custom-spec:not([hidden]) { animation: m-rise var(--m-reveal) var(--m-ease) both; }
+.field.is-invalid .error,
+.error-summary.is-visible,
+.form-status.is-visible { animation: m-slide var(--m-base) var(--m-ease) both; }
+.form-status.is-success svg { animation: m-pop var(--m-reveal) var(--m-ease) both; }
+
+/* ---- Images that load after they are on screen fade in, never pop ---- */
+img[data-m-fade] { opacity: 0; transition: opacity var(--m-reveal) var(--m-ease); }
+img[data-m-fade].is-loaded { opacity: 1; }
+
+/* ---- Links and icons, pointer devices only ---- */
+@media (hover: hover) {
+  .breadcrumb a {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    transition: background-size var(--m-base) var(--m-ease), color var(--m-fast) var(--m-ease);
+  }
+  .breadcrumb a:hover { background-size: 100% 1px; }
+
+  .contact-action-icon { transition: transform var(--m-base) var(--m-ease); }
+  .contact-action:hover .contact-action-icon { transform: translateY(-2px) rotate(-6deg); }
+
+  .mega-col li .is-static { transition: color var(--m-fast) var(--m-ease); }
+  .mega-col li .is-static:hover { color: var(--text-dim); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-tweaks, .lab-spec > *, .custom-spec, .field .error, .error-summary,
+  .form-status, .form-status svg, .lab-stage::before { animation: none !important; }
+  img[data-m-fade] { opacity: 1; transition: none; }
+  .contact-action-icon { transition: none; transform: none !important; }
+}
