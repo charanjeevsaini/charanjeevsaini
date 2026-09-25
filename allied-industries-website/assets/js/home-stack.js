@@ -37,7 +37,7 @@
         depth += Math.max(0, Math.min(1, t));
       }
       c.style.transform = "scale(" + (1 - depth * 0.04).toFixed(4) + ")";
-      c.style.setProperty("--shade", Math.min(0.45, depth * 0.12).toFixed(3));
+      c.style.setProperty("--shade", Math.min(0.22, depth * 0.07).toFixed(3));
       // Photo zoom: 1.25 -> 1 as the card rises from the bottom of the viewport to its stuck position
       var e = (vh - rects[i].top) / Math.max(1, vh - tops[i]);
       e = Math.max(0, Math.min(1, e));
